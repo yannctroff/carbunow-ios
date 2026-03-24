@@ -149,14 +149,17 @@ struct HomeView: View {
     private var mapContent: some View {
         ZStack {
             Map(position: $cameraPosition, interactionModes: .all) {
-                ForEach(mapStations) { station in
+                ForEach(visibleMapStations) { station in
                     Annotation(station.displayName, coordinate: station.coordinate) {
-                        stationAnnotationView(for: station)
+                        stationAnnotationView(
+                            for: station,
+                            color: priceColorForMap(for: station, prices: visibleMapPrices)
+                        )
                     }
                     .annotationTitles(.hidden)
                 }
             }
-            .onMapCameraChange(frequency: .continuous) { context in
+            .onMapCameraChange(frequency: .onEnd) { context in
                 region = context.region
             }
             .ignoresSafeArea()
@@ -264,37 +267,30 @@ struct HomeView: View {
         }
     }
 
-    private func stationAnnotationView(for station: FuelStation) -> some View {
+    private func stationAnnotationView(for station: FuelStation, color: Color) -> some View {
         VStack(spacing: 4) {
             Image(systemName: "fuelpump.circle.fill")
                 .font(.title2)
                 .foregroundStyle(.white)
                 .padding(4)
-                .background(priceColorForMap(for: station))
+                .background(color)
                 .clipShape(Circle())
-                .shadow(radius: 4)
+                .shadow(radius: 3)
 
             if let price = station.price(for: viewModel.selectedFuel) {
                 Text(String(format: "%.3f €", price))
                     .font(.caption2.bold())
-                    .foregroundStyle(priceColorForMap(for: station))
+                    .foregroundStyle(color)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 3)
                     .background(.ultraThinMaterial)
                     .clipShape(Capsule())
             }
         }
-        .padding(10)
-        .background(
-            Color.black.opacity(0.001)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
-        )
         .contentShape(Rectangle())
-        .highPriorityGesture(
-            TapGesture().onEnded {
-                selectedStation = station
-            }
-        )
+        .onTapGesture {
+            selectedStation = station
+        }
     }
 
     private var listContent: some View {
@@ -400,34 +396,43 @@ struct HomeView: View {
         .padding(.top, 8)
     }
 
-    private var mapStations: [FuelStation] {
+    private var visibleMapStations: [FuelStation] {
         let latMin = appliedRegion.center.latitude - appliedRegion.span.latitudeDelta * 0.55
         let latMax = appliedRegion.center.latitude + appliedRegion.span.latitudeDelta * 0.55
         let lonMin = appliedRegion.center.longitude - appliedRegion.span.longitudeDelta * 0.55
         let lonMax = appliedRegion.center.longitude + appliedRegion.span.longitudeDelta * 0.55
 
-        let insideRegion = viewModel.filteredAndSortedStations(
+        let candidates = viewModel.filteredAndSortedStations(
             userLocation: locationManager.currentLocation,
             radiusKm: 0
-        ).filter { station in
+        )
+
+        let insideRegion = candidates.filter { station in
             station.latitude >= latMin && station.latitude <= latMax &&
             station.longitude >= lonMin && station.longitude <= lonMax
         }
 
         let limit: Int
         let maxSpan = max(appliedRegion.span.latitudeDelta, appliedRegion.span.longitudeDelta)
+
         switch maxSpan {
         case 0..<0.03:
-            limit = 30
+            limit = 40
         case 0.03..<0.06:
-            limit = 24
+            limit = 28
         case 0.06..<0.12:
-            limit = 16
-        default:
+            limit = 18
+        case 0.12..<0.25:
             limit = 12
+        default:
+            limit = 8
         }
 
         return Array(insideRegion.prefix(limit))
+    }
+
+    private var visibleMapPrices: [Double] {
+        visibleMapStations.compactMap { $0.price(for: viewModel.selectedFuel) }
     }
 
     private var regionSnapshot: String {
@@ -556,9 +561,7 @@ struct HomeView: View {
         return formatter.string(from: date)
     }
 
-    private func priceColorForMap(for station: FuelStation) -> Color {
-        let prices = mapStations.compactMap { $0.price(for: viewModel.selectedFuel) }
-
+    private func priceColorForMap(for station: FuelStation, prices: [Double]) -> Color {
         guard let currentPrice = station.price(for: viewModel.selectedFuel),
               let minPrice = prices.min(),
               let maxPrice = prices.max() else {

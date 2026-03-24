@@ -1,3 +1,11 @@
+//
+//  StationsViewModel.swift
+//  CarbuNow - Prix Du Carburant
+//
+//  Created by Yann CATTARIN on 24/03/2026.
+//
+
+
 import Foundation
 import CoreLocation
 import MapKit
