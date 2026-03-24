@@ -5,34 +5,50 @@ struct StationRowView: View {
     let station: FuelStation
     let selectedFuel: FuelType
     let userLocation: CLLocation?
+    var priceColor: Color = .green
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Text(station.name)
-                    .font(.headline)
-                    .lineLimit(1)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(station.displayName)
+                        .font(.headline)
+                        .lineLimit(2)
 
-                Spacer()
+                    Text(station.subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+
+                    Text("ID \(station.id)")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+
+                    if let updatedAtText = station.updatedAtText {
+                        Text(updatedAtText)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("Mise à jour inconnue")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Spacer(minLength: 8)
 
                 if let price = station.price(for: selectedFuel) {
                     Text(String(format: "%.3f €/L", price))
                         .font(.headline)
-                        .foregroundStyle(.green)
+                        .foregroundStyle(priceColor)
+                        .multilineTextAlignment(.trailing)
                 }
             }
 
-            Text([station.address, station.city].joined(separator: ", "))
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-
             HStack {
-                if let brand = station.brand, !brand.isEmpty {
-                    Label(brand, systemImage: "building.2")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                Label("\(station.prices.count) carburants", systemImage: "fuelpump")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
 
                 Spacer()
 
@@ -44,6 +60,9 @@ struct StationRowView: View {
             }
         }
         .padding(.vertical, 4)
+        .onAppear {
+            print("📋 [ROW] \(station.displayName) | \(station.updatedAtText ?? "maj=nil")")
+        }
     }
 
     private func formattedDistance(_ distance: Double) -> String {

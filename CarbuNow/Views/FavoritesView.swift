@@ -1,12 +1,5 @@
-//
-//  FavoritesView.swift
-//  CarbuNow
-//
-//  Created by Yann CATTARIN on 15/03/2026.
-//
-
-
 import SwiftUI
+import CoreLocation
 
 struct FavoritesView: View {
     @EnvironmentObject private var favoritesStore: FavoritesStore
@@ -15,33 +8,70 @@ struct FavoritesView: View {
 
     var body: some View {
         NavigationStack {
-            let favorites = viewModel.allStations.filter { favoritesStore.favoriteIDs.contains($0.id) }
+            content
+                .navigationTitle("Favoris")
+        }
+    }
 
-            Group {
-                if favorites.isEmpty {
-                    ContentUnavailableView(
-                        "Aucun favori",
-                        systemImage: "star",
-                        description: Text("Ajoute une station en favori depuis sa fiche.")
-                    )
-                } else {
-                    List {
-                        ForEach(favorites) { station in
-                            NavigationLink {
-                                StationDetailView(station: station)
-                            } label: {
-                                StationRowView(
-                                    station: station,
-                                    selectedFuel: viewModel.selectedFuel,
-                                    userLocation: locationManager.currentLocation
-                                )
-                            }
-                        }
+    @ViewBuilder
+    private var content: some View {
+        if favoriteStations.isEmpty {
+            ContentUnavailableView(
+                "Aucun favori",
+                systemImage: "star",
+                description: Text("Ajoute une station en favori depuis sa fiche.")
+            )
+        } else {
+            List {
+                ForEach(favoriteStations) { station in
+                    NavigationLink {
+                        StationDetailView(station: station)
+                    } label: {
+                        StationRowView(
+                            station: station,
+                            selectedFuel: viewModel.selectedFuel,
+                            userLocation: locationManager.currentLocation,
+                            priceColor: priceColor(for: station)
+                        )
                     }
-                    .listStyle(.plain)
                 }
             }
-            .navigationTitle("Favoris")
+            .listStyle(.plain)
         }
+    }
+
+    private var favoriteStations: [FuelStation] {
+        viewModel.allStations
+            .filter { favoritesStore.favoriteIDs.contains($0.id) }
+            .sorted { lhs, rhs in
+                let lhsPrice = lhs.price(for: viewModel.selectedFuel) ?? Double.greatestFiniteMagnitude
+                let rhsPrice = rhs.price(for: viewModel.selectedFuel) ?? Double.greatestFiniteMagnitude
+
+                if lhsPrice == rhsPrice {
+                    return lhs.displayName.localizedStandardCompare(rhs.displayName) == .orderedAscending
+                }
+
+                return lhsPrice < rhsPrice
+            }
+    }
+
+    private func priceColor(for station: FuelStation) -> Color {
+        let prices = favoriteStations.compactMap { $0.price(for: viewModel.selectedFuel) }
+
+        guard
+            let currentPrice = station.price(for: viewModel.selectedFuel),
+            let minPrice = prices.min(),
+            let maxPrice = prices.max()
+        else {
+            return .green
+        }
+
+        guard maxPrice > minPrice else {
+            return .green
+        }
+
+        let ratio = (currentPrice - minPrice) / (maxPrice - minPrice)
+        let hue = (1 - ratio) * 0.33
+        return Color(hue: hue, saturation: 0.85, brightness: 0.95)
     }
 }

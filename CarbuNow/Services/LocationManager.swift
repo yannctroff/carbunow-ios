@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreLocation
+import Combine
 
 final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
@@ -50,6 +51,6 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Erreur localisation :", error.localizedDescription)
+        print("Erreur localisation : \(error.localizedDescription)")
     }
 }

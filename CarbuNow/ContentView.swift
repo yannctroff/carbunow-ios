@@ -1,24 +1,14 @@
-//
-//  ContentView.swift
-//  CarbuNow
-//
-//  Created by Yann CATTARIN on 15/03/2026.
-//
-
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        HomeView()
     }
 }
 
 #Preview {
     ContentView()
+        .environmentObject(LocationManager())
+        .environmentObject(FavoritesStore())
+        .environmentObject(StationsViewModel())
 }

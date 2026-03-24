@@ -1,3 +1,11 @@
+//
+//  ReportIssueView.swift
+//  CarbuNow - Prix Du Carburant
+//
+//  Created by Yann CATTARIN on 22/03/2026.
+//
+
+
 import SwiftUI
 import UniformTypeIdentifiers
 import PhotosUI
@@ -66,10 +74,10 @@ struct ReportIssueView: View {
                 }
 
                 Section("Pièce jointe") {
-                    if let selectedFileName {
+                    if let fileName = selectedFileName {
                         HStack {
                             Image(systemName: "paperclip")
-                            Text(selectedFileName)
+                            Text(fileName)
                                 .lineLimit(1)
 
                             Spacer()

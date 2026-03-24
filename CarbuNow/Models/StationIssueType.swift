@@ -1,3 +1,11 @@
+//
+//  StationIssueType.swift
+//  CarbuNow - Prix Du Carburant
+//
+//  Created by Yann CATTARIN on 22/03/2026.
+//
+
+
 import Foundation
 
 enum StationIssueType: String, CaseIterable, Identifiable {

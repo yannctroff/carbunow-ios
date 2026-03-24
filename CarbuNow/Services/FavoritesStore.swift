@@ -7,6 +7,7 @@
 
 
 import Foundation
+import Combine
 
 final class FavoritesStore: ObservableObject {
     @Published private(set) var favoriteIDs: Set<String> = []

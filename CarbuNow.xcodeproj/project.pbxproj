@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		AAB4A0422F6703630085C8CF /* CarbuNow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarbuNow.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAB4A0422F6703630085C8CF /* CarbuNow - Prix Du Carburant.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CarbuNow - Prix Du Carburant.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAFCF6872F6C867F00AF3CB2 /* CarbuNow - Prix Du Carburant.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "CarbuNow - Prix Du Carburant.entitlements"; sourceTree = "<group>"; };
+		AAFCF6882F6C938000AF3CB2 /* CarbuNow---Prix-Du-Carburant-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "CarbuNow---Prix-Du-Carburant-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +34,8 @@
 		AAB4A0392F6703630085C8CF = {
 			isa = PBXGroup;
 			children = (
+				AAFCF6882F6C938000AF3CB2 /* CarbuNow---Prix-Du-Carburant-Info.plist */,
+				AAFCF6872F6C867F00AF3CB2 /* CarbuNow - Prix Du Carburant.entitlements */,
 				AAB4A0442F6703630085C8CF /* CarbuNow */,
 				AAB4A0432F6703630085C8CF /* Products */,
 			);
@@ -40,7 +44,7 @@
 		AAB4A0432F6703630085C8CF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AAB4A0422F6703630085C8CF /* CarbuNow.app */,
+				AAB4A0422F6703630085C8CF /* CarbuNow - Prix Du Carburant.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +52,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AAB4A0412F6703630085C8CF /* CarbuNow */ = {
+		AAB4A0412F6703630085C8CF /* CarbuNow - Prix Du Carburant */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AAB4A04D2F6703650085C8CF /* Build configuration list for PBXNativeTarget "CarbuNow" */;
+			buildConfigurationList = AAB4A04D2F6703650085C8CF /* Build configuration list for PBXNativeTarget "CarbuNow - Prix Du Carburant" */;
 			buildPhases = (
 				AAB4A03E2F6703630085C8CF /* Sources */,
 				AAB4A03F2F6703630085C8CF /* Frameworks */,
@@ -63,11 +67,11 @@
 			fileSystemSynchronizedGroups = (
 				AAB4A0442F6703630085C8CF /* CarbuNow */,
 			);
-			name = CarbuNow;
+			name = "CarbuNow - Prix Du Carburant";
 			packageProductDependencies = (
 			);
 			productName = CarbuNow;
-			productReference = AAB4A0422F6703630085C8CF /* CarbuNow.app */;
+			productReference = AAB4A0422F6703630085C8CF /* CarbuNow - Prix Du Carburant.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -86,11 +90,12 @@
 				};
 			};
 			buildConfigurationList = AAB4A03D2F6703630085C8CF /* Build configuration list for PBXProject "CarbuNow" */;
-			developmentRegion = en;
+			developmentRegion = fr;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				fr,
 			);
 			mainGroup = AAB4A0392F6703630085C8CF;
 			minimizedProjectReferenceProxies = 1;
@@ -99,7 +104,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AAB4A0412F6703630085C8CF /* CarbuNow */,
+				AAB4A0412F6703630085C8CF /* CarbuNow - Prix Du Carburant */,
 			);
 		};
 /* End PBXProject section */
@@ -251,30 +256,39 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = "CarbuNow - Prix Du Carburant.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = M4S92V6PCK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "CarbuNow---Prix-Du-Carburant-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = CarbuNow;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CarbuNow utilise votre position pour afficher les stations-service autour de vous.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cattarin.CarbuNow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -283,30 +297,39 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = "CarbuNow - Prix Du Carburant.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = M4S92V6PCK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "CarbuNow---Prix-Du-Carburant-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = CarbuNow;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CarbuNow utilise votre position pour afficher les stations-service autour de vous.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cattarin.CarbuNow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -322,7 +345,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AAB4A04D2F6703650085C8CF /* Build configuration list for PBXNativeTarget "CarbuNow" */ = {
+		AAB4A04D2F6703650085C8CF /* Build configuration list for PBXNativeTarget "CarbuNow - Prix Du Carburant" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AAB4A04E2F6703650085C8CF /* Debug */,
