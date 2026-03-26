@@ -102,20 +102,8 @@ struct HomeView: View {
     private var mapContent: some View {
         ZStack(alignment: .top) {
             Map(position: $cameraPosition, interactionModes: [.pan, .zoom, .rotate], scope: mapScope) {
-                Annotation("Ma position", coordinate: locationManager.currentLocation?.coordinate ?? defaultHomeRegion.center) {
-                    if locationManager.currentLocation != nil {
-                        ZStack {
-                            Circle()
-                                .fill(.blue.opacity(0.2))
-                                .frame(width: 22, height: 22)
 
-                            Circle()
-                                .fill(.blue)
-                                .frame(width: 12, height: 12)
-                        }
-                    }
-                }
-                .annotationTitles(.hidden)
+                UserAnnotation()
 
                 ForEach(visibleMapStations) { station in
                     Annotation(station.displayName, coordinate: station.coordinate) {

@@ -1,15 +1,11 @@
-//
-//  CarbuNowApp.swift
-//  CarbuNow
-//
-//  Created by Yann CATTARIN on 15/03/2026.
-//
-
 import SwiftUI
+import UIKit
+import UserNotifications
 
 @main
 struct CarbuNowApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @Environment(\.scenePhase) private var scenePhase
 
     @StateObject private var viewModel = StationsViewModel()
     @StateObject private var locationManager = LocationManager()
@@ -22,7 +18,11 @@ struct CarbuNowApp: App {
                 .environmentObject(viewModel)
                 .environmentObject(locationManager)
                 .environmentObject(favoritesStore)
-//                .environmentObject(priceAlertManager)
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                UNUserNotificationCenter.current().setBadgeCount(0)
+            }
         }
     }
 }
