@@ -11,12 +11,22 @@ struct HomeView: View {
     @EnvironmentObject private var locationManager: LocationManager
     @EnvironmentObject private var viewModel: StationsViewModel
 
+    @Namespace private var mapScope
+
     @State private var selectedStation: FuelStation?
     @State private var region = defaultHomeRegion
     @State private var appliedRegion = defaultHomeRegion
-    @State private var cameraPosition: MapCameraPosition = .region(defaultHomeRegion)
+    @State private var cameraPosition: MapCameraPosition = .camera(
+        MapCamera(
+            centerCoordinate: defaultHomeRegion.center,
+            distance: 18000,
+            heading: 0,
+            pitch: 0
+        )
+    )
     @State private var didAutoCenterOnUser = false
     @State private var hasPendingMapRefresh = false
+    @State private var hasCompletedInitialMapLoad = false
     @State private var lastListReloadLocation: CLLocation?
     @State private var didInitialListLoad = false
     @State private var showCitySearchSheet = false
@@ -29,126 +39,84 @@ struct HomeView: View {
         TabView {
             NavigationStack {
                 mapContent
-                    .toolbar {
-                        ToolbarItemGroup(placement: .topBarTrailing) {
-                            Button {
-                                showCitySearchSheet = true
-                            } label: {
-                                Image(systemName: "magnifyingglass")
-                            }
-
-                            Button {
-                                Task {
-                                    appliedRegion = region
-                                    hasPendingMapRefresh = false
-                                    suppressNextPendingRefresh = true
-                                    await viewModel.loadStations(in: appliedRegion, force: true)
-                                }
-                            } label: {
-                                Image(systemName: "arrow.clockwise")
-                            }
-
-                            Button {
-                                locationManager.requestPermission()
-                                locationManager.startUpdating()
-                                recenterOnUserIfPossible(force: true)
-                            } label: {
-                                Image(systemName: "location.fill")
-                            }
-                        }
-                    }
+                    .toolbar(.hidden, for: .navigationBar)
                     .sheet(isPresented: $showCitySearchSheet) {
                         citySearchSheet
                             .presentationDetents([.medium])
                             .presentationDragIndicator(.visible)
                     }
+                    .sheet(item: $selectedStation) { station in
+                        NavigationStack {
+                            StationDetailView(station: station, showsCloseButton: true)
+                        }
+                    }
+                    .task {
+                        await handleInitialLoad()
+                    }
+                    .onChange(of: locationManager.authorizationStatus) { _, _ in
+                        Task {
+                            await handleLocationAuthorizationChange()
+                        }
+                    }
+                    .onChange(of: locationManager.currentLocation?.coordinate.latitude) { _, _ in
+                        handleLocationChange()
+                    }
+                    .onChange(of: locationManager.currentLocation?.coordinate.longitude) { _, _ in
+                        handleLocationChange()
+                    }
+                    .onChange(of: regionSnapshot) { _, _ in
+                        handleRegionChange()
+                    }
             }
             .tabItem {
-                Label("Carte", systemImage: "map.fill")
+                Label("Carte", systemImage: "map")
             }
 
             NavigationStack {
                 listContent
                     .navigationTitle("Stations")
-                    .toolbar {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button {
-                                Task {
-                                    await reloadList(force: true)
-                                }
-                            } label: {
-                                Image(systemName: "arrow.clockwise")
-                            }
-                        }
+                    .task {
+                        await handleInitialListLoad()
+                    }
+                    .refreshable {
+                        await reloadList(force: true)
                     }
             }
             .tabItem {
                 Label("Liste", systemImage: "list.bullet")
             }
 
-            SettingsView()
-                .tabItem {
-                    Label("Réglages", systemImage: "gearshape.fill")
-                }
-        }
-        .task {
-            await viewModel.loadStations(in: appliedRegion, force: true)
-            await reloadList(force: true)
+            NavigationStack {
+                SettingsView()
+                    .navigationTitle("Paramètres")
+            }
+            .tabItem {
+                Label("Paramètres", systemImage: "gearshape")
+            }
         }
         .onAppear {
-            if locationManager.authorizationStatus == .notDetermined {
                 locationManager.requestPermission()
-            } else {
-                locationManager.startUpdating()
             }
-        }
-        .onChange(of: locationManager.currentLocation) { _, newLocation in
-            recenterOnUserIfPossible(force: false)
-
-            guard shouldReloadList(for: newLocation) else { return }
-
-            Task {
-                await reloadList(force: false)
-            }
-        }
-        .onChange(of: viewModel.selectedFuel) { _, _ in
-            Task {
-                await viewModel.loadStations(in: appliedRegion, force: true)
-                await reloadList(force: true)
-            }
-        }
-        .onChange(of: viewModel.searchRadiusKm) { _, _ in
-            Task {
-                await reloadList(force: true)
-            }
-        }
-        .sheet(item: $selectedStation) { station in
-            NavigationStack {
-                StationDetailView(
-                    station: station,
-                    showsCloseButton: true
-                )
-            }
-        }
-        .alert("Recherche impossible", isPresented: Binding(
-            get: { citySearchErrorMessage != nil },
-            set: { newValue in
-                if !newValue {
-                    citySearchErrorMessage = nil
-                }
-            }
-        )) {
-            Button("OK", role: .cancel) {
-                citySearchErrorMessage = nil
-            }
-        } message: {
-            Text(citySearchErrorMessage ?? "")
-        }
     }
 
     private var mapContent: some View {
-        ZStack {
-            Map(position: $cameraPosition, interactionModes: .all) {
+        ZStack(alignment: .top) {
+            Map(position: $cameraPosition, interactionModes: [.pan, .zoom, .rotate], scope: mapScope) {
+                Annotation("Ma position", coordinate: locationManager.currentLocation?.coordinate ?? defaultHomeRegion.center) {
+                    if locationManager.currentLocation != nil {
+                        ZStack {
+                            Circle()
+                                .fill(.blue.opacity(0.2))
+                                .frame(width: 22, height: 22)
+
+                            Circle()
+                                .fill(.blue)
+                                .frame(width: 12, height: 12)
+                        }
+                    }
+                }
+                .annotationTitles(.hidden)
+
                 ForEach(visibleMapStations) { station in
                     Annotation(station.displayName, coordinate: station.coordinate) {
                         stationAnnotationView(
@@ -159,12 +127,27 @@ struct HomeView: View {
                     .annotationTitles(.hidden)
                 }
             }
+            .mapScope(mapScope)
+            .mapControlVisibility(.hidden)
             .onMapCameraChange(frequency: .onEnd) { context in
                 region = context.region
             }
             .ignoresSafeArea()
 
             VStack(spacing: 12) {
+                mapFuelSection
+
+                if let refreshDate = viewModel.lastRefreshDate {
+                    Text("Dernière actualisation : \(formattedDate(refreshDate))")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 9)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                        .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+                }
+
                 HStack {
                     Spacer()
 
@@ -181,103 +164,101 @@ struct HomeView: View {
                                 .font(.subheadline.bold())
                                 .padding(.horizontal, 14)
                                 .padding(.vertical, 10)
-                                .background(.ultraThinMaterial)
+                                .background(.regularMaterial)
                                 .clipShape(Capsule())
+                                .shadow(radius: 6)
                         }
+                        .padding(.trailing)
                     }
                 }
-                .padding(.horizontal)
-                .padding(.top, 8)
 
                 Spacer()
 
-                mapFuelSection
-                    .padding(.horizontal)
-                    .padding(.bottom, 10)
-            }
-        }
-        .onChange(of: regionSnapshot) { _, _ in
-            if suppressNextPendingRefresh {
-                suppressNextPendingRefresh = false
-                hasPendingMapRefresh = false
-                return
-            }
+                HStack {
+                    Spacer()
 
-            guard didAutoCenterOnUser else {
-                hasPendingMapRefresh = false
-                return
-            }
+                    VStack(spacing: 10) {
+                        Button {
+                            recenterOnUserIfPossible(force: true)
+                        } label: {
+                            Image(systemName: "location.fill")
+                                .font(.title3)
+                                .foregroundStyle(.primary)
+                                .padding(12)
+                                .background(.regularMaterial)
+                                .clipShape(Circle())
+                                .shadow(radius: 6)
+                        }
 
-            hasPendingMapRefresh = regionDifferenceIsSignificant(lhs: region, rhs: appliedRegion)
+                        Button {
+                            showCitySearchSheet = true
+                        } label: {
+                            Image(systemName: "magnifyingglass")
+                                .font(.title3)
+                                .foregroundStyle(.primary)
+                                .padding(12)
+                                .background(.regularMaterial)
+                                .clipShape(Circle())
+                                .shadow(radius: 6)
+                        }
+                    }
+                    .padding(.trailing)
+                    .padding(.bottom, 90)
+                }
+            }
+            .safeAreaPadding(.top, 8)
         }
     }
 
-    private var citySearchSheet: some View {
-        NavigationStack {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Rechercher une ville")
-                    .font(.title3.bold())
-
-                TextField("Ex : Bordeaux, Toulouse, Paris...", text: $citySearchText)
-                    .textInputAutocapitalization(.words)
-                    .autocorrectionDisabled()
-                    .textFieldStyle(.roundedBorder)
-                    .onSubmit {
-                        Task {
-                            await searchCityAndRefresh()
-                        }
-                    }
-
-                Button {
-                    Task {
-                        await searchCityAndRefresh()
-                    }
-                } label: {
-                    HStack {
-                        if isSearchingCity {
-                            ProgressView()
-                                .controlSize(.small)
-                        } else {
-                            Image(systemName: "magnifyingglass")
-                        }
-
-                        Text(isSearchingCity ? "Recherche..." : "Rechercher")
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(isSearchingCity || citySearchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-
-                Text("La carte sera déplacée automatiquement sur la ville trouvée, puis la zone sera actualisée.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Recherche")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Fermer") {
-                        showCitySearchSheet = false
-                    }
+    private var mapFuelSection: some View {
+        VStack(spacing: 10) {
+            Picker("Carburant", selection: Binding(
+                get: { viewModel.selectedFuel },
+                set: { viewModel.setDefaultFuel($0) }
+            )) {
+                ForEach(FuelType.allCases, id: \.self) { fuel in
+                    Text(fuel.displayName).tag(fuel)
                 }
             }
+            .pickerStyle(.segmented)
+            .padding(8)
+            .background(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(.ultraThinMaterial)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .stroke(.white.opacity(0.08), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.18), radius: 10, y: 4)
+            .padding(.horizontal, 16)
         }
+        .padding(.top, 8)
     }
 
     private func stationAnnotationView(for station: FuelStation, color: Color) -> some View {
-        VStack(spacing: 4) {
+        let isRupture = station.hasActiveRupture(for: viewModel.selectedFuel)
+
+        return VStack(spacing: 3) {
             Image(systemName: "fuelpump.circle.fill")
                 .font(.title2)
                 .foregroundStyle(.white)
                 .padding(4)
-                .background(color)
+                .background(isRupture ? Color.gray : color)
                 .clipShape(Circle())
                 .shadow(radius: 3)
 
-            if let price = station.price(for: viewModel.selectedFuel) {
+            if isRupture {
+                Text("Rupture")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.9))
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 3)
+                    .background(
+                        Capsule()
+                            .fill(Color.gray.opacity(0.92))
+                    )
+            } else if let price = station.price(for: viewModel.selectedFuel) {
                 Text(String(format: "%.3f €", price))
                     .font(.caption2.bold())
                     .foregroundStyle(color)
@@ -315,24 +296,16 @@ struct HomeView: View {
                 .padding()
                 Spacer()
             } else {
-                List {
-                    if let lastRefreshDate = viewModel.lastListRefreshDate {
-                        Text("Dernière synchro : \(formattedDate(lastRefreshDate))")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    ForEach(viewModel.filteredAndSortedListStations(userLocation: locationManager.currentLocation)) { station in
-                        NavigationLink {
-                            StationDetailView(station: station)
-                        } label: {
-                            StationRowView(
-                                station: station,
-                                selectedFuel: viewModel.selectedFuel,
-                                userLocation: locationManager.currentLocation,
-                                priceColor: priceColorForList(for: station)
-                            )
-                        }
+                List(viewModel.filteredAndSortedListStations(userLocation: locationManager.currentLocation)) { station in
+                    NavigationLink {
+                        StationDetailView(station: station)
+                    } label: {
+                        StationRowView(
+                            station: station,
+                            selectedFuel: viewModel.selectedFuel,
+                            userLocation: locationManager.currentLocation,
+                            priceColor: priceColorForList(for: station)
+                        )
                     }
                 }
                 .listStyle(.plain)
@@ -343,64 +316,217 @@ struct HomeView: View {
         }
     }
 
-    private var mapFuelSection: some View {
-        VStack(spacing: 10) {
-            Picker("Carburant", selection: Binding(
-                get: { viewModel.selectedFuel },
-                set: { viewModel.setDefaultFuel($0) }
-            )) {
-                ForEach(FuelType.allCases) { fuel in
-                    Text(fuel.displayName).tag(fuel)
-                }
-            }
-            .pickerStyle(.segmented)
-        }
-        .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-    }
-
     private var listFiltersSection: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 12) {
             Picker("Carburant", selection: Binding(
                 get: { viewModel.selectedFuel },
                 set: { viewModel.setDefaultFuel($0) }
             )) {
-                ForEach(FuelType.allCases) { fuel in
+                ForEach(FuelType.allCases, id: \.self) { fuel in
                     Text(fuel.displayName).tag(fuel)
                 }
             }
             .pickerStyle(.segmented)
 
             Picker("Tri", selection: $viewModel.sortOption) {
-                ForEach(StationSortOption.allCases) { option in
-                    Text(option.rawValue).tag(option)
+                ForEach(StationSortOption.allCases, id: \.self) { option in
+                    Text(option.label).tag(option)
                 }
             }
             .pickerStyle(.segmented)
 
-            HStack {
-                Text("Rayon")
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text("Rayon de recherche")
+                    Spacer()
+                    Text(viewModel.searchRadiusKm <= 0 ? "Illimité" : "\(Int(viewModel.searchRadiusKm)) km")
+                        .foregroundStyle(.secondary)
+                }
+
+                Slider(
+                    value: Binding(
+                        get: { viewModel.searchRadiusKm },
+                        set: { viewModel.setSearchRadius($0) }
+                    ),
+                    in: 0...100,
+                    step: 1
+                )
+            }
+
+            Button {
+                Task {
+                    await reloadList(force: true)
+                }
+            } label: {
+                Label("Actualiser la liste", systemImage: "arrow.clockwise")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            
+            if let refreshDate = viewModel.lastListRefreshDate {
+                Text("Dernière actualisation : \(formattedDate(refreshDate))")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Text("\(Int(viewModel.searchRadiusKm)) km")
-                    .font(.caption.bold())
                     .foregroundStyle(.secondary)
             }
         }
-        .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
         .padding(.horizontal)
-        .padding(.top, 8)
+        .padding(.top)
+    }
+
+    private var citySearchSheet: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 16) {
+                TextField("Ville ou code postal (33000, Bordeaux, 750000, Paris,...)", text: $citySearchText)
+                    .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.words)
+                    .disableAutocorrection(true)
+
+                if let citySearchErrorMessage {
+                    Text(citySearchErrorMessage)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                }
+
+                Button {
+                    Task {
+                        await searchCity()
+                    }
+                } label: {
+                    HStack {
+                        if isSearchingCity {
+                            ProgressView()
+                                .controlSize(.small)
+                        }
+                        Text("Rechercher")
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(isSearchingCity || citySearchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("Rechercher une ville")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+
+    private func handleInitialLoad() async {
+        recenterOnUserIfPossible(force: false)
+        appliedRegion = region
+        hasPendingMapRefresh = false
+        await viewModel.loadStations(in: appliedRegion, force: true)
+        hasCompletedInitialMapLoad = true
+    }
+
+    private func handleLocationAuthorizationChange() async {
+        recenterOnUserIfPossible(force: false)
+        await reloadList(force: true)
+    }
+
+    private func handleInitialListLoad() async {
+        guard !didInitialListLoad else { return }
+        didInitialListLoad = true
+        await reloadList(force: true)
+    }
+
+    private func handleLocationChange() {
+        guard let currentLocation = locationManager.currentLocation else { return }
+
+        if !didAutoCenterOnUser {
+            recenterOnUserIfPossible(force: false)
+        }
+
+        if let last = lastListReloadLocation {
+            let moved = currentLocation.distance(from: last)
+            if moved >= 5000 {
+                Task {
+                    await reloadList(force: true)
+                }
+            }
+        } else {
+            Task {
+                await reloadList(force: true)
+            }
+        }
+    }
+
+    private func handleRegionChange() {
+        guard hasCompletedInitialMapLoad else { return }
+
+        guard !suppressNextPendingRefresh else {
+            suppressNextPendingRefresh = false
+            return
+        }
+
+        let distance = region.center.distance(to: appliedRegion.center)
+        let latDeltaDiff = abs(region.span.latitudeDelta - appliedRegion.span.latitudeDelta)
+        let lonDeltaDiff = abs(region.span.longitudeDelta - appliedRegion.span.longitudeDelta)
+
+        if distance > 1000 || latDeltaDiff > 0.01 || lonDeltaDiff > 0.01 {
+            hasPendingMapRefresh = true
+        }
+    }
+
+    private func reloadList(force: Bool) async {
+        await viewModel.loadListStations(
+            userLocation: locationManager.currentLocation,
+            force: force
+        )
+        lastListReloadLocation = locationManager.currentLocation
+    }
+
+    private func searchCity() async {
+        let query = citySearchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return }
+
+        isSearchingCity = true
+        citySearchErrorMessage = nil
+        defer { isSearchingCity = false }
+
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = query
+        request.resultTypes = .address
+
+        do {
+            let response = try await MKLocalSearch(request: request).start()
+            guard let item = response.mapItems.first else {
+                citySearchErrorMessage = "Aucun résultat."
+                return
+            }
+
+            let coordinate: CLLocationCoordinate2D
+            if #available(iOS 26.0, *) {
+                coordinate = item.location.coordinate
+            } else {
+                coordinate = item.placemark.coordinate
+            }
+            
+            let searchedRegion = MKCoordinateRegion(
+                center: coordinate,
+                span: MKCoordinateSpan(latitudeDelta: 0.08, longitudeDelta: 0.08)
+            )
+
+            suppressNextPendingRefresh = true
+            region = searchedRegion
+            appliedRegion = searchedRegion
+            cameraPosition = cameraPosition(for: searchedRegion, distance: 12000)
+            hasPendingMapRefresh = false
+            showCitySearchSheet = false
+
+            await viewModel.loadStations(in: searchedRegion, force: true)
+            hasCompletedInitialMapLoad = true
+        } catch {
+            citySearchErrorMessage = error.localizedDescription
+        }
     }
 
     private var visibleMapStations: [FuelStation] {
-        let latMin = appliedRegion.center.latitude - appliedRegion.span.latitudeDelta * 0.55
-        let latMax = appliedRegion.center.latitude + appliedRegion.span.latitudeDelta * 0.55
-        let lonMin = appliedRegion.center.longitude - appliedRegion.span.longitudeDelta * 0.55
-        let lonMax = appliedRegion.center.longitude + appliedRegion.span.longitudeDelta * 0.55
+        let latMin = appliedRegion.center.latitude - appliedRegion.span.latitudeDelta / 2
+        let latMax = appliedRegion.center.latitude + appliedRegion.span.latitudeDelta / 2
+        let lonMin = appliedRegion.center.longitude - appliedRegion.span.longitudeDelta / 2
+        let lonMax = appliedRegion.center.longitude + appliedRegion.span.longitudeDelta / 2
 
         let candidates = viewModel.filteredAndSortedStations(
             userLocation: locationManager.currentLocation,
@@ -448,109 +574,26 @@ struct HomeView: View {
         didAutoCenterOnUser = true
         suppressNextPendingRefresh = true
 
-        let nextRegion = MKCoordinateRegion(
+        let newRegion = MKCoordinateRegion(
             center: currentLocation.coordinate,
             span: MKCoordinateSpan(latitudeDelta: 0.08, longitudeDelta: 0.08)
         )
 
-        region = nextRegion
-        appliedRegion = nextRegion
-        cameraPosition = .region(nextRegion)
+        region = newRegion
+        appliedRegion = newRegion
+        cameraPosition = cameraPosition(for: newRegion, distance: 12000)
         hasPendingMapRefresh = false
-
-        Task {
-            await viewModel.loadStations(in: appliedRegion, force: true)
-        }
     }
 
-    private func shouldReloadList(for newLocation: CLLocation?) -> Bool {
-        guard let newLocation else { return false }
-
-        if !didInitialListLoad {
-            return true
-        }
-
-        guard let lastListReloadLocation else {
-            return true
-        }
-
-        return newLocation.distance(from: lastListReloadLocation) >= 250
-    }
-
-    private func reloadList(force: Bool) async {
-        await viewModel.loadListStations(
-            userLocation: locationManager.currentLocation,
-            force: force
+    private func cameraPosition(for region: MKCoordinateRegion, distance: CLLocationDistance) -> MapCameraPosition {
+        .camera(
+            MapCamera(
+                centerCoordinate: region.center,
+                distance: distance,
+                heading: 0,
+                pitch: 0
+            )
         )
-
-        if let currentLocation = locationManager.currentLocation {
-            lastListReloadLocation = currentLocation
-            didInitialListLoad = true
-        }
-    }
-
-    private func searchCityAndRefresh() async {
-        let trimmedQuery = citySearchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedQuery.isEmpty else { return }
-
-        isSearchingCity = true
-        defer { isSearchingCity = false }
-
-        do {
-            let request = MKLocalSearch.Request()
-            request.naturalLanguageQuery = trimmedQuery
-            request.resultTypes = .address
-
-            let response = try await MKLocalSearch(request: request).start()
-
-            guard let firstItem = response.mapItems.first else {
-                citySearchErrorMessage = "Aucun résultat trouvé pour “\(trimmedQuery)”."
-                return
-            }
-
-            let nextRegion: MKCoordinateRegion
-            let responseRegion = response.boundingRegion
-            let hasUsableSpan = responseRegion.span.latitudeDelta > 0 && responseRegion.span.longitudeDelta > 0
-
-            if hasUsableSpan {
-                let adjustedLat = max(responseRegion.span.latitudeDelta * 1.4, 0.08)
-                let adjustedLon = max(responseRegion.span.longitudeDelta * 1.4, 0.08)
-
-                nextRegion = MKCoordinateRegion(
-                    center: responseRegion.center,
-                    span: MKCoordinateSpan(latitudeDelta: adjustedLat, longitudeDelta: adjustedLon)
-                )
-            } else {
-                let coordinate = firstItem.location.coordinate
-
-                nextRegion = MKCoordinateRegion(
-                    center: coordinate,
-                    span: MKCoordinateSpan(latitudeDelta: 0.12, longitudeDelta: 0.12)
-                )
-            }
-
-            suppressNextPendingRefresh = true
-            didAutoCenterOnUser = true
-            region = nextRegion
-            appliedRegion = nextRegion
-            cameraPosition = .region(nextRegion)
-            hasPendingMapRefresh = false
-
-            await viewModel.loadStations(in: appliedRegion, force: true)
-
-            showCitySearchSheet = false
-        } catch {
-            citySearchErrorMessage = "Erreur pendant la recherche : \(error.localizedDescription)"
-        }
-    }
-
-    private func regionDifferenceIsSignificant(lhs: MKCoordinateRegion, rhs: MKCoordinateRegion) -> Bool {
-        let centerDeltaLat = abs(lhs.center.latitude - rhs.center.latitude)
-        let centerDeltaLon = abs(lhs.center.longitude - rhs.center.longitude)
-        let spanDeltaLat = abs(lhs.span.latitudeDelta - rhs.span.latitudeDelta)
-        let spanDeltaLon = abs(lhs.span.longitudeDelta - rhs.span.longitudeDelta)
-
-        return centerDeltaLat > 0.002 || centerDeltaLon > 0.002 || spanDeltaLat > 0.002 || spanDeltaLon > 0.002
     }
 
     private func formattedDate(_ date: Date) -> String {
@@ -594,5 +637,13 @@ struct HomeView: View {
         let ratio = (currentPrice - minPrice) / (maxPrice - minPrice)
         let hue = (1 - ratio) * 0.33
         return Color(hue: hue, saturation: 0.85, brightness: 0.95)
+    }
+}
+
+private extension CLLocationCoordinate2D {
+    func distance(to other: CLLocationCoordinate2D) -> CLLocationDistance {
+        let lhs = CLLocation(latitude: latitude, longitude: longitude)
+        let rhs = CLLocation(latitude: other.latitude, longitude: other.longitude)
+        return lhs.distance(from: rhs)
     }
 }

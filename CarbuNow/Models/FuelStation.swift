@@ -11,6 +11,7 @@ struct FuelStation: Decodable, Identifiable, Hashable {
     let address: String?
     let name: String?
     let prices: [FuelPrice]
+    let ruptures: [FuelRupture]
     let updatedAtRaw: String?
 
     enum CodingKeys: String, CodingKey {
@@ -22,6 +23,7 @@ struct FuelStation: Decodable, Identifiable, Hashable {
         case address
         case name
         case prices
+        case ruptures
         case updatedAtRaw = "updated_at"
     }
 
@@ -34,6 +36,7 @@ struct FuelStation: Decodable, Identifiable, Hashable {
         address: String? = nil,
         name: String? = nil,
         prices: [FuelPrice],
+        ruptures: [FuelRupture] = [],
         updatedAtRaw: String? = nil
     ) {
         self.id = id
@@ -44,6 +47,7 @@ struct FuelStation: Decodable, Identifiable, Hashable {
         self.address = address
         self.name = name
         self.prices = prices
+        self.ruptures = ruptures
         self.updatedAtRaw = updatedAtRaw
     }
 
@@ -106,6 +110,18 @@ struct FuelStation: Decodable, Identifiable, Hashable {
 
     func price(for fuel: FuelType) -> Double? {
         prices.first(where: { $0.type == fuel })?.price
+    }
+
+    func hasActiveRupture(for fuel: FuelType) -> Bool {
+        ruptures.contains(where: { $0.type == fuel && $0.isActive })
+    }
+
+    func isAvailable(for fuel: FuelType) -> Bool {
+        price(for: fuel) != nil || hasActiveRupture(for: fuel)
+    }
+
+    var availableFuelTypes: [FuelType] {
+        FuelType.allCases.filter { isAvailable(for: $0) }
     }
 
     func distance(from location: CLLocation?) -> CLLocationDistance? {

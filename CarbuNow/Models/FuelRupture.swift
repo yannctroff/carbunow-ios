@@ -1,3 +1,11 @@
+//
+//  FuelRupture.swift
+//  CarbuNow - Prix Du Carburant
+//
+//  Created by Yann CATTARIN on 25/03/2026.
+//
+
+
 import Foundation
 
 struct FuelRupture: Decodable, Hashable {
@@ -11,6 +19,13 @@ struct FuelRupture: Decodable, Hashable {
         case startedAtRaw = "started_at"
         case endedAtRaw = "ended_at"
         case kind
+    }
+
+    init(type: FuelType, startedAtRaw: String? = nil, endedAtRaw: String? = nil, kind: String? = nil) {
+        self.type = type
+        self.startedAtRaw = startedAtRaw
+        self.endedAtRaw = endedAtRaw
+        self.kind = kind
     }
 
     init(from decoder: Decoder) throws {

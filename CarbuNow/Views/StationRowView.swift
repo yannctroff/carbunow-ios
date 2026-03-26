@@ -37,7 +37,12 @@ struct StationRowView: View {
 
                 Spacer(minLength: 8)
 
-                if let price = station.price(for: selectedFuel) {
+                if station.hasActiveRupture(for: selectedFuel) {
+                    Text("Rupture")
+                        .font(.headline)
+                        .foregroundStyle(.gray)
+                        .multilineTextAlignment(.trailing)
+                } else if let price = station.price(for: selectedFuel) {
                     Text(String(format: "%.3f €/L", price))
                         .font(.headline)
                         .foregroundStyle(priceColor)
@@ -46,7 +51,7 @@ struct StationRowView: View {
             }
 
             HStack {
-                Label("\(station.prices.count) carburants", systemImage: "fuelpump")
+                Label("\(station.availableFuelTypes.count) carburants", systemImage: "fuelpump")
                     .font(.caption)
                     .foregroundStyle(.secondary)
 

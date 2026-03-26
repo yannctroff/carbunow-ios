@@ -5,7 +5,6 @@
 //  Created by Yann CATTARIN on 24/03/2026.
 //
 
-
 import Foundation
 import CoreLocation
 import MapKit
@@ -103,7 +102,7 @@ final class StationsViewModel: ObservableObject {
         let effectiveRadius = radiusKm ?? searchRadiusKm
 
         let filtered = allStations.filter { station in
-            guard station.price(for: selectedFuel) != nil else { return false }
+            guard station.isAvailable(for: selectedFuel) else { return false }
 
             if effectiveRadius <= 0 {
                 return true
@@ -132,7 +131,7 @@ final class StationsViewModel: ObservableObject {
 
     func filteredAndSortedListStations(userLocation: CLLocation?) -> [FuelStation] {
         let filtered = listStations.filter { station in
-            guard station.price(for: selectedFuel) != nil else { return false }
+            guard station.isAvailable(for: selectedFuel) else { return false }
 
             if searchRadiusKm <= 0 {
                 return true

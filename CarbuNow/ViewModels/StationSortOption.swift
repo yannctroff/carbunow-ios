@@ -1,8 +1,15 @@
 import Foundation
 
-enum StationSortOption: String, CaseIterable, Identifiable {
-    case price = "Prix"
-    case distance = "Distance"
+enum StationSortOption: String, CaseIterable, Hashable {
+    case price
+    case distance
 
-    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .price:
+            return "Prix"
+        case .distance:
+            return "Distance"
+        }
+    }
 }

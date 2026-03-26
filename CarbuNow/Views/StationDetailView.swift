@@ -91,15 +91,22 @@ struct StationDetailView: View {
             Text("Prix disponibles")
                 .font(.headline)
 
-            ForEach(station.prices, id: \.self) { price in
+            ForEach(availableFuels, id: \.self) { fuel in
                 HStack {
-                    Text(price.type.displayName)
+                    Text(fuel.displayName)
                     Spacer()
-                    Text(String(format: "%.3f €/L", price.price))
-                        .bold()
+
+                    if station.hasActiveRupture(for: fuel) {
+                        Text("Rupture")
+                            .bold()
+                            .foregroundStyle(.gray)
+                    } else if let price = station.price(for: fuel) {
+                        Text(String(format: "%.3f €/L", price))
+                            .bold()
+                    }
                 }
 
-                if price != station.prices.last {
+                if fuel != availableFuels.last {
                     Divider()
                 }
             }
@@ -114,23 +121,23 @@ struct StationDetailView: View {
             Text("Alertes de prix")
                 .font(.headline)
 
-            ForEach(station.prices, id: \.self) { price in
+            ForEach(availableFuels, id: \.self) { fuel in
                 let isActive = alertManager.isAlertActive(
                     stationID: station.id,
-                    fuelType: price.type.rawValue
+                    fuelType: fuel.rawValue
                 )
 
                 Button {
                     Task {
-                        await activateAlert(for: price.type)
+                        await activateAlert(for: fuel)
                     }
                 } label: {
                     HStack {
                         Image(systemName: isActive ? "bell.badge.fill" : "bell.badge")
 
                         Text(isActive
-                             ? "Alerte \(price.type.displayName) active"
-                             : "Activer alerte \(price.type.displayName)")
+                             ? "Alerte \(fuel.displayName) active"
+                             : "Activer alerte \(fuel.displayName)")
 
                         Spacer()
 
@@ -170,6 +177,10 @@ struct StationDetailView: View {
         }
     }
 
+    private var availableFuels: [FuelType] {
+        FuelType.allCases.filter { station.isAvailable(for: $0) }
+    }
+
     private func activateAlert(for fuelType: FuelType) async {
         guard !isSubmittingAlert else { return }
 
@@ -195,14 +206,26 @@ struct StationDetailView: View {
     }
 
     private func openInMaps() {
-        let mapItem = MKMapItem(
-            location: CLLocation(
-                latitude: station.coordinate.latitude,
-                longitude: station.coordinate.longitude
-            ),
-            address: nil
+        let coordinate = CLLocationCoordinate2D(
+            latitude: station.coordinate.latitude,
+            longitude: station.coordinate.longitude
         )
-        
+
+        let mapItem: MKMapItem
+
+        if #available(iOS 26.0, *) {
+            mapItem = MKMapItem(
+                location: CLLocation(
+                    latitude: coordinate.latitude,
+                    longitude: coordinate.longitude
+                ),
+                address: nil
+            )
+        } else {
+            let placemark = MKPlacemark(coordinate: coordinate)
+            mapItem = MKMapItem(placemark: placemark)
+        }
+
         mapItem.name = station.displayName
         mapItem.openInMaps()
     }
@@ -213,3 +236,4 @@ private struct AlertMessage: Identifiable {
     let title: String
     let message: String
 }
+
