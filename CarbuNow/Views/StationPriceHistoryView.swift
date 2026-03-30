@@ -9,11 +9,36 @@ struct StationPriceHistoryView: View {
     @State private var history: [FuelPriceHistoryPoint] = []
     @State private var selectedPeriod = 7
     @State private var isLoading = false
+    @State private var selectedPoint: FuelPriceHistoryPoint?
 
     private var pricedHistory: [FuelPriceHistoryPoint] {
-        history
+        let sorted = history
             .filter { $0.price != nil }
             .sorted { $0.timestamp < $1.timestamp }
+
+        var result: [FuelPriceHistoryPoint] = []
+        let calendar = Calendar.current
+
+        for point in sorted {
+            guard let price = point.price else { continue }
+
+            guard let last = result.last, let lastPrice = last.price else {
+                result.append(point)
+                continue
+            }
+
+            let sameDay = calendar.isDate(point.date, inSameDayAs: last.date)
+
+            if sameDay {
+                if price != lastPrice {
+                    result.append(point)
+                }
+            } else {
+                result.append(point)
+            }
+        }
+
+        return result
     }
 
     private var latestPrice: Double? {
@@ -39,31 +64,49 @@ struct StationPriceHistoryView: View {
 
     private var chartMinY: Double {
         guard let minPrice, let maxPrice else { return 0 }
-
         let range = maxPrice - minPrice
         let padding = max(0.003, range * 0.15)
-
         return minPrice - padding
     }
 
     private var chartMaxY: Double {
         guard let minPrice, let maxPrice else { return 2 }
-
         let range = maxPrice - minPrice
         let padding = max(0.003, range * 0.15)
-
         return maxPrice + padding
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Historique des prix")
+                        .font(.headline)
 
-            Text("Historique des prix")
-                .font(.headline)
+                    Text(fuelDisplayName)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
 
-            Text(fuelDisplayName)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                Spacer()
+
+                if let selectedPoint, let selectedPrice = selectedPoint.price {
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text(formattedDate(selectedPoint.date))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        Text("\(selectedPrice, specifier: "%.3f")€")
+                            .font(.headline.bold())
+                            .monospacedDigit()
+                            .foregroundStyle(.primary)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                }
+            }
 
             Picker("", selection: $selectedPeriod) {
                 Text("7j").tag(7)
@@ -73,31 +116,21 @@ struct StationPriceHistoryView: View {
             }
             .pickerStyle(.segmented)
             .onChange(of: selectedPeriod) {
+                selectedPoint = nil
                 load()
             }
 
             if isLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity, minHeight: 180)
-            }
-            else if pricedHistory.isEmpty {
+            } else if pricedHistory.isEmpty {
                 Text("Aucune donnée")
                     .foregroundStyle(.secondary)
-            }
-            else {
+            } else {
                 VStack(alignment: .leading, spacing: 14) {
-
                     Chart {
                         ForEach(pricedHistory) { point in
                             if let price = point.price {
-
-                                LineMark(
-                                    x: .value("Date", point.date),
-                                    y: .value("Prix", price)
-                                )
-                                .interpolationMethod(.catmullRom)
-                                .foregroundStyle(.blue)
-
                                 AreaMark(
                                     x: .value("Date", point.date),
                                     yStart: .value("Base", chartMinY),
@@ -106,12 +139,25 @@ struct StationPriceHistoryView: View {
                                 .interpolationMethod(.catmullRom)
                                 .foregroundStyle(.blue.opacity(0.15))
 
+                                LineMark(
+                                    x: .value("Date", point.date),
+                                    y: .value("Prix", price)
+                                )
+                                .interpolationMethod(.catmullRom)
+                                .foregroundStyle(.blue)
+
                                 PointMark(
                                     x: .value("Date", point.date),
                                     y: .value("Prix", price)
                                 )
                                 .foregroundStyle(.blue)
                             }
+                        }
+
+                        if let selectedPoint {
+                            RuleMark(x: .value("Date sélectionnée", selectedPoint.date))
+                                .foregroundStyle(.secondary.opacity(0.5))
+                                .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
                         }
                     }
                     .chartYScale(domain: chartMinY...chartMaxY)
@@ -127,6 +173,36 @@ struct StationPriceHistoryView: View {
                     }
                     .chartXAxis {
                         AxisMarks(values: .automatic(desiredCount: 4))
+                    }
+                    .chartOverlay { proxy in
+                        GeometryReader { geometry in
+                            Rectangle()
+                                .fill(.clear)
+                                .contentShape(Rectangle())
+                                .gesture(
+                                    DragGesture(minimumDistance: 0)
+                                        .onChanged { value in
+                                            guard let plotFrame = proxy.plotFrame else {
+                                                return
+                                            }
+
+                                            let plotRect = geometry[plotFrame]
+                                            let xPosition = value.location.x - plotRect.origin.x
+
+                                            guard xPosition >= 0, xPosition <= plotRect.size.width else {
+                                                selectedPoint = nil
+                                                return
+                                            }
+
+                                            if let date: Date = proxy.value(atX: xPosition) {
+                                                selectedPoint = nearestPoint(to: date)
+                                            }
+                                        }
+                                        .onEnded { _ in
+                                            selectedPoint = nil
+                                        }
+                                )
+                        }
                     }
                     .frame(height: 220)
 
@@ -164,6 +240,7 @@ struct StationPriceHistoryView: View {
             load()
         }
         .onChange(of: fuelType) {
+            selectedPoint = nil
             load()
         }
     }
@@ -185,6 +262,19 @@ struct StationPriceHistoryView: View {
         }
     }
 
+    private func nearestPoint(to date: Date) -> FuelPriceHistoryPoint? {
+        pricedHistory.min {
+            abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date))
+        }
+    }
+
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.dateFormat = "dd/MM/yyyy"
+        return formatter.string(from: date)
+    }
+
     private func load() {
         isLoading = true
 
@@ -198,6 +288,7 @@ struct StationPriceHistoryView: View {
 
                 await MainActor.run {
                     history = result
+                    selectedPoint = nil
                     isLoading = false
                 }
             } catch {
@@ -205,6 +296,7 @@ struct StationPriceHistoryView: View {
 
                 await MainActor.run {
                     history = []
+                    selectedPoint = nil
                     isLoading = false
                 }
             }

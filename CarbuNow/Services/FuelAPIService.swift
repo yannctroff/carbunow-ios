@@ -3,6 +3,10 @@ import CoreLocation
 import MapKit
 
 final class FuelAPIService {
+
+    // ✅ AJOUT : singleton
+    static let shared = FuelAPIService()
+
     private let baseURL = "https://api.carbunow.yannctr.fr"
     private let session: URLSession
 
@@ -13,6 +17,8 @@ final class FuelAPIService {
         config.waitsForConnectivity = true
         self.session = URLSession(configuration: config)
     }
+
+    // MARK: - Stations
 
     func fetchStations(in region: MKCoordinateRegion, limit: Int = 200) async throws -> [FuelStation] {
         let minLat = region.center.latitude - region.span.latitudeDelta / 2
@@ -100,6 +106,53 @@ final class FuelAPIService {
         } catch {
             let raw = String(data: data, encoding: .utf8) ?? ""
             print("❌ Décodage stations impossible : \(error)")
+            print("📦 Réponse brute : \(raw)")
+            throw error
+        }
+    }
+
+    // MARK: - 🔥 HISTORY (AJOUT)
+
+    func fetchHistory(
+        stationID: String,
+        fuelType: String,
+        days: Int
+    ) async throws -> [FuelPriceHistoryPoint] {
+
+        guard var components = URLComponents(string: "\(baseURL)/stations/\(stationID)/history") else {
+            throw URLError(.badURL)
+        }
+
+        components.queryItems = [
+            URLQueryItem(name: "fuel_type", value: fuelType),
+            URLQueryItem(name: "days", value: String(days))
+        ]
+
+        guard let url = components.url else {
+            throw URLError(.badURL)
+        }
+
+        let (data, response) = try await session.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let body = String(data: data, encoding: .utf8) ?? ""
+            throw NSError(
+                domain: "FuelAPIService",
+                code: httpResponse.statusCode,
+                userInfo: [NSLocalizedDescriptionKey: "Erreur API history \(httpResponse.statusCode) : \(body)"]
+            )
+        }
+
+        do {
+            let decoder = JSONDecoder()
+            return try decoder.decode([FuelPriceHistoryPoint].self, from: data)
+        } catch {
+            let raw = String(data: data, encoding: .utf8) ?? ""
+            print("❌ Décodage history impossible : \(error)")
             print("📦 Réponse brute : \(raw)")
             throw error
         }
