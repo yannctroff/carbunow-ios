@@ -9,6 +9,7 @@ struct StationDetailView: View {
     @State private var alertMessage: AlertMessage?
     @State private var isSubmittingAlert = false
     @State private var showReportIssueSheet = false
+    @State private var selectedHistoryFuel: FuelType?
 
     let station: FuelStation
     var showsCloseButton: Bool = false
@@ -19,6 +20,7 @@ struct StationDetailView: View {
                 mapSection
                 infoSection
                 pricesSection
+                historySection
                 alertsSection
                 actionsSection
             }
@@ -46,6 +48,16 @@ struct StationDetailView: View {
                 message: Text(item.message),
                 dismissButton: .default(Text("OK"))
             )
+        }
+        .onAppear {
+            if selectedHistoryFuel == nil {
+                selectedHistoryFuel = availableFuels.first
+            }
+        }
+        .onChange(of: availableFuels) {
+            if selectedHistoryFuel == nil || !availableFuels.contains(selectedHistoryFuel!) {
+                selectedHistoryFuel = availableFuels.first
+            }
         }
     }
 
@@ -114,6 +126,39 @@ struct StationDetailView: View {
         .padding()
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+
+    private var historySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if !availableFuels.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(availableFuels, id: \.self) { fuel in
+                            Button {
+                                selectedHistoryFuel = fuel
+                            } label: {
+                                Text(fuel.displayName)
+                                    .font(.subheadline.weight(.semibold))
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        (selectedHistoryFuel == fuel ? Color.white.opacity(0.18) : Color.white.opacity(0.08)),
+                                        in: Capsule()
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 2)
+                }
+            }
+
+            StationPriceHistoryView(
+                stationID: station.id,
+                fuelType: selectedHistoryFuel?.rawValue ?? availableFuels.first?.rawValue ?? "gazole",
+                fuelDisplayName: selectedHistoryFuel?.displayName ?? availableFuels.first?.displayName ?? "Gazole"
+            )
+        }
     }
 
     private var alertsSection: some View {
@@ -236,4 +281,3 @@ private struct AlertMessage: Identifiable {
     let title: String
     let message: String
 }
-
