@@ -2,10 +2,14 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject private var viewModel: StationsViewModel
+    @ObservedObject private var vehicleStore = VehicleSettingsStore.shared
 
     @AppStorage("priceAlert.isEnabled") private var priceAlertIsEnabled = false
     @AppStorage("priceAlert.selectedStationID") private var selectedStationID = ""
     @AppStorage("priceAlert.selectedFuel") private var selectedFuelRawValue = FuelType.gazole.rawValue
+
+    @State private var showVehicleEditor = false
+    @State private var editingVehicle: VehicleProfile?
 
     private let priceAlertManager = PriceAlertManager.shared
 
@@ -23,10 +27,12 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.navigationLink)
 
-                    Text("Ce carburant sera utilisé par défaut sur la carte, dans la liste et au prochain lancement de l’app.")
+                    Text("Ce carburant sera utilisé par défaut sur la carte et dans la liste.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
+
+                vehicleSection
 
                 Section("Notification prix station") {
                     Toggle("Activer l’alerte de prix", isOn: $priceAlertIsEnabled)
@@ -134,6 +140,87 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Réglages")
+            .sheet(isPresented: $showVehicleEditor) {
+                VehicleEditorSheet(vehicle: editingVehicle)
+            }
+        }
+    }
+
+    private var vehicleSection: some View {
+        Section("Réservoir et consommation") {
+            if vehicleStore.vehicles.isEmpty {
+                ContentUnavailableView(
+                    "Aucun véhicule",
+                    systemImage: "car",
+                    description: Text("Ajoute un véhicule avec son carburant, son litrage et sa consommation pour afficher le coût estimé dans la fiche station.")
+                )
+            } else {
+                Picker("Véhicule utilisé", selection: Binding(
+                    get: { vehicleStore.selectedVehicleID },
+                    set: { vehicleStore.selectedVehicleID = $0 }
+                )) {
+                    Text("Aucun").tag("")
+                    ForEach(vehicleStore.vehicles) { vehicle in
+                        Text(vehicle.label).tag(vehicle.id.uuidString)
+                    }
+                }
+                .pickerStyle(.navigationLink)
+
+                ForEach(vehicleStore.vehicles) { vehicle in
+                    Button {
+                        vehicleStore.selectVehicle(vehicle)
+                    } label: {
+                        HStack(alignment: .center, spacing: 12) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(vehicle.label)
+                                    .foregroundStyle(.primary)
+
+                                Text("\(vehicle.fuelType.displayName) • \(formattedLiters(vehicle.tankCapacityLiters)) • \(formattedConsumption(vehicle.consumptionLitersPer100km))")
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Spacer()
+
+                            if vehicleStore.selectedVehicleID == vehicle.id.uuidString {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(.tint)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button("Modifier") {
+                            editingVehicle = vehicle
+                            showVehicleEditor = true
+                        }
+                        .tint(.blue)
+
+                        Button("Supprimer", role: .destructive) {
+                            vehicleStore.deleteVehicle(vehicle)
+                        }
+                    }
+                }
+                .onDelete(perform: vehicleStore.deleteVehicles)
+            }
+
+            Button {
+                editingVehicle = nil
+                showVehicleEditor = true
+            } label: {
+                Label("Ajouter un véhicule", systemImage: "plus.circle.fill")
+            }
+
+            if let selectedVehicle = vehicleStore.selectedVehicle {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Véhicule actif : \(selectedVehicle.label)")
+                        .font(.footnote)
+                }
+            } else {
+                Text("Sélectionne un véhicule pour afficher le coût estimé dans la fiche station.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
@@ -145,7 +232,7 @@ struct SettingsView: View {
         guard priceAlertIsEnabled else { return }
         guard !selectedStationID.isEmpty else { return }
         guard let fuel = watchedFuel else { return }
-        
+
         Task {
             do {
                 _ = try await priceAlertManager.activateAlert(
@@ -173,5 +260,151 @@ struct SettingsView: View {
         formatter.minimumFractionDigits = 3
         formatter.maximumFractionDigits = 3
         return (formatter.string(from: NSNumber(value: value)) ?? String(format: "%.3f", value)) + "€"
+    }
+
+    private func formattedLiters(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = value.rounded() == value ? 0 : 1
+        formatter.maximumFractionDigits = 1
+        return "\(formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)) L"
+    }
+
+    private func formattedConsumption(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = value.rounded() == value ? 0 : 1
+        formatter.maximumFractionDigits = 1
+        let text = formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)
+        return "\(text) L/100"
+    }
+}
+
+private struct VehicleEditorSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var vehicleStore = VehicleSettingsStore.shared
+
+    let vehicle: VehicleProfile?
+
+    @State private var label: String
+    @State private var fuelType: FuelType
+    @State private var tankCapacityText: String
+    @State private var consumptionText: String
+
+    init(vehicle: VehicleProfile?) {
+        self.vehicle = vehicle
+        _label = State(initialValue: vehicle?.label ?? "")
+        _fuelType = State(initialValue: vehicle?.fuelType ?? .gazole)
+        _tankCapacityText = State(initialValue: vehicle.map { VehicleEditorSheet.decimalString(for: $0.tankCapacityLiters) } ?? "")
+        _consumptionText = State(initialValue: vehicle.map { VehicleEditorSheet.decimalString(for: $0.consumptionLitersPer100km) } ?? "")
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Véhicule") {
+                    TextField("Nom ou plaque", text: $label)
+                        .textInputAutocapitalization(.characters)
+                        .autocorrectionDisabled()
+
+                    Picker("Carburant utilisé", selection: $fuelType) {
+                        ForEach(FuelType.allCases) { fuel in
+                            Text(fuel.displayName).tag(fuel)
+                        }
+                    }
+                    .pickerStyle(.navigationLink)
+
+                    TextField("Capacité du réservoir (L)", text: $tankCapacityText)
+                        .keyboardType(.decimalPad)
+
+                    TextField("Consommation (L/100)", text: $consumptionText)
+                        .keyboardType(.decimalPad)
+                }
+
+                Section {
+                    Text("Exemple : SP98, 50 L pour le réservoir et 6,2 L/100 pour la consommation.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .navigationTitle(vehicle == nil ? "Ajouter un véhicule" : "Modifier le véhicule")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Annuler") {
+                        dismiss()
+                    }
+                }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Enregistrer") {
+                        save()
+                    }
+                    .disabled(!canSave)
+                }
+            }
+        }
+    }
+
+    private var parsedTankCapacity: Double? {
+        Self.parseDecimal(tankCapacityText)
+    }
+
+    private var parsedConsumption: Double? {
+        Self.parseDecimal(consumptionText)
+    }
+
+    private var canSave: Bool {
+        let trimmedLabel = label.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmedLabel.isEmpty else { return false }
+        guard let parsedTankCapacity, parsedTankCapacity > 0 else { return false }
+        guard let parsedConsumption, parsedConsumption > 0 else { return false }
+        return true
+    }
+
+    private func save() {
+        guard let parsedTankCapacity, let parsedConsumption else { return }
+
+        let trimmedLabel = label.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if let vehicle {
+            let updatedVehicle = VehicleProfile(
+                id: vehicle.id,
+                label: trimmedLabel,
+                fuelType: fuelType,
+                tankCapacityLiters: parsedTankCapacity,
+                consumptionLitersPer100km: parsedConsumption
+            )
+            vehicleStore.updateVehicle(updatedVehicle)
+        } else {
+            vehicleStore.addVehicle(
+                label: trimmedLabel,
+                fuelType: fuelType,
+                tankCapacityLiters: parsedTankCapacity,
+                consumptionLitersPer100km: parsedConsumption
+            )
+        }
+
+        dismiss()
+    }
+
+    private static func parseDecimal(_ text: String) -> Double? {
+        let normalized = text
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: ",", with: ".")
+
+        return Double(normalized)
+    }
+
+    private static func decimalString(for value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = value.rounded() == value ? 0 : 1
+        formatter.maximumFractionDigits = 1
+        return formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)
     }
 }

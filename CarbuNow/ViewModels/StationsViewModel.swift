@@ -9,6 +9,7 @@ import Foundation
 import CoreLocation
 import MapKit
 import Combine
+import SwiftUI
 
 @MainActor
 final class StationsViewModel: ObservableObject {
@@ -175,5 +176,138 @@ final class StationsViewModel: ObservableObject {
 
         guard let minPrice = prices.min(), let maxPrice = prices.max() else { return nil }
         return (minPrice, maxPrice)
+    }
+}
+
+struct VehicleProfile: Identifiable, Codable, Equatable {
+    let id: UUID
+    var label: String
+    var fuelType: FuelType
+    var tankCapacityLiters: Double
+    var consumptionLitersPer100km: Double
+
+    init(
+        id: UUID = UUID(),
+        label: String,
+        fuelType: FuelType,
+        tankCapacityLiters: Double,
+        consumptionLitersPer100km: Double
+    ) {
+        self.id = id
+        self.label = label
+        self.fuelType = fuelType
+        self.tankCapacityLiters = tankCapacityLiters
+        self.consumptionLitersPer100km = consumptionLitersPer100km
+    }
+}
+
+@MainActor
+final class VehicleSettingsStore: ObservableObject {
+    static let shared = VehicleSettingsStore()
+
+    @Published private(set) var vehicles: [VehicleProfile] = []
+    @Published var selectedVehicleID: String = "" {
+        didSet {
+            UserDefaults.standard.set(selectedVehicleID, forKey: selectedVehicleIDKey)
+        }
+    }
+
+    var selectedVehicle: VehicleProfile? {
+        vehicles.first { $0.id.uuidString == selectedVehicleID }
+    }
+
+    private let vehiclesKey = "vehicleSettings.vehicles"
+    private let selectedVehicleIDKey = "vehicleSettings.selectedVehicleID"
+
+    private init() {
+        load()
+    }
+
+    func load() {
+        if let data = UserDefaults.standard.data(forKey: vehiclesKey),
+           let decoded = try? JSONDecoder().decode([VehicleProfile].self, from: data) {
+            vehicles = decoded.sorted {
+                $0.label.localizedStandardCompare($1.label) == .orderedAscending
+            }
+        } else {
+            vehicles = []
+        }
+
+        let savedSelectedID = UserDefaults.standard.string(forKey: selectedVehicleIDKey) ?? ""
+
+        if vehicles.contains(where: { $0.id.uuidString == savedSelectedID }) {
+            selectedVehicleID = savedSelectedID
+        } else {
+            selectedVehicleID = vehicles.first?.id.uuidString ?? ""
+        }
+    }
+
+    func addVehicle(
+        label: String,
+        fuelType: FuelType,
+        tankCapacityLiters: Double,
+        consumptionLitersPer100km: Double
+    ) {
+        let trimmedLabel = label.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let newVehicle = VehicleProfile(
+            label: trimmedLabel.isEmpty ? "Véhicule" : trimmedLabel,
+            fuelType: fuelType,
+            tankCapacityLiters: tankCapacityLiters,
+            consumptionLitersPer100km: consumptionLitersPer100km
+        )
+
+        vehicles.append(newVehicle)
+        persist()
+
+        if selectedVehicleID.isEmpty {
+            selectedVehicleID = newVehicle.id.uuidString
+        }
+    }
+
+    func updateVehicle(_ vehicle: VehicleProfile) {
+        guard let index = vehicles.firstIndex(where: { $0.id == vehicle.id }) else { return }
+        vehicles[index] = vehicle
+        persist()
+    }
+
+    func deleteVehicles(at offsets: IndexSet) {
+        let idsToDelete = offsets.map { vehicles[$0].id.uuidString }
+        vehicles.remove(atOffsets: offsets)
+
+        if idsToDelete.contains(selectedVehicleID) {
+            selectedVehicleID = vehicles.first?.id.uuidString ?? ""
+        }
+
+        persist()
+    }
+
+    func deleteVehicle(_ vehicle: VehicleProfile) {
+        guard let index = vehicles.firstIndex(of: vehicle) else { return }
+        vehicles.remove(at: index)
+
+        if selectedVehicleID == vehicle.id.uuidString {
+            selectedVehicleID = vehicles.first?.id.uuidString ?? ""
+        }
+
+        persist()
+    }
+
+    func selectVehicle(_ vehicle: VehicleProfile) {
+        selectedVehicleID = vehicle.id.uuidString
+    }
+
+    private func persist() {
+        vehicles.sort {
+            $0.label.localizedStandardCompare($1.label) == .orderedAscending
+        }
+
+        if let encoded = try? JSONEncoder().encode(vehicles) {
+            UserDefaults.standard.set(encoded, forKey: vehiclesKey)
+        }
+
+        if !vehicles.contains(where: { $0.id.uuidString == selectedVehicleID }) {
+            selectedVehicleID = vehicles.first?.id.uuidString ?? ""
+        }
     }
 }

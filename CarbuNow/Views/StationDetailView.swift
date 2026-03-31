@@ -4,6 +4,8 @@ import CoreLocation
 
 struct StationDetailView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var locationManager: LocationManager
+    @ObservedObject private var vehicleStore = VehicleSettingsStore.shared
 
     @StateObject private var alertManager = PriceAlertManager.shared
     @State private var alertMessage: AlertMessage?
@@ -21,6 +23,7 @@ struct StationDetailView: View {
                 infoSection
                 pricesSection
                 historySection
+                estimatedCostSection
                 alertsSection
                 actionsSection
             }
@@ -142,7 +145,7 @@ struct StationDetailView: View {
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 8)
                                     .background(
-                                        (selectedHistoryFuel == fuel ? Color.white.opacity(0.18) : Color.white.opacity(0.08)),
+                                        selectedHistoryFuel == fuel ? Color.white.opacity(0.18) : Color.white.opacity(0.08),
                                         in: Capsule()
                                     )
                             }
@@ -159,6 +162,50 @@ struct StationDetailView: View {
                 fuelDisplayName: selectedHistoryFuel?.displayName ?? availableFuels.first?.displayName ?? "Gazole"
             )
         }
+    }
+
+    private var estimatedCostSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Coût estimé")
+                .font(.headline)
+
+            if vehicleStore.vehicles.isEmpty {
+                Text("Ajoute un véhicule dans Réglages pour afficher le coût estimé du plein, le coût aux 100 km et le coût du déplacement.")
+                    .foregroundStyle(.secondary)
+            } else if vehicleStore.selectedVehicle == nil {
+                Text("Sélectionne un véhicule actif dans Réglages pour afficher le coût estimé.")
+                    .foregroundStyle(.secondary)
+            } else if let selectedVehicle = vehicleStore.selectedVehicle {
+                let fuel = selectedVehicle.fuelType
+
+                if station.hasActiveRupture(for: fuel) {
+                    Text("Le carburant \(fuel.displayName) du véhicule sélectionné est en rupture dans cette station.")
+                        .foregroundStyle(.secondary)
+                } else if let price = station.price(for: fuel) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        detailRow(title: "Véhicule", value: selectedVehicle.label)
+                        detailRow(title: "Carburant utilisé", value: fuel.displayName)
+                        detailRow(title: "Réservoir", value: formattedLiters(selectedVehicle.tankCapacityLiters))
+                        detailRow(title: "Consommation", value: formattedConsumption(selectedVehicle.consumptionLitersPer100km))
+                        detailRow(title: "Prix au litre", value: formattedPricePerLiter(price))
+                        detailRow(title: "Coût du plein", value: formattedCurrency(selectedVehicle.tankCapacityLiters * price))
+                        detailRow(title: "Coût / 100 km", value: formattedCurrency(selectedVehicle.consumptionLitersPer100km * price))
+
+                        if let travelCostText {
+                            detailRow(title: "Coût du déplacement", value: travelCostText)
+                        } else {
+                            detailRow(title: "Coût du déplacement", value: "Position indisponible")
+                        }
+                    }
+                } else {
+                    Text("Le carburant \(fuel.displayName) du véhicule sélectionné n’est pas disponible dans cette station.")
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding()
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
     private var alertsSection: some View {
@@ -226,6 +273,31 @@ struct StationDetailView: View {
         FuelType.allCases.filter { station.isAvailable(for: $0) }
     }
 
+    private var distanceFromUserKm: Double? {
+        guard let userLocation = locationManager.currentLocation else { return nil }
+
+        let stationLocation = CLLocation(
+            latitude: station.coordinate.latitude,
+            longitude: station.coordinate.longitude
+        )
+
+        let distanceMeters = userLocation.distance(from: stationLocation)
+        return distanceMeters / 1000
+    }
+
+    private var travelCostText: String? {
+        guard let selectedVehicle = vehicleStore.selectedVehicle,
+              let price = station.price(for: selectedVehicle.fuelType),
+              let distanceKm = distanceFromUserKm else {
+            return nil
+        }
+
+        let litersNeeded = (distanceKm / 100.0) * selectedVehicle.consumptionLitersPer100km
+        let cost = litersNeeded * price
+
+        return "\(formattedCurrency(cost)) (\(formattedDistance(distanceKm)) depuis vous)"
+    }
+
     private func activateAlert(for fuelType: FuelType) async {
         guard !isSubmittingAlert else { return }
 
@@ -273,6 +345,65 @@ struct StationDetailView: View {
 
         mapItem.name = station.displayName
         mapItem.openInMaps()
+    }
+
+    private func detailRow(title: String, value: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Text(title)
+                .foregroundStyle(.secondary)
+
+            Spacer()
+
+            Text(value)
+                .multilineTextAlignment(.trailing)
+                .bold()
+        }
+    }
+
+    private func formattedLiters(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = value.rounded() == value ? 0 : 1
+        formatter.maximumFractionDigits = 1
+        return "\(formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)) L"
+    }
+
+    private func formattedConsumption(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = value.rounded() == value ? 0 : 1
+        formatter.maximumFractionDigits = 1
+        let text = formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)
+        return "\(text) L/100"
+    }
+
+    private func formattedPricePerLiter(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 3
+        formatter.maximumFractionDigits = 3
+        return "\(formatter.string(from: NSNumber(value: value)) ?? String(format: "%.3f", value)) €/L"
+    }
+
+    private func formattedCurrency(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .currency
+        formatter.currencyCode = "EUR"
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: value)) ?? String(format: "%.2f €", value)
+    }
+
+    private func formattedDistance(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = value < 10 ? 1 : 0
+        formatter.maximumFractionDigits = value < 10 ? 1 : 0
+        return "\(formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)) km"
     }
 }
 
