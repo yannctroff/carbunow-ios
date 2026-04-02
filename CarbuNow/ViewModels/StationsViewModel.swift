@@ -110,7 +110,7 @@ final class StationsViewModel: ObservableObject {
         let effectiveRadius = radiusKm ?? searchRadiusKm
 
         let filtered = allStations.filter { station in
-            guard station.isAvailable(for: selectedFuel) else { return false }
+            guard station.shouldAppear(for: selectedFuel) else { return false }
 
             if effectiveRadius <= 0 {
                 return true
@@ -139,7 +139,7 @@ final class StationsViewModel: ObservableObject {
 
     func filteredAndSortedListStations(userLocation: CLLocation?) -> [FuelStation] {
         let filtered = listStations.filter { station in
-            guard station.isAvailable(for: selectedFuel) else { return false }
+            guard station.shouldAppear(for: selectedFuel) else { return false }
 
             if searchRadiusKm <= 0 {
                 return true

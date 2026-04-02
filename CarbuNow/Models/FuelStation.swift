@@ -115,8 +115,43 @@ struct FuelStation: Decodable, Identifiable, Hashable {
         ruptures.contains(where: { $0.type == fuel && $0.isActive })
     }
 
+    func hasActiveTemporaryRupture(for fuel: FuelType) -> Bool {
+        ruptures.contains(where: {
+            $0.type == fuel &&
+            $0.isActive &&
+            ($0.kind ?? "").trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "temporaire"
+        })
+    }
+
+    var hasAnyActiveRupture: Bool {
+        ruptures.contains(where: { $0.isActive })
+    }
+
+    var hasAnyActiveTemporaryRupture: Bool {
+        ruptures.contains(where: {
+            $0.isActive &&
+            ($0.kind ?? "").trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "temporaire"
+        })
+    }
+
     func isAvailable(for fuel: FuelType) -> Bool {
         price(for: fuel) != nil || hasActiveRupture(for: fuel)
+    }
+
+    func shouldAppear(for fuel: FuelType) -> Bool {
+        if isAvailable(for: fuel) {
+            return true
+        }
+
+        return prices.isEmpty && hasAnyActiveTemporaryRupture
+    }
+
+    func shouldShowRuptureBadge(for fuel: FuelType) -> Bool {
+        if hasActiveRupture(for: fuel) {
+            return true
+        }
+
+        return prices.isEmpty && hasAnyActiveTemporaryRupture
     }
 
     var availableFuelTypes: [FuelType] {

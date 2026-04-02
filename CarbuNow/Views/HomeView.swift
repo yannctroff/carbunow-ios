@@ -240,7 +240,7 @@ struct HomeView: View {
     }
 
     private func stationAnnotationView(for station: FuelStation, color: Color) -> some View {
-        let isRupture = station.hasActiveRupture(for: viewModel.selectedFuel)
+        let isRupture = station.shouldShowRuptureBadge(for: viewModel.selectedFuel)
 
         return VStack(spacing: 3) {
             Image(systemName: "fuelpump.circle.fill")

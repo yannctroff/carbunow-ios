@@ -68,12 +68,12 @@ struct StationDetailView: View {
         }
         .onAppear {
             if selectedHistoryFuel == nil {
-                selectedHistoryFuel = availableFuels.first
+                selectedHistoryFuel = historyFuels.first
             }
         }
-        .onChange(of: availableFuels) {
-            if selectedHistoryFuel == nil || !availableFuels.contains(selectedHistoryFuel!) {
-                selectedHistoryFuel = availableFuels.first
+        .onChange(of: historyFuels) {
+            if selectedHistoryFuel == nil || !historyFuels.contains(selectedHistoryFuel!) {
+                selectedHistoryFuel = historyFuels.first
             }
         }
     }
@@ -117,10 +117,10 @@ struct StationDetailView: View {
 
     private var pricesSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Prix disponibles")
+            Text("Carburants")
                 .font(.headline)
 
-            ForEach(availableFuels, id: \.self) { fuel in
+            ForEach(displayedFuels, id: \.self) { fuel in
                 HStack {
                     Text(fuel.displayName)
                     Spacer()
@@ -132,10 +132,13 @@ struct StationDetailView: View {
                     } else if let price = station.price(for: fuel) {
                         Text(String(format: "%.3f €/L", price))
                             .bold()
+                    } else {
+                        Text("Donnée indisponible actuellement")
+                            .foregroundStyle(.secondary)
                     }
                 }
 
-                if fuel != availableFuels.last {
+                if fuel != displayedFuels.last {
                     Divider()
                 }
             }
@@ -147,10 +150,10 @@ struct StationDetailView: View {
 
     private var historySection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            if !availableFuels.isEmpty {
+            if !historyFuels.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
-                        ForEach(availableFuels, id: \.self) { fuel in
+                        ForEach(historyFuels, id: \.self) { fuel in
                             Button {
                                 selectedHistoryFuel = fuel
                             } label: {
@@ -172,8 +175,8 @@ struct StationDetailView: View {
 
             StationPriceHistoryView(
                 stationID: station.id,
-                fuelType: selectedHistoryFuel?.rawValue ?? availableFuels.first?.rawValue ?? "gazole",
-                fuelDisplayName: selectedHistoryFuel?.displayName ?? availableFuels.first?.displayName ?? "Gazole"
+                fuelType: selectedHistoryFuel?.rawValue ?? historyFuels.first?.rawValue ?? "gazole",
+                fuelDisplayName: selectedHistoryFuel?.displayName ?? historyFuels.first?.displayName ?? "Gazole"
             )
         }
     }
@@ -235,7 +238,7 @@ struct StationDetailView: View {
                             detailRow(title: "Carburant estimé à ajouter", value: formattedLiters(estimation.estimatedLitersToAdd))
                             detailRow(title: "Coût estimé du plein", value: formattedCurrency(estimation.estimatedFillCost))
                         } else {
-                            Text("Appuie sur le bouton ci-dessus pour saisir l’autonomie restante, la distance parcourue et la consommation moyenne affichées sur l’ordinateur de bord.")
+                            Text("Appuyez sur le bouton ci-dessus pour saisir l’autonomie restante, la distance parcourue et la consommation moyenne affichées sur l’ordinateur de bord.")
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -248,7 +251,7 @@ struct StationDetailView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 } else {
-                    Text("Le carburant \(fuel.displayName) du véhicule sélectionné n’est pas disponible dans cette station.")
+                    Text("Le carburant \(fuel.displayName) n’a pas de prix communiqué actuellement dans cette station.")
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -265,7 +268,7 @@ struct StationDetailView: View {
             Text("Alertes de prix")
                 .font(.headline)
 
-            ForEach(availableFuels, id: \.self) { fuel in
+            ForEach(alertableFuels, id: \.self) { fuel in
                 let isActive = alertManager.isAlertActive(
                     stationID: station.id,
                     fuelType: fuel.rawValue
@@ -295,6 +298,12 @@ struct StationDetailView: View {
                 .buttonStyle(.bordered)
                 .disabled(isSubmittingAlert || isActive)
             }
+
+            if alertableFuels.isEmpty {
+                Text("Aucun carburant avec prix ou rupture active pour le moment.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding()
         .background(.thinMaterial)
@@ -321,7 +330,15 @@ struct StationDetailView: View {
         }
     }
 
-    private var availableFuels: [FuelType] {
+    private var displayedFuels: [FuelType] {
+        FuelType.allCases
+    }
+
+    private var historyFuels: [FuelType] {
+        FuelType.allCases
+    }
+
+    private var alertableFuels: [FuelType] {
         FuelType.allCases.filter { station.isAvailable(for: $0) }
     }
 
@@ -572,11 +589,20 @@ private struct AutonomyEstimatorSheet: View {
             return
         }
 
-        let estimatedRemainingLiters = max((remainingRangeKm / 100.0) * averageConsumption, 0)
-        let estimatedLitersToAdd = min(
-            max(vehicle.tankCapacityLiters - estimatedRemainingLiters, 0),
-            vehicle.tankCapacityLiters
-        )
+        let usedLitersByDistance = max((distanceKm / 100.0) * averageConsumption, 0)
+
+        let remainingLitersByRange = max((remainingRangeKm / 100.0) * averageConsumption, 0)
+
+        let estimatedLitersToAdd: Double
+
+        if remainingLitersByRange >= vehicle.tankCapacityLiters {
+            estimatedLitersToAdd = min(usedLitersByDistance, vehicle.tankCapacityLiters)
+        } else {
+            estimatedLitersToAdd = min(
+                max(vehicle.tankCapacityLiters - remainingLitersByRange, 0),
+                vehicle.tankCapacityLiters
+            )
+        }
 
         let estimation = FillEstimation(
             distanceKm: distanceKm,

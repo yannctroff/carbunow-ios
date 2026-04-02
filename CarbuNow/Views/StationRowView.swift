@@ -37,7 +37,7 @@ struct StationRowView: View {
 
                 Spacer(minLength: 8)
 
-                if station.hasActiveRupture(for: selectedFuel) {
+                if station.shouldShowRuptureBadge(for: selectedFuel) {
                     Text("Rupture")
                         .font(.headline)
                         .foregroundStyle(.gray)
