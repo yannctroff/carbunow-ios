@@ -8,10 +8,19 @@
 import SwiftUI
 
 @main
-struct CarbuNow_WatchApp_Watch_AppApp: App {
+struct CarbuNowWatchApp: App {
+    @StateObject private var viewModel = WatchStationsViewModel()
+    @StateObject private var locationManager = WatchLocationManager()
+
+    init() {
+        WatchConnectivityBridge.shared.activate()
+    }
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            WatchRootView()
+                .environmentObject(viewModel)
+                .environmentObject(locationManager)
         }
     }
 }

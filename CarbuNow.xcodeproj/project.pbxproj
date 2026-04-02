@@ -6,22 +6,93 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		AA21DCFD2F7C368E00B3C92C /* CarbuNow---Prix-Du-Carburant-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AAFCF6882F6C938000AF3CB2 /* CarbuNow---Prix-Du-Carburant-Info.plist */; };
+		AAFD855C2F7C2D4000C9F1BB /* CarbuNow-WatchApp Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AAFD85522F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AAFD855A2F7C2D4000C9F1BB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AAB4A03A2F6703630085C8CF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AAFD85512F7C2D3E00C9F1BB;
+			remoteInfo = "CarbuNow-WatchApp Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AAFD855D2F7C2D4000C9F1BB /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				AAFD855C2F7C2D4000C9F1BB /* CarbuNow-WatchApp Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		AAB4A0422F6703630085C8CF /* CarbuNow - Prix Du Carburant.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CarbuNow - Prix Du Carburant.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AAFCF6872F6C867F00AF3CB2 /* CarbuNow - Prix Du Carburant.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "CarbuNow - Prix Du Carburant.entitlements"; sourceTree = "<group>"; };
 		AAFCF6882F6C938000AF3CB2 /* CarbuNow---Prix-Du-Carburant-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "CarbuNow---Prix-Du-Carburant-Info.plist"; sourceTree = "<group>"; };
+		AAFD85522F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CarbuNow-WatchApp Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AA21DD192F7C368F00B3C92C /* Exceptions for "CarbuNow" folder in "CarbuNow-WatchApp Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/FuelPrice.swift,
+				Models/FuelPriceHistoryPoint.swift,
+				Models/FuelRupture.swift,
+				Models/FuelStation.swift,
+				Models/FuelType.swift,
+				Models/StationIssueType.swift,
+			);
+			target = AAFD85512F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App */;
+		};
+		AA21DD212F7C4E6600B3C92C /* Exceptions for "CarbuNow-WatchApp Watch App" folder in "CarbuNow - Prix Du Carburant" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Services/WatchConnectivityBridge.swift,
+				SharedDefaults.swift,
+			);
+			target = AAB4A0412F6703630085C8CF /* CarbuNow - Prix Du Carburant */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AAB4A0442F6703630085C8CF /* CarbuNow */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AA21DD192F7C368F00B3C92C /* Exceptions for "CarbuNow" folder in "CarbuNow-WatchApp Watch App" target */,
+			);
 			path = CarbuNow;
+			sourceTree = "<group>";
+		};
+		AAFD85532F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AA21DD212F7C4E6600B3C92C /* Exceptions for "CarbuNow-WatchApp Watch App" folder in "CarbuNow - Prix Du Carburant" target */,
+			);
+			path = "CarbuNow-WatchApp Watch App";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		AAB4A03F2F6703630085C8CF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AAFD854F2F7C2D3E00C9F1BB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -37,6 +108,7 @@
 				AAFCF6882F6C938000AF3CB2 /* CarbuNow---Prix-Du-Carburant-Info.plist */,
 				AAFCF6872F6C867F00AF3CB2 /* CarbuNow - Prix Du Carburant.entitlements */,
 				AAB4A0442F6703630085C8CF /* CarbuNow */,
+				AAFD85532F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App */,
 				AAB4A0432F6703630085C8CF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -45,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				AAB4A0422F6703630085C8CF /* CarbuNow - Prix Du Carburant.app */,
+				AAFD85522F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -59,10 +132,12 @@
 				AAB4A03E2F6703630085C8CF /* Sources */,
 				AAB4A03F2F6703630085C8CF /* Frameworks */,
 				AAB4A0402F6703630085C8CF /* Resources */,
+				AAFD855D2F7C2D4000C9F1BB /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				AAFD855B2F7C2D4000C9F1BB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				AAB4A0442F6703630085C8CF /* CarbuNow */,
@@ -72,6 +147,28 @@
 			);
 			productName = CarbuNow;
 			productReference = AAB4A0422F6703630085C8CF /* CarbuNow - Prix Du Carburant.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AAFD85512F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AAFD85602F7C2D4000C9F1BB /* Build configuration list for PBXNativeTarget "CarbuNow-WatchApp Watch App" */;
+			buildPhases = (
+				AAFD854E2F7C2D3E00C9F1BB /* Sources */,
+				AAFD854F2F7C2D3E00C9F1BB /* Frameworks */,
+				AAFD85502F7C2D3E00C9F1BB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				AAFD85532F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App */,
+			);
+			name = "CarbuNow-WatchApp Watch App";
+			packageProductDependencies = (
+			);
+			productName = "CarbuNow-WatchApp Watch App";
+			productReference = AAFD85522F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,6 +182,9 @@
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					AAB4A0412F6703630085C8CF = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					AAFD85512F7C2D3E00C9F1BB = {
 						CreatedOnToolsVersion = 26.3;
 					};
 				};
@@ -105,6 +205,7 @@
 			projectRoot = "";
 			targets = (
 				AAB4A0412F6703630085C8CF /* CarbuNow - Prix Du Carburant */,
+				AAFD85512F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App */,
 			);
 		};
 /* End PBXProject section */
@@ -114,6 +215,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AAFD85502F7C2D3E00C9F1BB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA21DCFD2F7C368E00B3C92C /* CarbuNow---Prix-Du-Carburant-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,7 +236,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AAFD854E2F7C2D3E00C9F1BB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AAFD855B2F7C2D4000C9F1BB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AAFD85512F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App */;
+			targetProxy = AAFD855A2F7C2D4000C9F1BB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		AAB4A04B2F6703650085C8CF /* Debug */ = {
@@ -259,7 +383,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "CarbuNow - Prix Du Carburant.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_TEAM = M4S92V6PCK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -277,7 +401,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7;
+				MARKETING_VERSION = 1.9;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cattarin.CarbuNow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -302,7 +426,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "CarbuNow - Prix Du Carburant.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_TEAM = M4S92V6PCK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -320,7 +444,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7;
+				MARKETING_VERSION = 1.9;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cattarin.CarbuNow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -334,6 +458,80 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		AAFD855E2F7C2D4000C9F1BB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "CarbuNow-WatchApp Watch App/CarbuNow-WatchApp Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 28;
+				DEVELOPMENT_TEAM = M4S92V6PCK;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "CarbuNow-WatchApp-Watch-App-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = CarbuNow;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CarbuNow utilise votre position pour afficher les stations proches.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.cattarin.CarbuNow;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.9;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cattarin.CarbuNow.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		AAFD855F2F7C2D4000C9F1BB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "CarbuNow-WatchApp Watch App/CarbuNow-WatchApp Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 28;
+				DEVELOPMENT_TEAM = M4S92V6PCK;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "CarbuNow-WatchApp-Watch-App-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = CarbuNow;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CarbuNow utilise votre position pour afficher les stations proches.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.cattarin.CarbuNow;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.9;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cattarin.CarbuNow.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -354,6 +552,15 @@
 			buildConfigurations = (
 				AAB4A04E2F6703650085C8CF /* Debug */,
 				AAB4A04F2F6703650085C8CF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AAFD85602F7C2D4000C9F1BB /* Build configuration list for PBXNativeTarget "CarbuNow-WatchApp Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AAFD855E2F7C2D4000C9F1BB /* Debug */,
+				AAFD855F2F7C2D4000C9F1BB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

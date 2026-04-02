@@ -1,3 +1,11 @@
+//
+//  WatchFuelAPIService.swift
+//  CarbuNow
+//
+//  Created by Yann CATTARIN on 31/03/2026.
+//
+
+
 import Foundation
 import CoreLocation
 
@@ -12,15 +20,20 @@ final class WatchFuelAPIService {
         config.timeoutIntervalForRequest = 20
         config.timeoutIntervalForResource = 20
         config.waitsForConnectivity = true
-        self.session = URLSession(configuration: config)
+        session = URLSession(configuration: config)
     }
 
-    func fetchStations(around coordinate: CLLocationCoordinate2D, radiusKm: Double, limit: Int = 100) async throws -> [FuelStation] {
+    func fetchStations(
+        around coordinate: CLLocationCoordinate2D,
+        radiusKm: Double,
+        limit: Int = 100
+    ) async throws -> [FuelStation] {
         let radiusMeters = max(radiusKm, 1) * 1000
 
         let earthRadius = 6_371_000.0
         let latDelta = (radiusMeters / earthRadius) * (180 / .pi)
-        let lonDelta = (radiusMeters / (earthRadius * cos(coordinate.latitude * .pi / 180))) * (180 / .pi)
+        let lonDenominator = max(cos(coordinate.latitude * .pi / 180), 0.01)
+        let lonDelta = (radiusMeters / (earthRadius * lonDenominator)) * (180 / .pi)
 
         let minLat = coordinate.latitude - latDelta
         let maxLat = coordinate.latitude + latDelta

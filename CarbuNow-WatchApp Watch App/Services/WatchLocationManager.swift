@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreLocation
+import Combine
 
 final class WatchLocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
@@ -17,7 +18,7 @@ final class WatchLocationManager: NSObject, ObservableObject, CLLocationManagerD
     @Published var lastErrorMessage: String?
 
     override init() {
-        self.authorizationStatus = manager.authorizationStatus
+        authorizationStatus = manager.authorizationStatus
         super.init()
 
         manager.delegate = self
@@ -30,7 +31,9 @@ final class WatchLocationManager: NSObject, ObservableObject, CLLocationManagerD
             manager.requestWhenInUseAuthorization()
         case .authorizedAlways, .authorizedWhenInUse:
             requestLocation()
-        default:
+        case .denied, .restricted:
+            lastErrorMessage = "Localisation refusée."
+        @unknown default:
             break
         }
     }
@@ -48,7 +51,9 @@ final class WatchLocationManager: NSObject, ObservableObject, CLLocationManagerD
             requestLocation()
         case .denied, .restricted:
             lastErrorMessage = "Localisation refusée."
-        default:
+        case .notDetermined:
+            break
+        @unknown default:
             break
         }
     }

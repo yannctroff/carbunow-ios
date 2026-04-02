@@ -1,6 +1,6 @@
 import Foundation
 
-enum FuelType: String, CaseIterable, Identifiable, Codable {
+enum FuelType: String, CaseIterable, Identifiable, Codable, Hashable {
     case gazole = "gazole"
     case sp95 = "sp95"
     case sp98 = "sp98"

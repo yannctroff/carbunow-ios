@@ -13,6 +13,9 @@ struct StationDetailView: View {
     @State private var showReportIssueSheet = false
     @State private var selectedHistoryFuel: FuelType?
 
+    @State private var showAutonomyEstimatorSheet = false
+    @State private var latestEstimation: FillEstimation?
+
     let station: FuelStation
     var showsCloseButton: Bool = false
 
@@ -44,6 +47,17 @@ struct StationDetailView: View {
         }
         .sheet(isPresented: $showReportIssueSheet) {
             ReportIssueView(station: station)
+        }
+        .sheet(isPresented: $showAutonomyEstimatorSheet) {
+            if let selectedVehicle = vehicleStore.selectedVehicle {
+                AutonomyEstimatorSheet(
+                    vehicle: selectedVehicle,
+                    station: station,
+                    onEstimate: { estimation in
+                        latestEstimation = estimation
+                    }
+                )
+            }
         }
         .alert(item: $alertMessage) { item in
             Alert(
@@ -165,44 +179,82 @@ struct StationDetailView: View {
     }
 
     private var estimatedCostSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Coût estimé")
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Estimation du plein")
                 .font(.headline)
 
             if vehicleStore.vehicles.isEmpty {
-                Text("Ajoute un véhicule dans Réglages pour afficher le coût estimé du plein, le coût aux 100 km et le coût du déplacement.")
+                Text("Ajoute un véhicule dans Réglages pour estimer le plein dans cette fiche station.")
                     .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             } else if vehicleStore.selectedVehicle == nil {
-                Text("Sélectionne un véhicule actif dans Réglages pour afficher le coût estimé.")
+                Text("Sélectionne un véhicule actif dans Réglages pour estimer le plein.")
                     .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             } else if let selectedVehicle = vehicleStore.selectedVehicle {
                 let fuel = selectedVehicle.fuelType
 
                 if station.hasActiveRupture(for: fuel) {
-                    Text("Le carburant \(fuel.displayName) du véhicule sélectionné est en rupture dans cette station.")
+                    Text("Le \(fuel.displayName) est en rupture dans cette station.")
                         .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 } else if let price = station.price(for: fuel) {
                     VStack(alignment: .leading, spacing: 8) {
                         detailRow(title: "Véhicule", value: selectedVehicle.label)
                         detailRow(title: "Carburant utilisé", value: fuel.displayName)
                         detailRow(title: "Réservoir", value: formattedLiters(selectedVehicle.tankCapacityLiters))
-                        detailRow(title: "Consommation", value: formattedConsumption(selectedVehicle.consumptionLitersPer100km))
+                        detailRow(title: "Consommation de référence", value: formattedConsumption(selectedVehicle.consumptionLitersPer100km))
                         detailRow(title: "Prix au litre", value: formattedPricePerLiter(price))
-                        detailRow(title: "Coût du plein", value: formattedCurrency(selectedVehicle.tankCapacityLiters * price))
-                        detailRow(title: "Coût / 100 km", value: formattedCurrency(selectedVehicle.consumptionLitersPer100km * price))
+                        detailRow(title: "Coût réservoir plein", value: formattedCurrency(selectedVehicle.tankCapacityLiters * price))
 
                         if let travelCostText {
                             detailRow(title: "Coût du déplacement", value: travelCostText)
                         } else {
                             detailRow(title: "Coût du déplacement", value: "Position indisponible")
                         }
+
+                        Button {
+                            showAutonomyEstimatorSheet = true
+                        } label: {
+                            Label("Estimer le plein par rapport à mon autonomie", systemImage: "fuelpump.fill")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+
+                        if let estimation = latestEstimation {
+                            Divider()
+
+                            detailRow(title: "Distance parcourue", value: formattedDistance(estimation.distanceKm))
+                            detailRow(title: "Conso moyenne", value: formattedConsumption(estimation.averageConsumptionLitersPer100km))
+                            detailRow(title: "Autonomie restante", value: formattedDistance(estimation.remainingRangeKm))
+
+                            if let averageSpeedKmh = estimation.averageSpeedKmh {
+                                detailRow(title: "Vitesse moyenne", value: formattedSpeed(averageSpeedKmh))
+                            }
+
+                            detailRow(title: "Carburant estimé à ajouter", value: formattedLiters(estimation.estimatedLitersToAdd))
+                            detailRow(title: "Coût estimé du plein", value: formattedCurrency(estimation.estimatedFillCost))
+                        } else {
+                            Text("Appuie sur le bouton ci-dessus pour saisir l’autonomie restante, la distance parcourue et la consommation moyenne affichées sur l’ordinateur de bord.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+
+                        Text("Ces informations se trouvent sur le tableau de bord en appuyant sur le bouton « << » du commodo d’essuie-glace, si l’ordinateur de bord a bien été réinitialisé après chaque plein.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 } else {
                     Text("Le carburant \(fuel.displayName) du véhicule sélectionné n’est pas disponible dans cette station.")
                         .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -405,6 +457,209 @@ struct StationDetailView: View {
         formatter.maximumFractionDigits = value < 10 ? 1 : 0
         return "\(formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)) km"
     }
+
+    private func formattedSpeed(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = value.rounded() == value ? 0 : 1
+        formatter.maximumFractionDigits = 1
+        let text = formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)
+        return "\(text) km/h"
+    }
+}
+
+private struct AutonomyEstimatorSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let vehicle: VehicleProfile
+    let station: FuelStation
+    let onEstimate: (FillEstimation) -> Void
+
+    @State private var distanceText = ""
+    @State private var averageConsumptionText = ""
+    @State private var remainingRangeText = ""
+    @State private var averageSpeedText = ""
+
+    private var stationPrice: Double? {
+        station.price(for: vehicle.fuelType)
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Véhicule") {
+                    infoRow(title: "Véhicule", value: vehicle.label)
+                    infoRow(title: "Carburant", value: vehicle.fuelType.displayName)
+                    infoRow(title: "Réservoir", value: formattedLiters(vehicle.tankCapacityLiters))
+                    infoRow(title: "Conso de référence", value: formattedConsumption(vehicle.consumptionLitersPer100km))
+
+                    if let stationPrice {
+                        infoRow(title: "Prix station", value: formattedPricePerLiter(stationPrice))
+                    }
+                }
+
+                Section("Ordinateur de bord") {
+                    TextField("Distance parcourue depuis le dernier plein (km)", text: $distanceText)
+                        .keyboardType(.decimalPad)
+
+                    TextField("Consommation moyenne affichée (L/100)", text: $averageConsumptionText)
+                        .keyboardType(.decimalPad)
+
+                    TextField("Autonomie restante estimée (km)", text: $remainingRangeText)
+                        .keyboardType(.decimalPad)
+
+                    TextField("Vitesse moyenne (km/h) - optionnel", text: $averageSpeedText)
+                        .keyboardType(.decimalPad)
+                }
+
+                Section {
+                    Text("Ces informations peuvent être relevées sur le tableau de bord en appuyant sur le bouton « << » du commodo d’essuie-glace, si l’ordinateur de bord a bien été réinitialisé après chaque plein.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .navigationTitle("Estimer le plein")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Annuler") {
+                        dismiss()
+                    }
+                }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Calculer") {
+                        calculate()
+                    }
+                    .disabled(!canCalculate)
+                }
+            }
+            .onAppear {
+            }
+        }
+    }
+
+    private var parsedDistance: Double? {
+        parseDecimal(distanceText)
+    }
+
+    private var parsedAverageConsumption: Double? {
+        parseDecimal(averageConsumptionText)
+    }
+
+    private var parsedRemainingRange: Double? {
+        parseDecimal(remainingRangeText)
+    }
+
+    private var parsedAverageSpeed: Double? {
+        parseOptionalDecimal(averageSpeedText)
+    }
+
+    private var canCalculate: Bool {
+        guard stationPrice != nil else { return false }
+        guard let parsedDistance, parsedDistance > 0 else { return false }
+        guard let parsedAverageConsumption, parsedAverageConsumption > 0 else { return false }
+        guard let parsedRemainingRange, parsedRemainingRange >= 0 else { return false }
+        return true
+    }
+
+    private func calculate() {
+        guard let price = stationPrice,
+              let distanceKm = parsedDistance,
+              let averageConsumption = parsedAverageConsumption,
+              let remainingRangeKm = parsedRemainingRange else {
+            return
+        }
+
+        let estimatedRemainingLiters = max((remainingRangeKm / 100.0) * averageConsumption, 0)
+        let estimatedLitersToAdd = min(
+            max(vehicle.tankCapacityLiters - estimatedRemainingLiters, 0),
+            vehicle.tankCapacityLiters
+        )
+
+        let estimation = FillEstimation(
+            distanceKm: distanceKm,
+            averageConsumptionLitersPer100km: averageConsumption,
+            remainingRangeKm: remainingRangeKm,
+            averageSpeedKmh: parsedAverageSpeed,
+            estimatedLitersToAdd: estimatedLitersToAdd,
+            estimatedFillCost: estimatedLitersToAdd * price
+        )
+
+        onEstimate(estimation)
+        dismiss()
+    }
+
+    private func parseDecimal(_ text: String) -> Double? {
+        let normalized = text
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: ",", with: ".")
+
+        return Double(normalized)
+    }
+
+    private func parseOptionalDecimal(_ text: String) -> Double? {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        return parseDecimal(trimmed)
+    }
+
+    private func decimalString(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = value.rounded() == value ? 0 : 1
+        formatter.maximumFractionDigits = 1
+        return formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)
+    }
+
+    private func formattedLiters(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = value.rounded() == value ? 0 : 1
+        formatter.maximumFractionDigits = 1
+        return "\(formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)) L"
+    }
+
+    private func formattedConsumption(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = value.rounded() == value ? 0 : 1
+        formatter.maximumFractionDigits = 1
+        let text = formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)
+        return "\(text) L/100"
+    }
+
+    private func formattedPricePerLiter(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 3
+        formatter.maximumFractionDigits = 3
+        return "\(formatter.string(from: NSNumber(value: value)) ?? String(format: "%.3f", value)) €/L"
+    }
+
+    private func infoRow(title: String, value: String) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            Text(value)
+                .multilineTextAlignment(.trailing)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+private struct FillEstimation {
+    let distanceKm: Double
+    let averageConsumptionLitersPer100km: Double
+    let remainingRangeKm: Double
+    let averageSpeedKmh: Double?
+    let estimatedLitersToAdd: Double
+    let estimatedFillCost: Double
 }
 
 private struct AlertMessage: Identifiable {

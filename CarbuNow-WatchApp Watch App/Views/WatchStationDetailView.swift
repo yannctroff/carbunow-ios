@@ -1,3 +1,11 @@
+//
+//  WatchStationDetailView.swift
+//  CarbuNow
+//
+//  Created by Yann CATTARIN on 31/03/2026.
+//
+
+
 import SwiftUI
 import CoreLocation
 
@@ -77,7 +85,7 @@ struct WatchStationDetailView: View {
                                     Text("Rupture")
                                         .foregroundStyle(.red)
                                 } else if let price = station.price(for: fuel) {
-                                    Text(String(format: "%.3f", price))
+                                    Text(String(format: "%.3f €/L", price))
                                 }
                             }
                             .font(.caption)

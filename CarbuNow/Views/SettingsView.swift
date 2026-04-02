@@ -147,12 +147,12 @@ struct SettingsView: View {
     }
 
     private var vehicleSection: some View {
-        Section("Réservoir et consommation") {
+        Section("Véhicules") {
             if vehicleStore.vehicles.isEmpty {
                 ContentUnavailableView(
                     "Aucun véhicule",
                     systemImage: "car",
-                    description: Text("Ajoute un véhicule avec son carburant, son litrage et sa consommation pour afficher le coût estimé dans la fiche station.")
+                    description: Text("Ajoute un véhicule avec son carburant, son réservoir et sa consommation de référence.")
                 )
             } else {
                 Picker("Véhicule utilisé", selection: Binding(
@@ -212,12 +212,11 @@ struct SettingsView: View {
             }
 
             if let selectedVehicle = vehicleStore.selectedVehicle {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Véhicule actif : \(selectedVehicle.label)")
-                        .font(.footnote)
-                }
+                Text("Véhicule actif : \(selectedVehicle.label)")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             } else {
-                Text("Sélectionne un véhicule pour afficher le coût estimé dans la fiche station.")
+                Text("Sélectionne un véhicule pour l’utiliser dans la fiche station.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -319,14 +318,8 @@ private struct VehicleEditorSheet: View {
                     TextField("Capacité du réservoir (L)", text: $tankCapacityText)
                         .keyboardType(.decimalPad)
 
-                    TextField("Consommation (L/100)", text: $consumptionText)
+                    TextField("Consommation de référence (L/100)", text: $consumptionText)
                         .keyboardType(.decimalPad)
-                }
-
-                Section {
-                    Text("Exemple : SP98, 50 L pour le réservoir et 6,2 L/100 pour la consommation.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
                 }
             }
             .navigationTitle(vehicle == nil ? "Ajouter un véhicule" : "Modifier le véhicule")
@@ -376,7 +369,13 @@ private struct VehicleEditorSheet: View {
                 label: trimmedLabel,
                 fuelType: fuelType,
                 tankCapacityLiters: parsedTankCapacity,
-                consumptionLitersPer100km: parsedConsumption
+                consumptionLitersPer100km: parsedConsumption,
+                dashboardMode: vehicle.estimationMode,
+                tripDistanceKm: vehicle.tripDistanceKm,
+                tripAverageConsumptionLitersPer100km: vehicle.tripAverageConsumptionLitersPer100km,
+                remainingRangeKm: vehicle.remainingRangeKm,
+                tripAverageSpeedKmh: vehicle.tripAverageSpeedKmh,
+                resetTripAtFillUp: vehicle.resetTripAtFillUp
             )
             vehicleStore.updateVehicle(updatedVehicle)
         } else {

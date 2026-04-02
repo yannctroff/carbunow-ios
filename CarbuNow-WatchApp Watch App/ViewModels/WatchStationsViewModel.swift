@@ -8,6 +8,23 @@
 
 import Foundation
 import CoreLocation
+import Combine
+
+enum WatchStationSortOption: String, CaseIterable, Identifiable {
+    case distance
+    case price
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .distance:
+            return "Distance"
+        case .price:
+            return "Prix"
+        }
+    }
+}
 
 @MainActor
 final class WatchStationsViewModel: ObservableObject {
@@ -16,30 +33,42 @@ final class WatchStationsViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var lastRefreshDate: Date?
+    @Published var sortOption: WatchStationSortOption = .distance
 
     private let apiService = WatchFuelAPIService.shared
     private let searchRadiusKm: Double = 15
+    private var cancellables = Set<AnyCancellable>()
+    private var lastLocation: CLLocation?
 
     init() {
+        WatchConnectivityBridge.shared.activate()
         loadSelectedFuel()
+        observeFuelSync()
     }
 
     func loadSelectedFuel() {
         if let saved = SharedDefaults.shared.string(forKey: SharedDefaults.defaultFuelKey),
            let fuel = FuelType(rawValue: saved) {
             selectedFuel = fuel
+        } else if let saved = UserDefaults.standard.string(forKey: SharedDefaults.defaultFuelKey),
+                  let fuel = FuelType(rawValue: saved) {
+            selectedFuel = fuel
         } else {
             selectedFuel = .gazole
         }
+
+        print("⌚️ selectedFuel chargé sur Watch: \(selectedFuel.rawValue)")
     }
 
     func refresh(using location: CLLocation?) async {
         guard let location else {
             errorMessage = "Position indisponible."
             stations = []
+            isLoading = false
             return
         }
 
+        lastLocation = location
         isLoading = true
         errorMessage = nil
         loadSelectedFuel()
@@ -51,16 +80,11 @@ final class WatchStationsViewModel: ObservableObject {
                 limit: 100
             )
 
-            let filtered = fetched
-                .filter { $0.isAvailable(for: selectedFuel) }
-                .sorted { lhs, rhs in
-                    let lhsDistance = lhs.distance(from: location) ?? .greatestFiniteMagnitude
-                    let rhsDistance = rhs.distance(from: location) ?? .greatestFiniteMagnitude
-                    return lhsDistance < rhsDistance
-                }
-
-            stations = filtered
+            let filtered = fetched.filter { $0.isAvailable(for: selectedFuel) }
+            stations = sortStations(filtered, userLocation: location)
             lastRefreshDate = Date()
+
+            print("⌚️ refresh Watch terminé avec carburant: \(selectedFuel.rawValue)")
         } catch {
             stations = []
             errorMessage = error.localizedDescription
@@ -69,30 +93,53 @@ final class WatchStationsViewModel: ObservableObject {
         isLoading = false
     }
 
-    func formattedDistance(for station: FuelStation, from location: CLLocation?) -> String? {
-        guard let distance = station.distance(from: location) else { return nil }
+    func applySort(using location: CLLocation?) {
+        stations = sortStations(stations, userLocation: location)
+    }
 
-        if distance < 1000 {
-            return "\(Int(distance)) m"
-        } else {
-            return String(format: "%.1f km", distance / 1000)
+    private func sortStations(_ stations: [FuelStation], userLocation: CLLocation?) -> [FuelStation] {
+        switch sortOption {
+        case .distance:
+            return stations.sorted {
+                let lhsDistance = $0.distance(from: userLocation) ?? .greatestFiniteMagnitude
+                let rhsDistance = $1.distance(from: userLocation) ?? .greatestFiniteMagnitude
+                return lhsDistance < rhsDistance
+            }
+
+        case .price:
+            return stations.sorted {
+                let lhsPrice = $0.price(for: selectedFuel) ?? .greatestFiniteMagnitude
+                let rhsPrice = $1.price(for: selectedFuel) ?? .greatestFiniteMagnitude
+
+                if lhsPrice == rhsPrice {
+                    let lhsDistance = $0.distance(from: userLocation) ?? .greatestFiniteMagnitude
+                    let rhsDistance = $1.distance(from: userLocation) ?? .greatestFiniteMagnitude
+                    return lhsDistance < rhsDistance
+                }
+
+                return lhsPrice < rhsPrice
+            }
         }
     }
 
-    func formattedPrice(for station: FuelStation) -> String? {
-        guard let price = station.price(for: selectedFuel) else { return nil }
-        return String(format: "%.3f €/L", price)
-    }
+    private func observeFuelSync() {
+        NotificationCenter.default.publisher(for: .watchDefaultFuelDidChange)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
 
-    func statusText(for station: FuelStation) -> String {
-        if station.hasActiveRupture(for: selectedFuel) {
-            return "Rupture"
-        }
+                print("⌚️ Notification watchDefaultFuelDidChange reçue")
 
-        if let price = formattedPrice(for: station) {
-            return price
-        }
+                self.loadSelectedFuel()
 
-        return "Indisponible"
+                if let location = self.lastLocation {
+                    Task {
+                        await self.refresh(using: location)
+                    }
+                } else {
+                    self.applySort(using: nil)
+                }
+            }
+            .store(in: &cancellables)
     }
 }

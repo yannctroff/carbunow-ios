@@ -35,6 +35,7 @@ struct HomeView: View {
     @State private var citySearchErrorMessage: String?
     @State private var suppressNextPendingRefresh = false
 
+    
     var body: some View {
         TabView {
             NavigationStack {
@@ -83,7 +84,14 @@ struct HomeView: View {
                     }
             }
             .tabItem {
-                Label("Liste", systemImage: "list.bullet")
+                Label {
+                    Text("Liste")
+                        .foregroundStyle(.green)
+                } icon: {
+                    Image(systemName: "list.bullet")
+                        .renderingMode(.template)
+                        .foregroundStyle(.green)
+                }
             }
 
             NavigationStack {
@@ -91,7 +99,14 @@ struct HomeView: View {
                     .navigationTitle("Paramètres")
             }
             .tabItem {
-                Label("Paramètres", systemImage: "gearshape")
+                Label {
+                    Text("Paramètres")
+                        .foregroundStyle(.gray)
+                } icon: {
+                    Image(systemName: "gearshape")
+                        .renderingMode(.template)
+                        .foregroundStyle(.gray)
+                }
             }
         }
         .onAppear {

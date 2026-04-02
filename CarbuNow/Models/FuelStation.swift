@@ -1,6 +1,5 @@
 import Foundation
 import CoreLocation
-import MapKit
 
 struct FuelStation: Decodable, Identifiable, Hashable {
     let id: String

@@ -30,8 +30,13 @@ final class StationsViewModel: ObservableObject {
     init() {
         self.apiService = FuelAPIService()
 
-        if let saved = UserDefaults.standard.string(forKey: "defaultFuel"),
+        WatchConnectivityBridge.shared.activate()
+
+        if let saved = SharedDefaults.shared.string(forKey: SharedDefaults.defaultFuelKey),
            let fuel = FuelType(rawValue: saved) {
+            self.selectedFuel = fuel
+        } else if let saved = UserDefaults.standard.string(forKey: "defaultFuel"),
+                  let fuel = FuelType(rawValue: saved) {
             self.selectedFuel = fuel
         } else {
             self.selectedFuel = .gazole
@@ -39,6 +44,8 @@ final class StationsViewModel: ObservableObject {
 
         let savedRadius = UserDefaults.standard.double(forKey: "searchRadiusKm")
         self.searchRadiusKm = savedRadius == 0 ? 15 : min(max(savedRadius, 0), 100)
+
+        WatchConnectivityBridge.shared.syncDefaultFuel(self.selectedFuel)
     }
 
     var availableStationsForAlerts: [FuelStation] {
@@ -162,6 +169,8 @@ final class StationsViewModel: ObservableObject {
     func setDefaultFuel(_ fuel: FuelType) {
         selectedFuel = fuel
         UserDefaults.standard.set(fuel.rawValue, forKey: "defaultFuel")
+        SharedDefaults.shared.set(fuel.rawValue, forKey: SharedDefaults.defaultFuelKey)
+        WatchConnectivityBridge.shared.syncDefaultFuel(fuel)
     }
 
     func setSearchRadius(_ value: Double) {
@@ -175,7 +184,32 @@ final class StationsViewModel: ObservableObject {
             .compactMap { $0.price(for: selectedFuel) }
 
         guard let minPrice = prices.min(), let maxPrice = prices.max() else { return nil }
-        return (minPrice, maxPrice)
+        return (min: minPrice, max: maxPrice)
+    }
+}
+
+enum VehicleEstimationMode: String, Codable, CaseIterable, Identifiable {
+    case quick
+    case complete
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .quick:
+            return "Rapide"
+        case .complete:
+            return "Complet"
+        }
+    }
+
+    var descriptionText: String {
+        switch self {
+        case .quick:
+            return "Saisie de la distance parcourue et de la consommation moyenne."
+        case .complete:
+            return "Ajoute aussi l’autonomie restante et la vitesse moyenne."
+        }
     }
 }
 
@@ -186,18 +220,93 @@ struct VehicleProfile: Identifiable, Codable, Equatable {
     var tankCapacityLiters: Double
     var consumptionLitersPer100km: Double
 
+    var dashboardModeRawValue: String
+    var tripDistanceKm: Double?
+    var tripAverageConsumptionLitersPer100km: Double?
+    var remainingRangeKm: Double?
+    var tripAverageSpeedKmh: Double?
+    var resetTripAtFillUp: Bool
+
+    var estimationMode: VehicleEstimationMode {
+        get { VehicleEstimationMode(rawValue: dashboardModeRawValue) ?? .quick }
+        set { dashboardModeRawValue = newValue.rawValue }
+    }
+
+    var effectiveAverageConsumptionLitersPer100km: Double {
+        tripAverageConsumptionLitersPer100km ?? consumptionLitersPer100km
+    }
+
     init(
         id: UUID = UUID(),
         label: String,
         fuelType: FuelType,
         tankCapacityLiters: Double,
-        consumptionLitersPer100km: Double
+        consumptionLitersPer100km: Double,
+        dashboardMode: VehicleEstimationMode = .quick,
+        tripDistanceKm: Double? = nil,
+        tripAverageConsumptionLitersPer100km: Double? = nil,
+        remainingRangeKm: Double? = nil,
+        tripAverageSpeedKmh: Double? = nil,
+        resetTripAtFillUp: Bool = false
     ) {
         self.id = id
         self.label = label
         self.fuelType = fuelType
         self.tankCapacityLiters = tankCapacityLiters
         self.consumptionLitersPer100km = consumptionLitersPer100km
+        self.dashboardModeRawValue = dashboardMode.rawValue
+        self.tripDistanceKm = tripDistanceKm
+        self.tripAverageConsumptionLitersPer100km = tripAverageConsumptionLitersPer100km
+        self.remainingRangeKm = remainingRangeKm
+        self.tripAverageSpeedKmh = tripAverageSpeedKmh
+        self.resetTripAtFillUp = resetTripAtFillUp
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case label
+        case fuelType
+        case tankCapacityLiters
+        case consumptionLitersPer100km
+        case dashboardModeRawValue
+        case tripDistanceKm
+        case tripAverageConsumptionLitersPer100km
+        case remainingRangeKm
+        case tripAverageSpeedKmh
+        case resetTripAtFillUp
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        id = try container.decode(UUID.self, forKey: .id)
+        label = try container.decode(String.self, forKey: .label)
+        fuelType = try container.decode(FuelType.self, forKey: .fuelType)
+        tankCapacityLiters = try container.decode(Double.self, forKey: .tankCapacityLiters)
+        consumptionLitersPer100km = try container.decode(Double.self, forKey: .consumptionLitersPer100km)
+
+        dashboardModeRawValue = try container.decodeIfPresent(String.self, forKey: .dashboardModeRawValue) ?? VehicleEstimationMode.quick.rawValue
+        tripDistanceKm = try container.decodeIfPresent(Double.self, forKey: .tripDistanceKm)
+        tripAverageConsumptionLitersPer100km = try container.decodeIfPresent(Double.self, forKey: .tripAverageConsumptionLitersPer100km)
+        remainingRangeKm = try container.decodeIfPresent(Double.self, forKey: .remainingRangeKm)
+        tripAverageSpeedKmh = try container.decodeIfPresent(Double.self, forKey: .tripAverageSpeedKmh)
+        resetTripAtFillUp = try container.decodeIfPresent(Bool.self, forKey: .resetTripAtFillUp) ?? false
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(id, forKey: .id)
+        try container.encode(label, forKey: .label)
+        try container.encode(fuelType, forKey: .fuelType)
+        try container.encode(tankCapacityLiters, forKey: .tankCapacityLiters)
+        try container.encode(consumptionLitersPer100km, forKey: .consumptionLitersPer100km)
+        try container.encode(dashboardModeRawValue, forKey: .dashboardModeRawValue)
+        try container.encodeIfPresent(tripDistanceKm, forKey: .tripDistanceKm)
+        try container.encodeIfPresent(tripAverageConsumptionLitersPer100km, forKey: .tripAverageConsumptionLitersPer100km)
+        try container.encodeIfPresent(remainingRangeKm, forKey: .remainingRangeKm)
+        try container.encodeIfPresent(tripAverageSpeedKmh, forKey: .tripAverageSpeedKmh)
+        try container.encode(resetTripAtFillUp, forKey: .resetTripAtFillUp)
     }
 }
 
@@ -246,7 +355,13 @@ final class VehicleSettingsStore: ObservableObject {
         label: String,
         fuelType: FuelType,
         tankCapacityLiters: Double,
-        consumptionLitersPer100km: Double
+        consumptionLitersPer100km: Double,
+        dashboardMode: VehicleEstimationMode = .quick,
+        tripDistanceKm: Double? = nil,
+        tripAverageConsumptionLitersPer100km: Double? = nil,
+        remainingRangeKm: Double? = nil,
+        tripAverageSpeedKmh: Double? = nil,
+        resetTripAtFillUp: Bool = false
     ) {
         let trimmedLabel = label.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -254,7 +369,13 @@ final class VehicleSettingsStore: ObservableObject {
             label: trimmedLabel.isEmpty ? "Véhicule" : trimmedLabel,
             fuelType: fuelType,
             tankCapacityLiters: tankCapacityLiters,
-            consumptionLitersPer100km: consumptionLitersPer100km
+            consumptionLitersPer100km: consumptionLitersPer100km,
+            dashboardMode: dashboardMode,
+            tripDistanceKm: tripDistanceKm,
+            tripAverageConsumptionLitersPer100km: tripAverageConsumptionLitersPer100km,
+            remainingRangeKm: remainingRangeKm,
+            tripAverageSpeedKmh: tripAverageSpeedKmh,
+            resetTripAtFillUp: resetTripAtFillUp
         )
 
         vehicles.append(newVehicle)

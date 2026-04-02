@@ -1,11 +1,3 @@
-//
-//  FuelRupture.swift
-//  CarbuNow - Prix Du Carburant
-//
-//  Created by Yann CATTARIN on 25/03/2026.
-//
-
-
 import Foundation
 
 struct FuelRupture: Decodable, Hashable {
