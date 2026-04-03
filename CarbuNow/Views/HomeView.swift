@@ -241,13 +241,15 @@ struct HomeView: View {
 
     private func stationAnnotationView(for station: FuelStation, color: Color) -> some View {
         let isRupture = station.shouldShowRuptureBadge(for: viewModel.selectedFuel)
+        let price = station.price(for: viewModel.selectedFuel)
+        let isPriceUnavailable = !isRupture && price == nil
 
         return VStack(spacing: 3) {
             Image(systemName: "fuelpump.circle.fill")
                 .font(.title2)
                 .foregroundStyle(.white)
                 .padding(4)
-                .background(isRupture ? Color.gray : color)
+                .background((isRupture || isPriceUnavailable) ? Color.gray : color)
                 .clipShape(Circle())
                 .shadow(radius: 3)
 
@@ -261,7 +263,7 @@ struct HomeView: View {
                         Capsule()
                             .fill(Color.gray.opacity(0.92))
                     )
-            } else if let price = station.price(for: viewModel.selectedFuel) {
+            } else if let price {
                 Text(String(format: "%.3f €", price))
                     .font(.caption2.bold())
                     .foregroundStyle(color)
@@ -269,6 +271,16 @@ struct HomeView: View {
                     .padding(.vertical, 3)
                     .background(.ultraThinMaterial)
                     .clipShape(Capsule())
+            } else {
+                Text("Prix indisponible")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.9))
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 3)
+                    .background(
+                        Capsule()
+                            .fill(Color.gray.opacity(0.92))
+                    )
             }
         }
         .contentShape(Rectangle())
@@ -535,7 +547,6 @@ struct HomeView: View {
             userLocation: locationManager.currentLocation,
             radiusKm: 0
         )
-
         let insideRegion = candidates.filter { station in
             station.latitude >= latMin && station.latitude <= latMax &&
             station.longitude >= lonMin && station.longitude <= lonMax
