@@ -133,7 +133,7 @@ struct StationDetailView: View {
                         Text(String(format: "%.3f €/L", price))
                             .bold()
                     } else {
-                        Text("Donnée indisponible actuellement")
+                        Text("—")
                             .foregroundStyle(.secondary)
                     }
                 }

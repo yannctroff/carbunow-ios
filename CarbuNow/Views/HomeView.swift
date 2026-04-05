@@ -272,7 +272,7 @@ struct HomeView: View {
                     .background(.ultraThinMaterial)
                     .clipShape(Capsule())
             } else {
-                Text("Prix indisponible")
+                Text("—")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.9))
                     .padding(.horizontal, 7)

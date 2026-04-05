@@ -47,6 +47,11 @@ struct StationRowView: View {
                         .font(.headline)
                         .foregroundStyle(priceColor)
                         .multilineTextAlignment(.trailing)
+                } else {
+                    Text("—")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.trailing)
                 }
             }
 
