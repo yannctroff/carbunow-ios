@@ -6,27 +6,51 @@ final class PriceAlertManager: ObservableObject {
 
     static let shared = PriceAlertManager()
 
-    struct ActiveAlert: Codable, Equatable {
+    struct ActiveAlert: Codable, Equatable, Identifiable {
         let stationID: String
         let fuelType: String
+        let isEnabled: Bool
+
+        init(stationID: String, fuelType: String, isEnabled: Bool = true) {
+            self.stationID = stationID
+            self.fuelType = fuelType.lowercased()
+            self.isEnabled = isEnabled
+        }
+
+        var id: String {
+            "\(stationID)|\(fuelType.lowercased())"
+        }
+    }
+
+    struct DeviceAlertsResponse: Codable {
+        let ok: Bool
+        let alerts: [ServerAlert]
+    }
+
+    struct ServerAlert: Codable {
+        let stationID: String
+        let fuelType: String
+        let isEnabled: Bool
+
+        enum CodingKeys: String, CodingKey {
+            case stationID = "station_id"
+            case fuelType = "fuel_type"
+            case isEnabled = "is_enabled"
+        }
     }
 
     enum ActivationResult {
         case activated
-        case replaced(previous: ActiveAlert)
         case alreadyActive
     }
 
-    @Published private(set) var activeAlert: ActiveAlert?
+    @Published private(set) var activeAlerts: [ActiveAlert] = []
 
     private let baseURL = "https://api.carbunow.yannctr.fr"
-    private let activeAlertKey = "active_price_alert"
-    private let settingsEnabledKey = "priceAlert.isEnabled"
-    private let settingsStationIDKey = "priceAlert.selectedStationID"
-    private let settingsFuelKey = "priceAlert.selectedFuel"
+    private let activeAlertsKey = "active_price_alerts"
 
     private init() {
-        loadStoredActiveAlert()
+        loadStoredAlerts()
     }
 
     private var deviceToken: String? {
@@ -34,56 +58,54 @@ final class PriceAlertManager: ObservableObject {
         set { UserDefaults.standard.setValue(newValue, forKey: "apns_token") }
     }
 
-    private func loadStoredActiveAlert() {
-        guard let data = UserDefaults.standard.data(forKey: activeAlertKey) else {
-            activeAlert = nil
+    private func loadStoredAlerts() {
+        guard let data = UserDefaults.standard.data(forKey: activeAlertsKey) else {
+            activeAlerts = []
             return
         }
 
         do {
-            let alert = try JSONDecoder().decode(ActiveAlert.self, from: data)
-            activeAlert = alert
-
-            UserDefaults.standard.set(true, forKey: settingsEnabledKey)
-            UserDefaults.standard.set(alert.stationID, forKey: settingsStationIDKey)
-            UserDefaults.standard.set(alert.fuelType.lowercased(), forKey: settingsFuelKey)
+            let alerts = try JSONDecoder().decode([ActiveAlert].self, from: data)
+            activeAlerts = deduplicated(alerts)
         } catch {
-            print("❌ Impossible de relire l’alerte active:", error.localizedDescription)
-            activeAlert = nil
+            print("Impossible de relire les alertes actives :", error.localizedDescription)
+            activeAlerts = []
         }
-    }   
+    }
 
-    private func saveActiveAlert(_ alert: ActiveAlert?) {
-        activeAlert = alert
+    private func saveAlerts() {
+        do {
+            let data = try JSONEncoder().encode(activeAlerts)
+            UserDefaults.standard.set(data, forKey: activeAlertsKey)
+        } catch {
+            print("Impossible de sauvegarder les alertes actives :", error.localizedDescription)
+        }
+    }
 
-        if let alert {
-            do {
-                let data = try JSONEncoder().encode(alert)
-                UserDefaults.standard.set(data, forKey: activeAlertKey)
-            } catch {
-                print("❌ Impossible de sauvegarder l’alerte active:", error.localizedDescription)
+    private func deduplicated(_ alerts: [ActiveAlert]) -> [ActiveAlert] {
+        var seen = Set<String>()
+        var result: [ActiveAlert] = []
+
+        for alert in alerts {
+            if seen.insert(alert.id).inserted {
+                result.append(alert)
             }
-
-            UserDefaults.standard.set(true, forKey: settingsEnabledKey)
-            UserDefaults.standard.set(alert.stationID, forKey: settingsStationIDKey)
-            UserDefaults.standard.set(alert.fuelType.lowercased(), forKey: settingsFuelKey)
-        } else {
-            UserDefaults.standard.removeObject(forKey: activeAlertKey)
-
-            UserDefaults.standard.set(false, forKey: settingsEnabledKey)
-            UserDefaults.standard.removeObject(forKey: settingsStationIDKey)
-            UserDefaults.standard.removeObject(forKey: settingsFuelKey)
         }
+
+        return result
     }
 
     func isAlertActive(stationID: String, fuelType: String) -> Bool {
-        activeAlert?.stationID == stationID &&
-        activeAlert?.fuelType.lowercased() == fuelType.lowercased()
+        let key = "\(stationID)|\(fuelType.lowercased())"
+        return activeAlerts.contains { $0.id == key && $0.isEnabled }
     }
 
-    func registerDevice(token: String) {
-        print("📡 registerDevice called with token:", token.prefix(20), "...")
+    func clearLocalAlertsCache() {
+        activeAlerts = []
+        UserDefaults.standard.removeObject(forKey: activeAlertsKey)
+    }
 
+    func registerDevice(token: String) async {
         self.deviceToken = token
 
         guard let url = URL(string: "\(baseURL)/alerts/register-device") else { return }
@@ -97,22 +119,65 @@ final class PriceAlertManager: ObservableObject {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("❌ registerDevice error:", error)
-                return
+        do {
+            _ = try await URLSession.shared.data(for: request)
+            try? await fetchAlertsFromServer()
+        } catch {
+            print("Impossible d’enregistrer le device token :", error.localizedDescription)
+        }
+    }
+
+    func fetchAlertsFromServer() async throws {
+        guard let token = deviceToken, !token.isEmpty else {
+            activeAlerts = deduplicated(activeAlerts)
+            saveAlerts()
+            return
+        }
+
+        var components = URLComponents(string: "\(baseURL)/alerts/by-device")
+        components?.queryItems = [
+            URLQueryItem(name: "deviceToken", value: token)
+        ]
+
+        guard let url = components?.url else {
+            throw NSError(
+                domain: "PriceAlertManager",
+                code: 100,
+                userInfo: [NSLocalizedDescriptionKey: "URL API invalide."]
+            )
+        }
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let http = response as? HTTPURLResponse else {
+            throw NSError(
+                domain: "PriceAlertManager",
+                code: 101,
+                userInfo: [NSLocalizedDescriptionKey: "Réponse serveur invalide."]
+            )
+        }
+
+        guard (200...299).contains(http.statusCode) else {
+            throw NSError(
+                domain: "PriceAlertManager",
+                code: http.statusCode,
+                userInfo: [NSLocalizedDescriptionKey: "Impossible de récupérer les alertes du serveur."]
+            )
+        }
+
+        let decoded = try JSONDecoder().decode(DeviceAlertsResponse.self, from: data)
+        let mapped = decoded.alerts
+            .filter { $0.isEnabled }
+            .map {
+                ActiveAlert(
+                    stationID: $0.stationID,
+                    fuelType: $0.fuelType,
+                    isEnabled: $0.isEnabled
+                )
             }
 
-            if let http = response as? HTTPURLResponse {
-                print("📡 registerDevice status:", http.statusCode)
-            }
-
-            if let data = data, let body = String(data: data, encoding: .utf8) {
-                print("📡 registerDevice response:", body)
-            }
-
-            print("✅ Device enregistré")
-        }.resume()
+        activeAlerts = deduplicated(mapped)
+        saveAlerts()
     }
 
     func activateAlert(stationID: String, fuelType: String) async throws -> ActivationResult {
@@ -125,14 +190,6 @@ final class PriceAlertManager: ObservableObject {
         }
 
         let normalizedFuelType = fuelType.lowercased()
-
-        if isAlertActive(stationID: stationID, fuelType: normalizedFuelType) {
-            return .alreadyActive
-        }
-
-        let previousAlert = activeAlert
-
-        print("📡 activateAlert →", stationID, normalizedFuelType)
 
         guard let url = URL(string: "\(baseURL)/alerts/upsert") else {
             throw NSError(
@@ -172,17 +229,88 @@ final class PriceAlertManager: ObservableObject {
             )
         }
 
-        let newAlert = ActiveAlert(
+        let alreadyActiveBeforeRefresh = isAlertActive(
             stationID: stationID,
             fuelType: normalizedFuelType
         )
 
-        saveActiveAlert(newAlert)
+        try? await fetchAlertsFromServer()
 
-        if let previousAlert {
-            return .replaced(previous: previousAlert)
-        } else {
-            return .activated
+        return alreadyActiveBeforeRefresh ? .alreadyActive : .activated
+    }
+
+    func removeAlert(stationID: String, fuelType: String) async throws {
+        guard let token = deviceToken, !token.isEmpty else {
+            throw NSError(
+                domain: "PriceAlertManager",
+                code: 4,
+                userInfo: [NSLocalizedDescriptionKey: "Les notifications push ne sont pas encore prêtes sur cet appareil."]
+            )
         }
+
+        guard let url = URL(string: "\(baseURL)/alerts/upsert") else {
+            throw NSError(
+                domain: "PriceAlertManager",
+                code: 5,
+                userInfo: [NSLocalizedDescriptionKey: "URL API invalide."]
+            )
+        }
+
+        let normalizedFuelType = fuelType.lowercased()
+
+        let body: [String: Any] = [
+            "deviceToken": token,
+            "stationID": stationID,
+            "fuelType": normalizedFuelType,
+            "isEnabled": false
+        ]
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (_, response) = try await URLSession.shared.data(for: request)
+
+        guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            throw NSError(
+                domain: "PriceAlertManager",
+                code: 6,
+                userInfo: [NSLocalizedDescriptionKey: "Impossible de supprimer l’alerte."]
+            )
+        }
+
+        try? await fetchAlertsFromServer()
+    }
+
+    func setAllAlertsEnabled(_ isEnabled: Bool) async {
+        guard let token = deviceToken, !token.isEmpty else { return }
+        guard let url = URL(string: "\(baseURL)/alerts/set-enabled-for-device") else { return }
+
+        let body: [String: Any] = [
+            "deviceToken": token,
+            "isEnabled": isEnabled
+        ]
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        do {
+            let (_, response) = try await URLSession.shared.data(for: request)
+            guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+                print("Impossible de mettre à jour l’état global des alertes")
+                return
+            }
+            try? await fetchAlertsFromServer()
+        } catch {
+            print("Erreur mise à jour état global des alertes :", error.localizedDescription)
+        }
+    }
+
+    func replaceAllAlerts(_ alerts: [ActiveAlert]) {
+        activeAlerts = deduplicated(alerts)
+        saveAlerts()
     }
 }

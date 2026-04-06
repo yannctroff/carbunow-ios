@@ -38,9 +38,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         let token = deviceToken.map { String(format: "%02x", $0) }.joined()
         print("📱 APNs token:", token)
 
-        PriceAlertManager.shared.registerDevice(token: token)
-
         Task {
+            await PriceAlertManager.shared.registerDevice(token: token)
             await PushNotificationManager.shared.updateAPNsToken(deviceToken)
         }
     }
@@ -52,6 +51,4 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         print("❌ APNs registration failed:", error.localizedDescription)
         print("❌ APNs registration full error:", error)
     }
-    
-    
 }

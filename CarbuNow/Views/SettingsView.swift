@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject private var viewModel: StationsViewModel
     @ObservedObject private var vehicleStore = VehicleSettingsStore.shared
+    @ObservedObject private var priceAlertManager = PriceAlertManager.shared
 
     @AppStorage("priceAlert.isEnabled") private var priceAlertIsEnabled = false
     @AppStorage("priceAlert.selectedStationID") private var selectedStationID = ""
@@ -10,8 +11,6 @@ struct SettingsView: View {
 
     @State private var showVehicleEditor = false
     @State private var editingVehicle: VehicleProfile?
-
-    private let priceAlertManager = PriceAlertManager.shared
 
     var body: some View {
         NavigationStack {
@@ -37,59 +36,91 @@ struct SettingsView: View {
                 Section("Notification prix station") {
                     Toggle("Activer l’alerte de prix", isOn: $priceAlertIsEnabled)
                         .onChange(of: priceAlertIsEnabled) { _, newValue in
-                            if newValue {
-                                syncAlertIfPossible()
+                            Task {
+                                await updateGlobalAlertsState(isEnabled: newValue)
                             }
                         }
 
-                    Picker("Station surveillée", selection: $selectedStationID) {
-                        Text("Aucune").tag("")
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(alignment: .top, spacing: 12) {
+                            Image(systemName: priceAlertIsEnabled ? "bell.badge.fill" : "bell.slash")
+                                .font(.title3)
+                                .foregroundColor(priceAlertIsEnabled ? .accentColor : .secondary)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(priceAlertIsEnabled ? "Notifications de prix activées" : "Notifications de prix désactivées")
+                                    .font(.subheadline.weight(.semibold))
 
-                        ForEach(viewModel.availableStationsForAlerts) { station in
-                            Text(station.displayName).tag(station.id)
-                        }
-                    }
-                    .pickerStyle(.navigationLink)
-                    .onChange(of: selectedStationID) { _, _ in
-                        syncAlertIfPossible()
-                    }
-
-                    Picker("Carburant surveillé", selection: $selectedFuelRawValue) {
-                        ForEach(FuelType.allCases) { fuel in
-                            Text(fuel.displayName).tag(fuel.rawValue)
-                        }
-                    }
-                    .pickerStyle(.navigationLink)
-                    .onChange(of: selectedFuelRawValue) { _, _ in
-                        syncAlertIfPossible()
-                    }
-
-                    if let monitoredStation = viewModel.availableStationsForAlerts.first(where: { $0.id == selectedStationID }) {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Station suivie : \(monitoredStation.displayName)")
+                                Text(
+                                    priceAlertManager.activeAlerts.isEmpty
+                                    ? "Aucune alerte enregistrée."
+                                    : "\(priceAlertManager.activeAlerts.count) alerte\(priceAlertManager.activeAlerts.count > 1 ? "s" : "") active\(priceAlertManager.activeAlerts.count > 1 ? "s" : "")."
+                                )
                                 .font(.footnote)
-
-                            if let watchedFuel = watchedFuel,
-                               let currentPrice = monitoredStation.price(for: watchedFuel) {
-                                Text("Prix actuel \(watchedFuel.displayName) : \(formattedPrice(currentPrice))")
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                            } else {
-                                Text("Ce carburant n’est pas disponible actuellement dans cette station.")
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
+                                .foregroundStyle(.secondary)
                             }
+
+                            Spacer()
                         }
-                    } else {
-                        Text("Choisis une station parmi celles déjà chargées dans la carte ou la liste.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+
+                        if !priceAlertManager.activeAlerts.isEmpty {
+                            VStack(alignment: .leading, spacing: 6) {
+                                ForEach(Array(priceAlertManager.activeAlerts.prefix(3))) { alert in
+                                    if let station = viewModel.availableStationsForAlerts.first(where: { $0.id == alert.stationID }),
+                                       let fuel = FuelType(rawValue: alert.fuelType.lowercased()) {
+                                        HStack(spacing: 8) {
+                                            Circle()
+                                                .fill(.tint)
+                                                .frame(width: 6, height: 6)
+
+                                            Text("\(fuel.displayName) • \(station.displayName)")
+                                                .font(.footnote)
+                                                .foregroundStyle(.secondary)
+                                                .lineLimit(1)
+                                        }
+                                    } else if let fuel = FuelType(rawValue: alert.fuelType.lowercased()) {
+                                        HStack(spacing: 8) {
+                                            Circle()
+                                                .fill(.tint)
+                                                .frame(width: 6, height: 6)
+
+                                            Text("\(fuel.displayName) • Station \(alert.stationID)")
+                                                .font(.footnote)
+                                                .foregroundStyle(.secondary)
+                                                .lineLimit(1)
+                                        }
+                                    }
+                                }
+
+                                if priceAlertManager.activeAlerts.count > 3 {
+                                    Text("+ \(priceAlertManager.activeAlerts.count - 3) autre\(priceAlertManager.activeAlerts.count - 3 > 1 ? "s" : "")")
+                                        .font(.footnote)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .padding(.top, 2)
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    NavigationLink {
+                        ActiveAlertsListView()
+                            .environmentObject(viewModel)
+                    } label: {
+                        Label("Voir les alertes actives", systemImage: "list.bullet.rectangle")
+                    }
+                    .disabled(priceAlertManager.activeAlerts.isEmpty)
+
+                    NavigationLink {
+                        AddPriceAlertView()
+                            .environmentObject(viewModel)
+                    } label: {
+                        Label("Ajouter une nouvelle alerte", systemImage: "plus.circle.fill")
                     }
 
-                    Label("Une notification sera envoyée quand le prix de ce carburant change dans la station choisie.", systemImage: "bell.badge")
+                    Label("Une notification sera envoyée quand le prix d’un carburant change dans la station choisie.", systemImage: "bell.badge")
                         .font(.footnote)
 
-                    Label("Limité à 1 alerte uniquement.", systemImage: "info.circle")
+                    Label("Tu peux créer plusieurs alertes pour plusieurs stations et carburants.", systemImage: "info.circle")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -129,14 +160,14 @@ struct SettingsView: View {
                                 .foregroundStyle(.secondary)
                         }
 
-                        Label("Les prix sont actualisés tous les 10 minutes. (8h00, 8h10, ...)", systemImage: "info.circle")
+                        Label("Les prix sont actualisés jusqu'à un délai de 15 minutes maximun", systemImage: "info.circle")
                     } else {
                         Label("Aucune actualisation encore effectuée", systemImage: "clock")
                     }
                 }
 
                 Section("Infos sur l'application") {
-                    Label("Les données proviennent de l’API CarbuNow", systemImage: "network")
+                    Label("Les données proviennent de l’API CarbuNow (via les données publiques de prix-carburants.gouv.fr)", systemImage: "network")
                 }
             }
             .navigationTitle("Réglages")
@@ -244,21 +275,22 @@ struct SettingsView: View {
         }
     }
 
+    private func updateGlobalAlertsState(isEnabled: Bool) async {
+        if !isEnabled {
+            await priceAlertManager.setAllAlertsEnabled(false)
+            return
+        }
+
+        await priceAlertManager.setAllAlertsEnabled(true)
+        syncAlertIfPossible()
+    }
+
     private func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "fr_FR")
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
         return formatter.string(from: date)
-    }
-
-    private func formattedPrice(_ value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.locale = Locale(identifier: "fr_FR")
-        formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 3
-        formatter.maximumFractionDigits = 3
-        return (formatter.string(from: NSNumber(value: value)) ?? String(format: "%.3f", value)) + "€"
     }
 
     private func formattedLiters(_ value: Double) -> String {
@@ -278,6 +310,156 @@ struct SettingsView: View {
         formatter.maximumFractionDigits = 1
         let text = formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)
         return "\(text) L/100"
+    }
+}
+
+private struct ActiveAlertsListView: View {
+    @EnvironmentObject private var viewModel: StationsViewModel
+    @ObservedObject private var alertManager = PriceAlertManager.shared
+
+    var body: some View {
+        List {
+            if alertManager.activeAlerts.isEmpty {
+                ContentUnavailableView(
+                    "Aucune alerte active",
+                    systemImage: "bell.slash",
+                    description: Text("Ajoute une alerte pour surveiller le prix d’un carburant dans une station.")
+                )
+            } else {
+                ForEach(alertManager.activeAlerts) { alert in
+                    VStack(alignment: .leading, spacing: 6) {
+                        if let station = viewModel.availableStationsForAlerts.first(where: { $0.id == alert.stationID }) {
+                            Text(station.displayName)
+                                .font(.body.weight(.semibold))
+                        } else {
+                            Text("Station \(alert.stationID)")
+                                .font(.body.weight(.semibold))
+                        }
+
+                        if let fuel = FuelType(rawValue: alert.fuelType.lowercased()) {
+                            Text(fuel.displayName)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .swipeActions(edge: .trailing) {
+                        Button("Supprimer", role: .destructive) {
+                            Task {
+                                try? await alertManager.removeAlert(
+                                    stationID: alert.stationID,
+                                    fuelType: alert.fuelType
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle("Alertes actives")
+    }
+}
+
+private struct AddPriceAlertView: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var viewModel: StationsViewModel
+    @ObservedObject private var alertManager = PriceAlertManager.shared
+
+    @State private var selectedStationID = ""
+    @State private var selectedFuelRawValue = FuelType.gazole.rawValue
+    @State private var isSubmitting = false
+    @State private var errorMessage: String?
+
+    private var selectedFuel: FuelType? {
+        FuelType(rawValue: selectedFuelRawValue)
+    }
+
+    var body: some View {
+        Form {
+            Section("Nouvelle alerte") {
+                Picker("Station surveillée", selection: $selectedStationID) {
+                    Text("Choisir").tag("")
+                    ForEach(viewModel.availableStationsForAlerts) { station in
+                        Text(station.displayName).tag(station.id)
+                    }
+                }
+                .pickerStyle(.navigationLink)
+
+                Picker("Carburant surveillé", selection: $selectedFuelRawValue) {
+                    ForEach(FuelType.allCases) { fuel in
+                        Text(fuel.displayName).tag(fuel.rawValue)
+                    }
+                }
+                .pickerStyle(.navigationLink)
+            }
+
+            if let station = viewModel.availableStationsForAlerts.first(where: { $0.id == selectedStationID }),
+               let fuel = selectedFuel {
+                Section("Aperçu") {
+                    Text(station.displayName)
+
+                    if let price = station.price(for: fuel) {
+                        Text("Prix actuel \(fuel.displayName) : \(formattedPrice(price))")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("Ce carburant n’est pas disponible actuellement dans cette station.")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+
+            Section {
+                Button {
+                    Task {
+                        await createAlert()
+                    }
+                } label: {
+                    HStack {
+                        Label("Ajouter l’alerte", systemImage: "plus.circle.fill")
+                        Spacer()
+                        if isSubmitting {
+                            ProgressView()
+                                .controlSize(.small)
+                        }
+                    }
+                }
+                .disabled(isSubmitting || selectedStationID.isEmpty || selectedFuel == nil)
+            }
+
+            if let errorMessage {
+                Section {
+                    Text(errorMessage)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                }
+            }
+        }
+        .navigationTitle("Nouvelle alerte")
+    }
+
+    private func createAlert() async {
+        guard let fuel = selectedFuel else { return }
+
+        isSubmitting = true
+        defer { isSubmitting = false }
+
+        do {
+            _ = try await alertManager.activateAlert(
+                stationID: selectedStationID,
+                fuelType: fuel.rawValue
+            )
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func formattedPrice(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 3
+        formatter.maximumFractionDigits = 3
+        return (formatter.string(from: NSNumber(value: value)) ?? String(format: "%.3f", value)) + "€"
     }
 }
 

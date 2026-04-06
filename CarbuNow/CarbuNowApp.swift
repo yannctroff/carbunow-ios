@@ -10,6 +10,7 @@ struct CarbuNowApp: App {
     @StateObject private var viewModel = StationsViewModel()
     @StateObject private var locationManager = LocationManager()
     @StateObject private var favoritesStore = FavoritesStore()
+    @StateObject private var versionChecker = VersionChecker()
     private let priceAlertManager = PriceAlertManager.shared
 
     var body: some Scene {
@@ -18,6 +19,25 @@ struct CarbuNowApp: App {
                 .environmentObject(viewModel)
                 .environmentObject(locationManager)
                 .environmentObject(favoritesStore)
+
+                // 🔥 CHECK VERSION AU LANCEMENT
+                .task {
+                    await versionChecker.check()
+                }
+
+                // 🔔 POPUP UPDATE
+                .alert("Mise à jour disponible", isPresented: $versionChecker.showUpdateAlert) {
+                    Button("Mettre à jour") {
+                        if let url = URL(string: "https://apps.apple.com/fr/app/id6760706117") {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+
+                    Button("Plus tard", role: .cancel) { }
+
+                } message: {
+                    Text("Une nouvelle version (\(versionChecker.latestVersion ?? "")) est disponible sur l’App Store.")
+                }
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
@@ -53,4 +73,3 @@ struct CarbuNowApp: App {
         }
     }
 }
-

@@ -16,6 +16,10 @@ struct StationDetailView: View {
     @State private var showAutonomyEstimatorSheet = false
     @State private var latestEstimation: FillEstimation?
 
+    @State private var resolvedFuelTypes: [FuelType] = []
+    @State private var hasLoadedResolvedFuelTypes = false
+    @State private var isLoadingResolvedFuelTypes = false
+
     let station: FuelStation
     var showsCloseButton: Bool = false
 
@@ -66,8 +70,12 @@ struct StationDetailView: View {
                 dismissButton: .default(Text("OK"))
             )
         }
-        .onAppear {
-            if selectedHistoryFuel == nil {
+        .task(id: station.id) {
+            hasLoadedResolvedFuelTypes = false
+            resolvedFuelTypes = []
+            await loadResolvedFuelTypesIfNeeded()
+
+            if selectedHistoryFuel == nil || !historyFuels.contains(selectedHistoryFuel!) {
                 selectedHistoryFuel = historyFuels.first
             }
         }
@@ -120,26 +128,31 @@ struct StationDetailView: View {
             Text("Carburants")
                 .font(.headline)
 
-            ForEach(displayedFuels, id: \.self) { fuel in
-                HStack {
-                    Text(fuel.displayName)
-                    Spacer()
+            if displayedFuels.isEmpty {
+                Text("Aucun carburant actuellement identifié pour cette station.")
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(displayedFuels, id: \.self) { fuel in
+                    HStack {
+                        Text(fuel.displayName)
+                        Spacer()
 
-                    if station.hasActiveRupture(for: fuel) {
-                        Text("Rupture")
-                            .bold()
-                            .foregroundStyle(.gray)
-                    } else if let price = station.price(for: fuel) {
-                        Text(String(format: "%.3f €/L", price))
-                            .bold()
-                    } else {
-                        Text("—")
-                            .foregroundStyle(.secondary)
+                        if station.hasActiveRupture(for: fuel) {
+                            Text("Rupture")
+                                .bold()
+                                .foregroundStyle(.gray)
+                        } else if let price = station.price(for: fuel) {
+                            Text(String(format: "%.3f €/L", price))
+                                .bold()
+                        } else {
+                            Text("—")
+                                .foregroundStyle(.secondary)
+                        }
                     }
-                }
 
-                if fuel != displayedFuels.last {
-                    Divider()
+                    if fuel != displayedFuels.last {
+                        Divider()
+                    }
                 }
             }
         }
@@ -282,9 +295,11 @@ struct StationDetailView: View {
                     HStack {
                         Image(systemName: isActive ? "bell.badge.fill" : "bell.badge")
 
-                        Text(isActive
-                             ? "Alerte \(fuel.displayName) active"
-                             : "Activer alerte \(fuel.displayName)")
+                        Text(
+                            isActive
+                            ? "Alerte \(fuel.displayName) active"
+                            : "Activer alerte \(fuel.displayName)"
+                        )
 
                         Spacer()
 
@@ -300,7 +315,7 @@ struct StationDetailView: View {
             }
 
             if alertableFuels.isEmpty {
-                Text("Aucun carburant avec prix ou rupture active pour le moment.")
+                Text("Aucun carburant disponible pour les alertes.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -331,15 +346,19 @@ struct StationDetailView: View {
     }
 
     private var displayedFuels: [FuelType] {
-        FuelType.allCases
+        if !resolvedFuelTypes.isEmpty {
+            return resolvedFuelTypes
+        }
+
+        return FuelType.allCases.filter { station.price(for: $0) != nil }
     }
 
     private var historyFuels: [FuelType] {
-        FuelType.allCases
+        displayedFuels
     }
 
     private var alertableFuels: [FuelType] {
-        FuelType.allCases.filter { station.isAvailable(for: $0) }
+        displayedFuels
     }
 
     private var distanceFromUserKm: Double? {
@@ -366,6 +385,78 @@ struct StationDetailView: View {
 
         return "\(formattedCurrency(cost)) (\(formattedDistance(distanceKm)) depuis vous)"
     }
+
+    private func loadResolvedFuelTypesIfNeeded() async {
+        guard !hasLoadedResolvedFuelTypes, !isLoadingResolvedFuelTypes else { return }
+
+        await MainActor.run {
+            isLoadingResolvedFuelTypes = true
+        }
+
+        let fuelsWithCurrentPrice = Set(
+            FuelType.allCases.filter { station.price(for: $0) != nil }
+        )
+
+        do {
+            let fuelsWithHistory = try await withThrowingTaskGroup(of: FuelType?.self) { group in
+                for fuel in FuelType.allCases {
+                    group.addTask {
+                        let history = try await FuelAPIService.shared.fetchHistory(
+                            stationID: station.id,
+                            fuelType: fuel.rawValue,
+                            days: 365
+                        )
+
+                        let hasKnownPrice = history.contains { $0.price != nil }
+                        return hasKnownPrice ? fuel : nil
+                    }
+                }
+
+                var result = Set<FuelType>()
+
+                for try await fuel in group {
+                    if let fuel {
+                        result.insert(fuel)
+                    }
+                }
+
+                return result
+            }
+
+            let merged = fuelsWithCurrentPrice.union(fuelsWithHistory)
+            let ordered = FuelType.allCases.filter { merged.contains($0) }
+
+            await MainActor.run {
+                resolvedFuelTypes = ordered
+                hasLoadedResolvedFuelTypes = true
+                isLoadingResolvedFuelTypes = false
+            }
+        } catch {
+            print("Erreur chargement carburants résolus:", error)
+
+            await MainActor.run {
+                resolvedFuelTypes = FuelType.allCases.filter { fuelsWithCurrentPrice.contains($0) }
+                hasLoadedResolvedFuelTypes = true
+                isLoadingResolvedFuelTypes = false
+            }
+        }
+    }
+    
+//    private var displayedFuels: [FuelType] {
+//        if !resolvedFuelTypes.isEmpty {
+//            return resolvedFuelTypes
+//        }
+//
+//        return FuelType.allCases.filter { station.price(for: $0) != nil }
+//    }
+//
+//    private var historyFuels: [FuelType] {
+//        displayedFuels
+//    }
+//
+//    private var alertableFuels: [FuelType] {
+//        displayedFuels
+//    }
 
     private func activateAlert(for fuelType: FuelType) async {
         guard !isSubmittingAlert else { return }
