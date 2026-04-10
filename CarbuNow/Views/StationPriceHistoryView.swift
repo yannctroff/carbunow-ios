@@ -45,6 +45,10 @@ struct StationPriceHistoryView: View {
         pricedHistory.last?.price
     }
 
+    private var displayedHistory: [FuelPriceHistoryPoint] {
+        sampledHistory(from: pricedHistory, for: selectedPeriod)
+    }
+
     private var minPrice: Double? {
         pricedHistory.compactMap(\.price).min()
     }
@@ -123,13 +127,13 @@ struct StationPriceHistoryView: View {
             if isLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity, minHeight: 180)
-            } else if pricedHistory.isEmpty {
+            } else if displayedHistory.isEmpty {
                 Text("Aucune donnée")
                     .foregroundStyle(.secondary)
             } else {
                 VStack(alignment: .leading, spacing: 14) {
                     Chart {
-                        ForEach(pricedHistory) { point in
+                        ForEach(displayedHistory) { point in
                             if let price = point.price {
                                 AreaMark(
                                     x: .value("Date", point.date),
@@ -227,7 +231,7 @@ struct StationPriceHistoryView: View {
                         }
                     }
 
-                    Text("\(pricedHistory.count) point(s)")
+                    Text("\(displayedHistory.count) point(s)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -263,9 +267,45 @@ struct StationPriceHistoryView: View {
     }
 
     private func nearestPoint(to date: Date) -> FuelPriceHistoryPoint? {
-        pricedHistory.min {
+        displayedHistory.min {
             abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date))
         }
+    }
+
+    private func sampledHistory(from history: [FuelPriceHistoryPoint], for period: Int) -> [FuelPriceHistoryPoint] {
+        let stepInDays: Int
+
+        switch period {
+        case 90:
+            stepInDays = 3
+        case 365:
+            stepInDays = 10
+        default:
+            return history
+        }
+
+        guard let firstPoint = history.first else {
+            return []
+        }
+
+        var result: [FuelPriceHistoryPoint] = [firstPoint]
+        let secondsPerBucket = stepInDays * 24 * 60 * 60
+        var lastBucket = firstPoint.timestamp / secondsPerBucket
+
+        for point in history.dropFirst() {
+            let currentBucket = point.timestamp / secondsPerBucket
+
+            if currentBucket != lastBucket {
+                result.append(point)
+                lastBucket = currentBucket
+            }
+        }
+
+        if let lastPoint = history.last, lastPoint.id != result.last?.id {
+            result.append(lastPoint)
+        }
+
+        return result
     }
 
     private func formattedDate(_ date: Date) -> String {
