@@ -15,7 +15,7 @@ struct WatchStationRowView: View {
     let userLocation: CLLocation?
 
     private var priceText: String {
-        if station.hasActiveRupture(for: selectedFuel) {
+        if station.shouldShowRuptureBadge(for: selectedFuel) {
             return "Rupture"
         }
 
@@ -23,7 +23,19 @@ struct WatchStationRowView: View {
             return String(format: "%.3f €/L", price)
         }
 
-        return "Indisponible"
+        return "—"
+    }
+
+    private var priceColor: Color {
+        if station.shouldShowRuptureBadge(for: selectedFuel) {
+            return .gray
+        }
+
+        if station.price(for: selectedFuel) != nil {
+            return .green
+        }
+
+        return .secondary
     }
 
     private var distanceText: String? {
@@ -44,7 +56,7 @@ struct WatchStationRowView: View {
 
             Text(priceText)
                 .font(.subheadline)
-                .foregroundStyle(station.hasActiveRupture(for: selectedFuel) ? .red : .green)
+                .foregroundStyle(priceColor)
 
             if let distanceText {
                 Text(distanceText)

@@ -14,8 +14,12 @@ struct WatchStationDetailView: View {
     let selectedFuel: FuelType
     let userLocation: CLLocation?
 
+    private var displayedFuels: [FuelType] {
+        FuelType.allCases.filter { station.price(for: $0) != nil }
+    }
+
     private var priceText: String {
-        if station.hasActiveRupture(for: selectedFuel) {
+        if station.shouldShowRuptureBadge(for: selectedFuel) {
             return "Rupture"
         }
 
@@ -23,7 +27,19 @@ struct WatchStationDetailView: View {
             return String(format: "%.3f €/L", price)
         }
 
-        return "Indisponible"
+        return "—"
+    }
+
+    private var selectedFuelPriceColor: Color {
+        if station.shouldShowRuptureBadge(for: selectedFuel) {
+            return .gray
+        }
+
+        if station.price(for: selectedFuel) != nil {
+            return .green
+        }
+
+        return .secondary
     }
 
     private var distanceText: String? {
@@ -56,7 +72,7 @@ struct WatchStationDetailView: View {
                     Text(priceText)
                         .font(.title3)
                         .fontWeight(.semibold)
-                        .foregroundStyle(station.hasActiveRupture(for: selectedFuel) ? .red : .green)
+                        .foregroundStyle(selectedFuelPriceColor)
                 }
 
                 if let distanceText {
@@ -70,22 +86,22 @@ struct WatchStationDetailView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                if !station.availableFuelTypes.isEmpty {
+                if !displayedFuels.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Carburants")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
 
-                        ForEach(station.availableFuelTypes) { fuel in
+                        ForEach(displayedFuels, id: \.self) { fuel in
                             HStack {
                                 Text(fuel.displayName)
                                 Spacer()
 
-                                if station.hasActiveRupture(for: fuel) {
-                                    Text("Rupture")
-                                        .foregroundStyle(.red)
-                                } else if let price = station.price(for: fuel) {
+                                if let price = station.price(for: fuel) {
                                     Text(String(format: "%.3f €/L", price))
+                                } else {
+                                    Text("—")
+                                        .foregroundStyle(.secondary)
                                 }
                             }
                             .font(.caption)
