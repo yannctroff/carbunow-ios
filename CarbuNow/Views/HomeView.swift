@@ -10,6 +10,7 @@ private let defaultHomeRegion = MKCoordinateRegion(
 struct HomeView: View {
     @EnvironmentObject private var locationManager: LocationManager
     @EnvironmentObject private var viewModel: StationsViewModel
+    @StateObject private var notificationInbox = NotificationInboxStore.shared
 
     @Namespace private var mapScope
 
@@ -30,6 +31,7 @@ struct HomeView: View {
     @State private var lastListReloadLocation: CLLocation?
     @State private var didInitialListLoad = false
     @State private var showCitySearchSheet = false
+    @State private var showNotificationCenterSheet = false
     @State private var citySearchText = ""
     @State private var isSearchingCity = false
     @State private var citySearchErrorMessage: String?
@@ -45,6 +47,13 @@ struct HomeView: View {
                         citySearchSheet
                             .presentationDetents([.medium])
                             .presentationDragIndicator(.visible)
+                    }
+                    .sheet(isPresented: $showNotificationCenterSheet) {
+                        NavigationStack {
+                            NotificationCenterSheetView(inbox: notificationInbox)
+                        }
+                        .presentationDetents([.medium, .large])
+                        .presentationDragIndicator(.visible)
                     }
                     .sheet(item: $selectedStation) { station in
                         NavigationStack {
@@ -110,8 +119,13 @@ struct HomeView: View {
             }
         }
         .onAppear {
-                locationManager.requestPermission()
+            locationManager.requestPermission()
+            notificationInbox.pruneExpired()
+
+            Task {
+                await notificationInbox.syncDeliveredNotifications()
             }
+        }
     }
 
     private var mapContent: some View {
@@ -181,6 +195,36 @@ struct HomeView: View {
                     Spacer()
 
                     VStack(spacing: 10) {
+                        Button {
+                            notificationInbox.pruneExpired()
+
+                            Task {
+                                await notificationInbox.syncDeliveredNotifications()
+                            }
+
+                            showNotificationCenterSheet = true
+                        } label: {
+                            ZStack(alignment: .topTrailing) {
+                                Image(systemName: "bell.badge")
+                                    .font(.title3)
+                                    .foregroundStyle(.primary)
+                                    .padding(12)
+                                    .background(.regularMaterial)
+                                    .clipShape(Circle())
+                                    .shadow(radius: 6)
+
+                                if !notificationInbox.items.isEmpty {
+                                    Text(notificationInbox.items.count > 99 ? "99+" : "\(notificationInbox.items.count)")
+                                        .font(.caption2.bold())
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 3)
+                                        .background(Color.red, in: Capsule())
+                                        .offset(x: 8, y: -8)
+                                }
+                            }
+                        }
+
                         Button {
                             recenterOnUserIfPossible(force: true)
                         } label: {
@@ -651,6 +695,69 @@ struct HomeView: View {
         let ratio = (currentPrice - minPrice) / (maxPrice - minPrice)
         let hue = (1 - ratio) * 0.33
         return Color(hue: hue, saturation: 0.85, brightness: 0.95)
+    }
+}
+
+private struct NotificationCenterSheetView: View {
+    @ObservedObject var inbox: NotificationInboxStore
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        Group {
+            if inbox.items.isEmpty {
+                ContentUnavailableView(
+                    "Aucune notification recente",
+                    systemImage: "bell.slash",
+                    description: Text("Les notifications recues durant les 7 derniers jours apparaitront ici.")
+                )
+            } else {
+                List(inbox.items) { item in
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(item.title)
+                            .font(.headline)
+
+                        if !item.message.isEmpty {
+                            Text(item.message)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Text(formattedDate(item.receivedAt))
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(.vertical, 4)
+                }
+                .listStyle(.plain)
+            }
+        }
+        .navigationTitle("Notifications")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Fermer") {
+                    dismiss()
+                }
+            }
+
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Tout effacer") {
+                    inbox.clearAll()
+                }
+                .disabled(inbox.items.isEmpty)
+            }
+        }
+        .task {
+            inbox.pruneExpired()
+            await inbox.syncDeliveredNotifications()
+        }
+    }
+
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.unitsStyle = .full
+        return date.formatted(date: .abbreviated, time: .shortened) + " • " + formatter.localizedString(for: date, relativeTo: .now)
     }
 }
 

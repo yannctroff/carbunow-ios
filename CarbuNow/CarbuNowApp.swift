@@ -44,6 +44,7 @@ struct CarbuNowApp: App {
                 UNUserNotificationCenter.current().setBadgeCount(0)
 
                 Task {
+                    await NotificationInboxStore.shared.syncDeliveredNotifications()
                     await resetBadgeOnServer()
                 }
             }

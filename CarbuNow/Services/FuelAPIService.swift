@@ -4,7 +4,6 @@ import MapKit
 
 final class FuelAPIService {
 
-    // ✅ AJOUT : singleton
     static let shared = FuelAPIService()
 
     private let baseURL = "https://api.carbunow.yannctr.fr"
@@ -18,7 +17,6 @@ final class FuelAPIService {
         self.session = URLSession(configuration: config)
     }
 
-    // MARK: - Stations
 
     func fetchStations(in region: MKCoordinateRegion, limit: Int = 200) async throws -> [FuelStation] {
         let minLat = region.center.latitude - region.span.latitudeDelta / 2
@@ -110,8 +108,6 @@ final class FuelAPIService {
             throw error
         }
     }
-
-    // MARK: - 🔥 HISTORY (AJOUT)
 
     func fetchHistory(
         stationID: String,
