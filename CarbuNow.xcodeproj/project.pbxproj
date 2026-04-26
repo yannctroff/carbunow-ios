@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AA21DCFD2F7C368E00B3C92C /* CarbuNow---Prix-Du-Carburant-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AAFCF6882F6C938000AF3CB2 /* CarbuNow---Prix-Du-Carburant-Info.plist */; };
 		AAFD855C2F7C2D4000C9F1BB /* CarbuNow-WatchApp Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AAFD85522F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AB0000012F9000010085C8CF /* CarbuNowWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AB0000042F9000010085C8CF /* CarbuNowWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -18,6 +18,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = AAFD85512F7C2D3E00C9F1BB;
 			remoteInfo = "CarbuNow-WatchApp Watch App";
+		};
+		AB0000022F9000010085C8CF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AAB4A03A2F6703630085C8CF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AB00000A2F9000010085C8CF;
+			remoteInfo = CarbuNowWidgets;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -33,6 +40,17 @@
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AB0000032F9000010085C8CF /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				AB0000012F9000010085C8CF /* CarbuNowWidgets.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +58,7 @@
 		AAFCF6872F6C867F00AF3CB2 /* CarbuNow - Prix Du Carburant.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "CarbuNow - Prix Du Carburant.entitlements"; sourceTree = "<group>"; };
 		AAFCF6882F6C938000AF3CB2 /* CarbuNow---Prix-Du-Carburant-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "CarbuNow---Prix-Du-Carburant-Info.plist"; sourceTree = "<group>"; };
 		AAFD85522F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CarbuNow-WatchApp Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB0000042F9000010085C8CF /* CarbuNowWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CarbuNowWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -63,6 +82,13 @@
 			);
 			target = AAB4A0412F6703630085C8CF /* CarbuNow - Prix Du Carburant */;
 		};
+		AB00000E2F9000010085C8CF /* Exceptions for "CarbuNowWidgets" folder in "CarbuNowWidgets" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = AB00000A2F9000010085C8CF /* CarbuNowWidgets */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -82,6 +108,14 @@
 			path = "CarbuNow-WatchApp Watch App";
 			sourceTree = "<group>";
 		};
+		AB0000052F9000010085C8CF /* CarbuNowWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AB00000E2F9000010085C8CF /* Exceptions for "CarbuNowWidgets" folder in "CarbuNowWidgets" target */,
+			);
+			path = CarbuNowWidgets;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +133,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AB0000062F9000010085C8CF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -109,6 +150,7 @@
 				AAFCF6872F6C867F00AF3CB2 /* CarbuNow - Prix Du Carburant.entitlements */,
 				AAB4A0442F6703630085C8CF /* CarbuNow */,
 				AAFD85532F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App */,
+				AB0000052F9000010085C8CF /* CarbuNowWidgets */,
 				AAB4A0432F6703630085C8CF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -118,6 +160,7 @@
 			children = (
 				AAB4A0422F6703630085C8CF /* CarbuNow - Prix Du Carburant.app */,
 				AAFD85522F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App.app */,
+				AB0000042F9000010085C8CF /* CarbuNowWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -133,10 +176,12 @@
 				AAB4A03F2F6703630085C8CF /* Frameworks */,
 				AAB4A0402F6703630085C8CF /* Resources */,
 				AAFD855D2F7C2D4000C9F1BB /* Embed Watch Content */,
+				AB0000032F9000010085C8CF /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				AB0000092F9000010085C8CF /* PBXTargetDependency */,
 				AAFD855B2F7C2D4000C9F1BB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
@@ -171,6 +216,28 @@
 			productReference = AAFD85522F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
+		AB00000A2F9000010085C8CF /* CarbuNowWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB00000B2F9000010085C8CF /* Build configuration list for PBXNativeTarget "CarbuNowWidgets" */;
+			buildPhases = (
+				AB0000082F9000010085C8CF /* Sources */,
+				AB0000062F9000010085C8CF /* Frameworks */,
+				AB0000072F9000010085C8CF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				AB0000052F9000010085C8CF /* CarbuNowWidgets */,
+			);
+			name = CarbuNowWidgets;
+			packageProductDependencies = (
+			);
+			productName = CarbuNowWidgets;
+			productReference = AB0000042F9000010085C8CF /* CarbuNowWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -185,6 +252,9 @@
 						CreatedOnToolsVersion = 26.3;
 					};
 					AAFD85512F7C2D3E00C9F1BB = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					AB00000A2F9000010085C8CF = {
 						CreatedOnToolsVersion = 26.3;
 					};
 				};
@@ -206,6 +276,7 @@
 			targets = (
 				AAB4A0412F6703630085C8CF /* CarbuNow - Prix Du Carburant */,
 				AAFD85512F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App */,
+				AB00000A2F9000010085C8CF /* CarbuNowWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -222,7 +293,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA21DCFD2F7C368E00B3C92C /* CarbuNow---Prix-Du-Carburant-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB0000072F9000010085C8CF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,6 +320,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AB0000082F9000010085C8CF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -250,6 +334,11 @@
 			isa = PBXTargetDependency;
 			target = AAFD85512F7C2D3E00C9F1BB /* CarbuNow-WatchApp Watch App */;
 			targetProxy = AAFD855A2F7C2D4000C9F1BB /* PBXContainerItemProxy */;
+		};
+		AB0000092F9000010085C8CF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AB00000A2F9000010085C8CF /* CarbuNowWidgets */;
+			targetProxy = AB0000022F9000010085C8CF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -405,7 +494,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.14.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cattarin.CarbuNow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -448,7 +537,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.14.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cattarin.CarbuNow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -486,7 +575,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.14.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cattarin.CarbuNow.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -523,7 +612,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.14.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cattarin.CarbuNow.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -536,6 +625,54 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		AB00000C2F9000010085C8CF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = CarbuNowWidgets/CarbuNowWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 45;
+				DEVELOPMENT_TEAM = M4S92V6PCK;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = CarbuNowWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CarbuNow;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cattarin.CarbuNow.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		AB00000D2F9000010085C8CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = CarbuNowWidgets/CarbuNowWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 45;
+				DEVELOPMENT_TEAM = M4S92V6PCK;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = CarbuNowWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CarbuNow;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cattarin.CarbuNow.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -565,6 +702,15 @@
 			buildConfigurations = (
 				AAFD855E2F7C2D4000C9F1BB /* Debug */,
 				AAFD855F2F7C2D4000C9F1BB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AB00000B2F9000010085C8CF /* Build configuration list for PBXNativeTarget "CarbuNowWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AB00000C2F9000010085C8CF /* Debug */,
+				AB00000D2F9000010085C8CF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -5,16 +5,35 @@ struct SettingsView: View {
     @ObservedObject private var vehicleStore = VehicleSettingsStore.shared
     @ObservedObject private var priceAlertManager = PriceAlertManager.shared
 
+    let hidesNavigationChrome: Bool
+
     @AppStorage("priceAlert.isEnabled") private var priceAlertIsEnabled = false
     @AppStorage("priceAlert.selectedStationID") private var selectedStationID = ""
     @AppStorage("priceAlert.selectedFuel") private var selectedFuelRawValue = FuelType.gazole.rawValue
 
     @State private var showVehicleEditor = false
     @State private var editingVehicle: VehicleProfile?
+    @State private var showActiveAlertsView = false
+    @State private var showAddAlertView = false
+    @State private var showSavedPlacesView = false
+    @State private var showPersonalHistoryView = false
+
+    init(hidesNavigationChrome: Bool = false) {
+        self.hidesNavigationChrome = hidesNavigationChrome
+    }
 
     var body: some View {
         NavigationStack {
             List {
+                if hidesNavigationChrome {
+                    Text("Réglages")
+                        .font(.system(size: 30, weight: .black, design: .rounded))
+                        .foregroundStyle(.white)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 4, trailing: 16))
+                        .listRowBackground(Color.clear)
+                        .padding(.top, 16)
+                }
+
                 Section("Prix affiché par défaut") {
                     Picker("Carburant par défaut", selection: Binding(
                         get: { viewModel.selectedFuel },
@@ -24,7 +43,7 @@ struct SettingsView: View {
                             Text(fuel.displayName).tag(fuel)
                         }
                     }
-                    .pickerStyle(.navigationLink)
+                    .pickerStyle(.menu)
 
                     Text("Ce carburant sera utilisé par défaut sur la carte et dans la liste.")
                         .font(.footnote)
@@ -102,17 +121,15 @@ struct SettingsView: View {
                     }
                     .padding(.vertical, 4)
 
-                    NavigationLink {
-                        ActiveAlertsListView()
-                            .environmentObject(viewModel)
+                    Button {
+                        showActiveAlertsView = true
                     } label: {
                         Label("Voir les alertes actives", systemImage: "list.bullet.rectangle")
                     }
                     .disabled(priceAlertManager.activeAlerts.isEmpty)
 
-                    NavigationLink {
-                        AddPriceAlertView()
-                            .environmentObject(viewModel)
+                    Button {
+                        showAddAlertView = true
                     } label: {
                         Label("Ajouter une nouvelle alerte", systemImage: "plus.circle.fill")
                     }
@@ -151,6 +168,26 @@ struct SettingsView: View {
                     Label("Le rayon de recherche appliqué affecte uniquement l'onglet Liste", systemImage: "info.circle")
                 }
 
+                Section("Personnalisation") {
+                    Button {
+                        showSavedPlacesView = true
+                    } label: {
+                        Label("Prix autour de mes lieux", systemImage: "mappin.and.ellipse")
+                    }
+
+                    Button {
+                        showPersonalHistoryView = true
+                    } label: {
+                        Label("Historique des consultations des stations", systemImage: "clock.arrow.circlepath")
+                    }
+                }
+
+                Section("Widgets") {
+                    Label("Ajoutez des widgets en cliquant sur + sur l'écran d'accueil de votre iPhone pour voir encore plus rapidement le prix de la station la + proche, la station au meillleur prix autour de votre position et les alertes actives des stations.",
+                        systemImage: "square.grid.2x2")
+                        .font(.footnote)
+                }
+
                 Section("Données") {
                     if let lastRefreshDate = viewModel.lastRefreshDate {
                         HStack {
@@ -171,8 +208,40 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Réglages")
+            .toolbar(hidesNavigationChrome ? .hidden : .visible, for: .navigationBar)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .scrollContentBackground(.hidden)
+            .background(UrbanTheme.background.ignoresSafeArea())
+            .tint(UrbanTheme.accent)
+            .task(id: viewModel.availableStationsForAlerts.map(\.id).joined(separator: "|")) {
+                priceAlertManager.refreshStationNames(using: viewModel.availableStationsForAlerts)
+            }
             .sheet(isPresented: $showVehicleEditor) {
                 VehicleEditorSheet(vehicle: editingVehicle)
+            }
+            .sheet(isPresented: $showActiveAlertsView) {
+                NavigationStack {
+                    ActiveAlertsListView(showsCloseButton: true)
+                        .environmentObject(viewModel)
+                }
+            }
+            .sheet(isPresented: $showAddAlertView) {
+                NavigationStack {
+                    AddPriceAlertView()
+                        .environmentObject(viewModel)
+                }
+            }
+            .sheet(isPresented: $showSavedPlacesView) {
+                NavigationStack {
+                    SavedPlacesView(showsCloseButton: true)
+                        .environmentObject(viewModel)
+                }
+            }
+            .sheet(isPresented: $showPersonalHistoryView) {
+                NavigationStack {
+                    PersonalHistoryView(showsCloseButton: true)
+                        .environmentObject(viewModel)
+                }
             }
         }
     }
@@ -195,7 +264,7 @@ struct SettingsView: View {
                         Text(vehicle.label).tag(vehicle.id.uuidString)
                     }
                 }
-                .pickerStyle(.navigationLink)
+                .pickerStyle(.menu)
 
                 ForEach(vehicleStore.vehicles) { vehicle in
                     Button {
@@ -267,7 +336,8 @@ struct SettingsView: View {
             do {
                 _ = try await priceAlertManager.activateAlert(
                     stationID: selectedStationID,
-                    fuelType: fuel.rawValue.lowercased()
+                    fuelType: fuel.rawValue.lowercased(),
+                    stationName: viewModel.availableStationsForAlerts.first(where: { $0.id == selectedStationID })?.displayName
                 )
             } catch {
                 print("❌ Activation alerte impossible :", error.localizedDescription)
@@ -313,9 +383,16 @@ struct SettingsView: View {
     }
 }
 
-private struct ActiveAlertsListView: View {
+struct ActiveAlertsListView: View {
     @EnvironmentObject private var viewModel: StationsViewModel
     @ObservedObject private var alertManager = PriceAlertManager.shared
+    @Environment(\.dismiss) private var dismiss
+
+    let showsCloseButton: Bool
+
+    init(showsCloseButton: Bool = false) {
+        self.showsCloseButton = showsCloseButton
+    }
 
     var body: some View {
         List {
@@ -356,6 +433,17 @@ private struct ActiveAlertsListView: View {
             }
         }
         .navigationTitle("Alertes actives")
+        .toolbar {
+            if showsCloseButton {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -434,6 +522,15 @@ private struct AddPriceAlertView: View {
             }
         }
         .navigationTitle("Nouvelle alerte")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                }
+            }
+        }
     }
 
     private func createAlert() async {
@@ -445,7 +542,8 @@ private struct AddPriceAlertView: View {
         do {
             _ = try await alertManager.activateAlert(
                 stationID: selectedStationID,
-                fuelType: fuel.rawValue
+                fuelType: fuel.rawValue,
+                stationName: viewModel.availableStationsForAlerts.first(where: { $0.id == selectedStationID })?.displayName
             )
             dismiss()
         } catch {

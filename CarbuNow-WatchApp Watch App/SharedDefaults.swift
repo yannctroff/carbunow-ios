@@ -9,11 +9,16 @@
 import Foundation
 
 enum SharedDefaults {
-    static let appGroupID = "group.com.cattarin.CarbuNow"
+    static let appGroupID = "group.com.cattarin.workhoursapp"
 
     static var shared: UserDefaults {
         UserDefaults(suiteName: appGroupID) ?? .standard
     }
 
     static let defaultFuelKey = "defaultFuel"
+    static let searchRadiusKey = "searchRadiusKm"
+    static let lastKnownLatitudeKey = "lastKnownLatitude"
+    static let lastKnownLongitudeKey = "lastKnownLongitude"
+    static let lastKnownLocationDateKey = "lastKnownLocationDate"
+    static let activeAlertsKey = "active_price_alerts"
 }

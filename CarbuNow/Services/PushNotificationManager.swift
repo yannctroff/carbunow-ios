@@ -23,9 +23,11 @@ final class NotificationInboxStore: ObservableObject {
     static let shared = NotificationInboxStore()
 
     @Published private(set) var items: [StoredNotificationItem] = []
+    @Published private(set) var unreadNotificationIDs: Set<String> = []
 
     private let defaults = UserDefaults.standard
     private let storageKey = "notificationInbox.items"
+    private let unreadStorageKey = "notificationInbox.unreadIDs"
     private let retentionInterval: TimeInterval = 7 * 24 * 60 * 60
 
     private init() {
@@ -33,14 +35,18 @@ final class NotificationInboxStore: ObservableObject {
         pruneExpired()
     }
 
-    func syncDeliveredNotifications() async {
+    var unreadCount: Int {
+        unreadNotificationIDs.count
+    }
+
+    func syncDeliveredNotifications(markNewAsUnread: Bool = true) async {
         let center = UNUserNotificationCenter.current()
         let notifications = await center.deliveredNotifications()
 
         pruneExpired()
 
         for notification in notifications {
-            upsert(notification: notification)
+            upsert(notification: notification, markAsUnread: markNewAsUnread)
         }
 
         save()
@@ -48,7 +54,7 @@ final class NotificationInboxStore: ObservableObject {
 
     func record(notification: UNNotification) {
         pruneExpired()
-        upsert(notification: notification)
+        upsert(notification: notification, markAsUnread: true)
         save()
     }
 
@@ -58,21 +64,38 @@ final class NotificationInboxStore: ObservableObject {
 
         if filtered != items {
             items = filtered
+            unreadNotificationIDs = unreadNotificationIDs.intersection(Set(filtered.map(\.id)))
             save()
         }
     }
 
+    func markAllAsSeen() {
+        guard !unreadNotificationIDs.isEmpty else { return }
+        unreadNotificationIDs.removeAll()
+        save()
+    }
+
+    func delete(_ item: StoredNotificationItem) {
+        items.removeAll { $0.id == item.id }
+        unreadNotificationIDs.remove(item.id)
+        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [item.id])
+        save()
+    }
+
     func clearAll() {
         items = []
+        unreadNotificationIDs.removeAll()
         defaults.removeObject(forKey: storageKey)
+        defaults.removeObject(forKey: unreadStorageKey)
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
     }
 
-    private func upsert(notification: UNNotification) {
+    private func upsert(notification: UNNotification, markAsUnread: Bool) {
         let content = notification.request.content
         let title = cleanedTitle(from: content)
         let message = cleanedMessage(from: content)
         let existingDate = items.first(where: { $0.id == notification.request.identifier })?.receivedAt ?? notification.date
+        let isNewItem = !items.contains(where: { $0.id == notification.request.identifier })
 
         let item = StoredNotificationItem(
             id: notification.request.identifier,
@@ -85,6 +108,10 @@ final class NotificationInboxStore: ObservableObject {
             items[existingIndex] = item
         } else {
             items.append(item)
+        }
+
+        if markAsUnread && isNewItem {
+            unreadNotificationIDs.insert(item.id)
         }
 
         items.sort { $0.receivedAt > $1.receivedAt }
@@ -112,9 +139,12 @@ final class NotificationInboxStore: ObservableObject {
         do {
             items = try JSONDecoder().decode([StoredNotificationItem].self, from: data)
                 .sorted { $0.receivedAt > $1.receivedAt }
+            unreadNotificationIDs = Set(defaults.stringArray(forKey: unreadStorageKey) ?? [])
+            unreadNotificationIDs = unreadNotificationIDs.intersection(Set(items.map(\.id)))
         } catch {
             print("Impossible de relire la boite de notifications :", error.localizedDescription)
             items = []
+            unreadNotificationIDs = []
         }
     }
 
@@ -122,6 +152,7 @@ final class NotificationInboxStore: ObservableObject {
         do {
             let data = try JSONEncoder().encode(items)
             defaults.set(data, forKey: storageKey)
+            defaults.set(Array(unreadNotificationIDs), forKey: unreadStorageKey)
         } catch {
             print("Impossible de sauvegarder la boite de notifications :", error.localizedDescription)
         }

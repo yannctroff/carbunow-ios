@@ -15,8 +15,11 @@ struct HomeView: View {
     @Namespace private var mapScope
 
     @State private var selectedStation: FuelStation?
+    @State private var selectedListStation: FuelStation?
     @State private var region = defaultHomeRegion
     @State private var appliedRegion = defaultHomeRegion
+    @State private var selectedTab: HomeTab = .map
+    @State private var transitionDirection: HorizontalDirection = .rightToLeft
     @State private var cameraPosition: MapCameraPosition = .camera(
         MapCamera(
             centerCoordinate: defaultHomeRegion.center,
@@ -32,6 +35,7 @@ struct HomeView: View {
     @State private var didInitialListLoad = false
     @State private var showCitySearchSheet = false
     @State private var showNotificationCenterSheet = false
+    @State private var showActiveAlertsSheet = false
     @State private var citySearchText = ""
     @State private var isSearchingCity = false
     @State private var citySearchErrorMessage: String?
@@ -39,85 +43,37 @@ struct HomeView: View {
 
     
     var body: some View {
-        TabView {
-            NavigationStack {
-                mapContent
-                    .toolbar(.hidden, for: .navigationBar)
-                    .sheet(isPresented: $showCitySearchSheet) {
-                        citySearchSheet
-                            .presentationDetents([.medium])
-                            .presentationDragIndicator(.visible)
-                    }
-                    .sheet(isPresented: $showNotificationCenterSheet) {
-                        NavigationStack {
-                            NotificationCenterSheetView(inbox: notificationInbox)
-                        }
-                        .presentationDetents([.medium, .large])
-                        .presentationDragIndicator(.visible)
-                    }
-                    .sheet(item: $selectedStation) { station in
-                        NavigationStack {
-                            StationDetailView(station: station, showsCloseButton: true)
-                        }
-                    }
-                    .task {
-                        await handleInitialLoad()
-                    }
-                    .onChange(of: locationManager.authorizationStatus) { _, _ in
-                        Task {
-                            await handleLocationAuthorizationChange()
-                        }
-                    }
-                    .onChange(of: locationManager.currentLocation?.coordinate.latitude) { _, _ in
-                        handleLocationChange()
-                    }
-                    .onChange(of: locationManager.currentLocation?.coordinate.longitude) { _, _ in
-                        handleLocationChange()
-                    }
-                    .onChange(of: regionSnapshot) { _, _ in
-                        handleRegionChange()
-                    }
-            }
-            .tabItem {
-                Label("Carte", systemImage: "map")
-            }
+        ZStack(alignment: .bottom) {
+            ZStack {
+                if selectedTab == .map {
+                    mapScreen
+                        .transition(screenTransition)
+                        .zIndex(1)
+                }
 
-            NavigationStack {
-                listContent
-                    .navigationTitle("Stations")
-                    .task {
-                        await handleInitialListLoad()
-                    }
-                    .refreshable {
-                        await reloadList(force: true)
-                    }
-            }
-            .tabItem {
-                Label {
-                    Text("Liste")
-                        .foregroundStyle(.green)
-                } icon: {
-                    Image(systemName: "list.bullet")
-                        .renderingMode(.template)
-                        .foregroundStyle(.green)
+                if selectedTab == .list {
+                    listScreen
+                        .transition(screenTransition)
+                        .zIndex(1)
+                }
+
+                if selectedTab == .settings {
+                    settingsScreen
+                        .transition(screenTransition)
+                        .zIndex(1)
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
-            NavigationStack {
-                SettingsView()
-                    .navigationTitle("Paramètres")
-            }
-            .tabItem {
-                Label {
-                    Text("Paramètres")
-                        .foregroundStyle(.gray)
-                } icon: {
-                    Image(systemName: "gearshape")
-                        .renderingMode(.template)
-                        .foregroundStyle(.gray)
-                }
-            }
+            navigationDock
+                .padding(.horizontal, 16)
+                .padding(.bottom, 0)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .tint(UrbanTheme.accent)
+        .background(UrbanTheme.background.ignoresSafeArea())
+        .ignoresSafeArea()
+        .animation(.easeInOut(duration: 0.26), value: selectedTab)
         .onAppear {
             locationManager.requestPermission()
             notificationInbox.pruneExpired()
@@ -126,6 +82,134 @@ struct HomeView: View {
                 await notificationInbox.syncDeliveredNotifications()
             }
         }
+        .sheet(isPresented: $showActiveAlertsSheet) {
+            NavigationStack {
+                ActiveAlertsListView(showsCloseButton: true)
+                    .environmentObject(viewModel)
+            }
+        }
+        .sheet(item: $selectedListStation) { station in
+            NavigationStack {
+                StationDetailView(station: station, showsCloseButton: true)
+            }
+        }
+        .onOpenURL { url in
+            handleDeepLink(url)
+        }
+    }
+
+    private var mapScreen: some View {
+        mapContent
+            .sheet(isPresented: $showCitySearchSheet) {
+                citySearchSheet
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.visible)
+            }
+            .sheet(isPresented: $showNotificationCenterSheet) {
+                NavigationStack {
+                    NotificationCenterSheetView(inbox: notificationInbox)
+                }
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+            }
+            .sheet(item: $selectedStation) { station in
+                NavigationStack {
+                    StationDetailView(station: station, showsCloseButton: true)
+                }
+            }
+            .task {
+                await handleInitialLoad()
+            }
+            .onChange(of: locationManager.authorizationStatus) { _, _ in
+                Task {
+                    await handleLocationAuthorizationChange()
+                }
+            }
+            .onChange(of: locationManager.currentLocation?.coordinate.latitude) { _, _ in
+                handleLocationChange()
+            }
+            .onChange(of: locationManager.currentLocation?.coordinate.longitude) { _, _ in
+                handleLocationChange()
+            }
+            .onChange(of: regionSnapshot) { _, _ in
+                handleRegionChange()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea()
+    }
+
+    private var listScreen: some View {
+        listContent
+            .task {
+                await handleInitialListLoad()
+            }
+            .refreshable {
+                await reloadList(force: true)
+            }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea()
+    }
+
+    private var settingsScreen: some View {
+        SettingsView(hidesNavigationChrome: true)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea()
+    }
+
+    private var navigationDock: some View {
+        HStack(spacing: 10) {
+            navigationButton(for: .map, title: "Carte", systemImage: "map.fill")
+            navigationButton(for: .list, title: "Liste", systemImage: "list.bullet")
+            navigationButton(for: .settings, title: "Réglages", systemImage: "gearshape.fill")
+        }
+    }
+
+    private func navigationButton(for tab: HomeTab, title: String, systemImage: String) -> some View {
+        let isSelected = selectedTab == tab
+
+        return Button {
+            guard selectedTab != tab else { return }
+            transitionDirection = tab.index > selectedTab.index ? .rightToLeft : .leftToRight
+            selectedTab = tab
+        } label: {
+            VStack(spacing: 6) {
+                Image(systemName: systemImage)
+                    .font(.system(size: isSelected ? 16 : 15, weight: .black))
+                Text(title)
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+            }
+            .foregroundStyle(isSelected ? Color.black.opacity(0.86) : UrbanTheme.mist)
+            .frame(width: isSelected ? 104 : 88)
+            .padding(.vertical, isSelected ? 13 : 11)
+            .background(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(isSelected ? UrbanTheme.accent : UrbanTheme.panel.opacity(0.82))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .stroke(isSelected ? Color.clear : UrbanTheme.line, lineWidth: 1)
+                    )
+            )
+            .shadow(
+                color: isSelected ? UrbanTheme.accent.opacity(0.22) : .black.opacity(0.18),
+                radius: isSelected ? 14 : 10,
+                y: 6
+            )
+            .scaleEffect(isSelected ? 1 : 0.96)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var screenTransition: AnyTransition {
+        .asymmetric(
+            insertion: .modifier(
+                active: ScreenShiftModifier(offsetX: transitionDirection.insertionOffset, opacity: 0),
+                identity: ScreenShiftModifier(offsetX: 0, opacity: 1)
+            ),
+            removal: .modifier(
+                active: ScreenShiftModifier(offsetX: transitionDirection.removalOffset, opacity: 0),
+                identity: ScreenShiftModifier(offsetX: 0, opacity: 1)
+            )
+        )
     }
 
     private var mapContent: some View {
@@ -149,20 +233,24 @@ struct HomeView: View {
             .onMapCameraChange(frequency: .onEnd) { context in
                 region = context.region
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .ignoresSafeArea()
 
             VStack(spacing: 12) {
-                mapFuelSection
-
                 if let refreshDate = viewModel.lastRefreshDate {
                     Text("Dernière actualisation : \(formattedDate(refreshDate))")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(UrbanTheme.mist)
                         .padding(.horizontal, 14)
-                        .padding(.vertical, 9)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Capsule())
-                        .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+                        .padding(.vertical, 10)
+                        .background(
+                            Capsule(style: .continuous)
+                                .fill(UrbanTheme.panel.opacity(0.92))
+                                .overlay(
+                                    Capsule(style: .continuous)
+                                        .stroke(UrbanTheme.line, lineWidth: 1)
+                                )
+                        )
                 }
 
                 HStack {
@@ -178,14 +266,11 @@ struct HomeView: View {
                             }
                         } label: {
                             Label("Actualiser la zone", systemImage: "arrow.triangle.2.circlepath")
-                                .font(.subheadline.bold())
-                                .padding(.horizontal, 14)
-                                .padding(.vertical, 10)
-                                .background(.regularMaterial)
-                                .clipShape(Capsule())
-                                .shadow(radius: 6)
+                                .font(.system(size: 14, weight: .bold, design: .rounded))
                         }
+                        .buttonStyle(UrbanCTAButtonStyle(tint: UrbanTheme.accent))
                         .padding(.trailing)
+                        .transition(.move(edge: .trailing).combined(with: .opacity))
                     }
                 }
 
@@ -195,66 +280,97 @@ struct HomeView: View {
                     Spacer()
 
                     VStack(spacing: 10) {
+                        mapFuelMenuButton
+
                         Button {
                             notificationInbox.pruneExpired()
+                            notificationInbox.markAllAsSeen()
 
                             Task {
-                                await notificationInbox.syncDeliveredNotifications()
+                                await notificationInbox.syncDeliveredNotifications(markNewAsUnread: false)
                             }
 
                             showNotificationCenterSheet = true
                         } label: {
                             ZStack(alignment: .topTrailing) {
                                 Image(systemName: "bell.badge")
-                                    .font(.title3)
-                                    .foregroundStyle(.primary)
-                                    .padding(12)
-                                    .background(.regularMaterial)
-                                    .clipShape(Circle())
-                                    .shadow(radius: 6)
+                                    .font(.system(size: 15, weight: .bold))
+                                    .frame(width: 16, height: 16)
+                                    .padding(8)
 
-                                if !notificationInbox.items.isEmpty {
-                                    Text(notificationInbox.items.count > 99 ? "99+" : "\(notificationInbox.items.count)")
+                                if notificationInbox.unreadCount > 0 {
+                                    Text(notificationInbox.unreadCount > 99 ? "99+" : "\(notificationInbox.unreadCount)")
                                         .font(.caption2.bold())
                                         .foregroundStyle(.white)
                                         .padding(.horizontal, 6)
                                         .padding(.vertical, 3)
-                                        .background(Color.red, in: Capsule())
+                                        .background(UrbanTheme.danger, in: Capsule())
                                         .offset(x: 8, y: -8)
                                 }
                             }
                         }
+                        .buttonStyle(UrbanFloatingButtonStyle(tint: UrbanTheme.panelSoft))
 
                         Button {
                             recenterOnUserIfPossible(force: true)
                         } label: {
                             Image(systemName: "location.fill")
-                                .font(.title3)
-                                .foregroundStyle(.primary)
-                                .padding(12)
-                                .background(.regularMaterial)
-                                .clipShape(Circle())
-                                .shadow(radius: 6)
+                                .font(.system(size: 15, weight: .bold))
+                                .frame(width: 16, height: 16)
+                                .padding(8)
                         }
+                        .buttonStyle(UrbanFloatingButtonStyle(tint: UrbanTheme.panel))
 
                         Button {
                             showCitySearchSheet = true
                         } label: {
                             Image(systemName: "magnifyingglass")
-                                .font(.title3)
-                                .foregroundStyle(.primary)
-                                .padding(12)
-                                .background(.regularMaterial)
-                                .clipShape(Circle())
-                                .shadow(radius: 6)
+                                .font(.system(size: 15, weight: .bold))
+                                .frame(width: 16, height: 16)
+                                .padding(8)
                         }
+                        .buttonStyle(UrbanFloatingButtonStyle(tint: UrbanTheme.panel))
                     }
                     .padding(.trailing)
-                    .padding(.bottom, 90)
+                    .padding(.bottom, 62)
                 }
             }
-            .safeAreaPadding(.top, 8)
+            .safeAreaPadding(.top, 58)
         }
+    }
+
+    private var mapFuelMenuButton: some View {
+        Menu {
+            ForEach(FuelType.allCases, id: \.self) { fuel in
+                Button {
+                    viewModel.setDefaultFuel(fuel)
+                } label: {
+                    Label(
+                        fuel.displayName,
+                        systemImage: fuel == viewModel.selectedFuel ? "checkmark" : "fuelpump"
+                    )
+                }
+            }
+        } label: {
+            VStack(spacing: 3) {
+                Image(systemName: "fuelpump.fill")
+                    .font(.system(size: 15, weight: .bold))
+                    .frame(width: 16, height: 16)
+
+                Text(viewModel.selectedFuel.displayName)
+                    .font(.system(size: 9, weight: .black, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+            }
+            .frame(width: 36, height: 36)
+            .padding(5)
+        }
+        .buttonStyle(
+            UrbanFloatingButtonStyle(
+                tint: viewModel.selectedFuel.urbanAccent,
+                foreground: .white
+            )
+        )
     }
 
     private var mapFuelSection: some View {
@@ -271,13 +387,13 @@ struct HomeView: View {
             .padding(8)
             .background(
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .fill(.ultraThinMaterial)
+                    .fill(UrbanTheme.panel.opacity(0.95))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .stroke(.white.opacity(0.08), lineWidth: 1)
+                    .stroke(UrbanTheme.line, lineWidth: 1)
             )
-            .shadow(color: .black.opacity(0.18), radius: 10, y: 4)
+            .tint(viewModel.selectedFuel.urbanAccent)
             .padding(.horizontal, 16)
         }
         .padding(.top, 8)
@@ -288,53 +404,67 @@ struct HomeView: View {
         let price = station.price(for: viewModel.selectedFuel)
         let isPriceUnavailable = !isRupture && price == nil
 
-        return VStack(spacing: 3) {
-            Image(systemName: "fuelpump.circle.fill")
-                .font(.title2)
-                .foregroundStyle(.white)
-                .padding(4)
-                .background((isRupture || isPriceUnavailable) ? Color.gray : color)
-                .clipShape(Circle())
-                .shadow(radius: 3)
+        let markerColor = (isRupture || isPriceUnavailable) ? UrbanTheme.panelSoft : color
 
-            if isRupture {
-                Text("Rupture")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.9))
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
-                    .background(
-                        Capsule()
-                            .fill(Color.gray.opacity(0.92))
+        return VStack(spacing: 4) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(markerColor)
+                    .frame(width: 32, height: 32)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .stroke(.white.opacity(0.14), lineWidth: 1)
                     )
-            } else if let price {
-                Text(String(format: "%.3f €", price))
-                    .font(.caption2.bold())
-                    .foregroundStyle(color)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 3)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Capsule())
-            } else {
-                Text("—")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.9))
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
-                    .background(
-                        Capsule()
-                            .fill(Color.gray.opacity(0.92))
-                    )
+                    .rotationEffect(.degrees(45))
+
+                Image(systemName: "fuelpump.fill")
+                    .font(.system(size: 13, weight: .black))
+                    .foregroundStyle(.white)
+            }
+            .padding(.bottom, 2)
+
+            Group {
+                if isRupture {
+                    annotationBadge("Rupture")
+                } else if let price {
+                    annotationBadge(String(format: "%.3f €", price))
+                } else {
+                    annotationBadge("—")
+                }
             }
         }
         .contentShape(Rectangle())
         .onTapGesture {
             selectedStation = station
         }
+        .transition(.scale(scale: 0.92).combined(with: .opacity))
+    }
+
+    private func annotationBadge(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: 11, weight: .bold, design: .rounded))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 4)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(UrbanTheme.panel.opacity(0.96))
+                    .overlay(
+                        Capsule(style: .continuous)
+                            .stroke(.white.opacity(0.08), lineWidth: 1)
+                    )
+            )
     }
 
     private var listContent: some View {
         VStack(spacing: 12) {
+            Text("Stations")
+                .font(.system(size: 30, weight: .black, design: .rounded))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16)
+                .padding(.top, 58)
+
             listFiltersSection
 
             if viewModel.isListLoading {
@@ -356,8 +486,8 @@ struct HomeView: View {
                 Spacer()
             } else {
                 List(viewModel.filteredAndSortedListStations(userLocation: locationManager.currentLocation)) { station in
-                    NavigationLink {
-                        StationDetailView(station: station)
+                    Button {
+                        selectedListStation = station
                     } label: {
                         StationRowView(
                             station: station,
@@ -366,13 +496,18 @@ struct HomeView: View {
                             priceColor: priceColorForList(for: station)
                         )
                     }
+                    .buttonStyle(.plain)
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(UrbanTheme.background)
                 .refreshable {
                     await reloadList(force: true)
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(UrbanTheme.background.ignoresSafeArea())
     }
 
     private var listFiltersSection: some View {
@@ -386,6 +521,7 @@ struct HomeView: View {
                 }
             }
             .pickerStyle(.segmented)
+            .tint(viewModel.selectedFuel.urbanAccent)
 
             Picker("Tri", selection: $viewModel.sortOption) {
                 ForEach(StationSortOption.allCases, id: \.self) { option in
@@ -393,13 +529,16 @@ struct HomeView: View {
                 }
             }
             .pickerStyle(.segmented)
+            .tint(UrbanTheme.accentSoft)
 
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text("Rayon de recherche")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
                     Spacer()
                     Text(viewModel.searchRadiusKm <= 0 ? "Illimité" : "\(Int(viewModel.searchRadiusKm)) km")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(UrbanTheme.mist)
                 }
 
                 Slider(
@@ -410,26 +549,38 @@ struct HomeView: View {
                     in: 0...100,
                     step: 1
                 )
+                .tint(UrbanTheme.accent)
             }
 
             Button {
                 Task {
                     await reloadList(force: true)
                 }
-            } label: {
-                Label("Actualiser la liste", systemImage: "arrow.clockwise")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
+                } label: {
+                    Label("Actualiser la liste", systemImage: "arrow.clockwise")
+                        .frame(maxWidth: .infinity)
+                }
+            .buttonStyle(UrbanCTAButtonStyle())
             
             if let refreshDate = viewModel.lastListRefreshDate {
                 Text("Dernière actualisation : \(formattedDate(refreshDate))")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .foregroundStyle(UrbanTheme.frost)
             }
         }
         .padding(.horizontal)
         .padding(.top)
+        .padding(.bottom, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .fill(UrbanTheme.panel)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                        .stroke(UrbanTheme.line, lineWidth: 1)
+                )
+        )
+        .padding(.horizontal)
+        .padding(.top, 8)
     }
 
     private var citySearchSheet: some View {
@@ -468,6 +619,15 @@ struct HomeView: View {
             .padding()
             .navigationTitle("Rechercher une ville")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showCitySearchSheet = false
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+            }
         }
     }
 
@@ -696,60 +856,214 @@ struct HomeView: View {
         let hue = (1 - ratio) * 0.33
         return Color(hue: hue, saturation: 0.85, brightness: 0.95)
     }
+
+    private func handleDeepLink(_ url: URL) {
+        guard url.scheme?.lowercased() == "carbunow" else { return }
+
+        switch url.host?.lowercased() {
+        case "alerts":
+            selectedTab = .settings
+            showActiveAlertsSheet = true
+
+        case "station":
+            guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                  let stationID = components.queryItems?.first(where: { $0.name == "id" })?.value,
+                  !stationID.isEmpty else { return }
+
+            let latitude = components.queryItems?.first(where: { $0.name == "lat" })?.value.flatMap(Double.init)
+            let longitude = components.queryItems?.first(where: { $0.name == "lon" })?.value.flatMap(Double.init)
+
+            Task {
+                await openStationFromDeepLink(id: stationID, latitude: latitude, longitude: longitude)
+            }
+
+        default:
+            break
+        }
+    }
+
+    @MainActor
+    private func openStationFromDeepLink(id: String, latitude: Double?, longitude: Double?) async {
+        selectedTab = .map
+
+        if let localStation = resolveStation(id: id) {
+            selectedStation = localStation
+            return
+        }
+
+        do {
+            let fetched: [FuelStation]
+
+            if let latitude, let longitude {
+                fetched = try await FuelAPIService.shared.fetchStations(
+                    around: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+                    radiusKm: 5,
+                    limit: 100
+                )
+            } else {
+                let searchCoordinate = locationManager.currentLocation?.coordinate ?? appliedRegion.center
+                fetched = try await FuelAPIService.shared.fetchStations(
+                    around: searchCoordinate,
+                    radiusKm: max(viewModel.searchRadiusKm, 30),
+                    limit: 300
+                )
+            }
+
+            if let station = fetched.first(where: { $0.id == id }) {
+                selectedStation = station
+            }
+        } catch {
+            print("Impossible d'ouvrir la station depuis le widget :", error.localizedDescription)
+        }
+    }
+
+    private func resolveStation(id: String) -> FuelStation? {
+        let merged = viewModel.allStations + viewModel.listStations
+        return merged.first(where: { $0.id == id })
+    }
+}
+
+private enum HomeTab: Hashable {
+    case map
+    case list
+    case settings
+
+    var index: Int {
+        switch self {
+        case .map: return 0
+        case .list: return 1
+        case .settings: return 2
+        }
+    }
+}
+
+private enum HorizontalDirection {
+    case leftToRight
+    case rightToLeft
+
+    var insertionOffset: CGFloat {
+        switch self {
+        case .leftToRight:
+            return -26
+        case .rightToLeft:
+            return 26
+        }
+    }
+
+    var removalOffset: CGFloat {
+        switch self {
+        case .leftToRight:
+            return 26
+        case .rightToLeft:
+            return -26
+        }
+    }
+}
+
+private struct ScreenShiftModifier: ViewModifier {
+    let offsetX: CGFloat
+    let opacity: Double
+
+    func body(content: Content) -> some View {
+        content
+            .offset(x: offsetX)
+            .opacity(opacity)
+    }
 }
 
 private struct NotificationCenterSheetView: View {
     @ObservedObject var inbox: NotificationInboxStore
     @Environment(\.dismiss) private var dismiss
+    private let actionWidth: CGFloat = 104
 
     var body: some View {
-        Group {
-            if inbox.items.isEmpty {
-                ContentUnavailableView(
-                    "Aucune notification recente",
-                    systemImage: "bell.slash",
-                    description: Text("Les notifications recues durant les 7 derniers jours apparaitront ici.")
-                )
-            } else {
-                List(inbox.items) { item in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(item.title)
-                            .font(.headline)
+        VStack(spacing: 0) {
+            notificationHeader
 
-                        if !item.message.isEmpty {
-                            Text(item.message)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+            Group {
+                if inbox.items.isEmpty {
+                    ContentUnavailableView(
+                        "Aucune notification recente",
+                        systemImage: "bell.slash",
+                        description: Text("Les notifications recues durant les 7 derniers jours apparaitront ici.")
+                    )
+                } else {
+                    List(inbox.items) { item in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(item.title)
+                                .font(.headline)
+
+                            if !item.message.isEmpty {
+                                Text(item.message)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Text(formattedDate(item.receivedAt))
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
                         }
-
-                        Text(formattedDate(item.receivedAt))
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
+                        .padding(.vertical, 4)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) {
+                                inbox.delete(item)
+                            } label: {
+                                Label("Supprimer", systemImage: "trash")
+                            }
+                        }
                     }
-                    .padding(.vertical, 4)
+                    .listStyle(.plain)
                 }
-                .listStyle(.plain)
             }
         }
-        .navigationTitle("Notifications")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Fermer") {
-                    dismiss()
-                }
-            }
-
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Tout effacer") {
-                    inbox.clearAll()
-                }
-                .disabled(inbox.items.isEmpty)
-            }
-        }
+        .navigationBarHidden(true)
         .task {
             inbox.pruneExpired()
-            await inbox.syncDeliveredNotifications()
+            inbox.markAllAsSeen()
+            await inbox.syncDeliveredNotifications(markNewAsUnread: false)
+        }
+    }
+
+    private var notificationHeader: some View {
+        VStack(spacing: 0) {
+            ZStack {
+                Text("Notifications")
+                    .font(.headline)
+
+                HStack {
+                    Button("Fermer") {
+                        dismiss()
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(.ultraThinMaterial, in: Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(.white.opacity(0.10), lineWidth: 1)
+                    )
+                    .frame(width: actionWidth, alignment: .leading)
+
+                    Spacer()
+
+                    Button("Tout effacer") {
+                        inbox.clearAll()
+                    }
+                    .disabled(inbox.items.isEmpty)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(.ultraThinMaterial, in: Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(.white.opacity(0.10), lineWidth: 1)
+                    )
+                    .frame(width: actionWidth, alignment: .trailing)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 14)
+
+            Divider()
+                .padding(.horizontal)
         }
     }
 

@@ -42,7 +42,8 @@ final class StationsViewModel: ObservableObject {
             self.selectedFuel = .gazole
         }
 
-        let savedRadius = UserDefaults.standard.double(forKey: "searchRadiusKm")
+        let sharedRadius = SharedDefaults.shared.double(forKey: SharedDefaults.searchRadiusKey)
+        let savedRadius = sharedRadius == 0 ? UserDefaults.standard.double(forKey: SharedDefaults.searchRadiusKey) : sharedRadius
         self.searchRadiusKm = savedRadius == 0 ? 15 : min(max(savedRadius, 0), 100)
 
         WatchConnectivityBridge.shared.syncDefaultFuel(self.selectedFuel)
@@ -167,12 +168,15 @@ final class StationsViewModel: ObservableObject {
         UserDefaults.standard.set(fuel.rawValue, forKey: "defaultFuel")
         SharedDefaults.shared.set(fuel.rawValue, forKey: SharedDefaults.defaultFuelKey)
         WatchConnectivityBridge.shared.syncDefaultFuel(fuel)
+        WidgetSyncCoordinator.reloadWidgets()
     }
 
     func setSearchRadius(_ value: Double) {
         let clamped = min(max(value, 0), 100)
         searchRadiusKm = clamped
-        UserDefaults.standard.set(clamped, forKey: "searchRadiusKm")
+        UserDefaults.standard.set(clamped, forKey: SharedDefaults.searchRadiusKey)
+        SharedDefaults.shared.set(clamped, forKey: SharedDefaults.searchRadiusKey)
+        WidgetSyncCoordinator.reloadWidgets()
     }
 
     func priceBounds(userLocation: CLLocation?, radiusKm: Double? = nil) -> (min: Double, max: Double)? {

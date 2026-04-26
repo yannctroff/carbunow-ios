@@ -10,11 +10,13 @@ final class PriceAlertManager: ObservableObject {
         let stationID: String
         let fuelType: String
         let isEnabled: Bool
+        let stationName: String?
 
-        init(stationID: String, fuelType: String, isEnabled: Bool = true) {
+        init(stationID: String, fuelType: String, isEnabled: Bool = true, stationName: String? = nil) {
             self.stationID = stationID
             self.fuelType = fuelType.lowercased()
             self.isEnabled = isEnabled
+            self.stationName = stationName?.trimmingCharacters(in: .whitespacesAndNewlines)
         }
 
         var id: String {
@@ -47,8 +49,6 @@ final class PriceAlertManager: ObservableObject {
     @Published private(set) var activeAlerts: [ActiveAlert] = []
 
     private let baseURL = "https://api.carbunow.yannctr.fr"
-    private let activeAlertsKey = "active_price_alerts"
-
     private init() {
         loadStoredAlerts()
     }
@@ -59,7 +59,9 @@ final class PriceAlertManager: ObservableObject {
     }
 
     private func loadStoredAlerts() {
-        guard let data = UserDefaults.standard.data(forKey: activeAlertsKey) else {
+        let defaults = SharedDefaults.shared
+
+        guard let data = defaults.data(forKey: SharedDefaults.activeAlertsKey) ?? UserDefaults.standard.data(forKey: SharedDefaults.activeAlertsKey) else {
             activeAlerts = []
             return
         }
@@ -76,23 +78,32 @@ final class PriceAlertManager: ObservableObject {
     private func saveAlerts() {
         do {
             let data = try JSONEncoder().encode(activeAlerts)
-            UserDefaults.standard.set(data, forKey: activeAlertsKey)
+            SharedDefaults.shared.set(data, forKey: SharedDefaults.activeAlertsKey)
+            UserDefaults.standard.set(data, forKey: SharedDefaults.activeAlertsKey)
+            WidgetSyncCoordinator.reloadWidgets()
         } catch {
             print("Impossible de sauvegarder les alertes actives :", error.localizedDescription)
         }
     }
 
     private func deduplicated(_ alerts: [ActiveAlert]) -> [ActiveAlert] {
-        var seen = Set<String>()
-        var result: [ActiveAlert] = []
+        var resultByID: [String: ActiveAlert] = [:]
 
         for alert in alerts {
-            if seen.insert(alert.id).inserted {
-                result.append(alert)
+            if let existing = resultByID[alert.id] {
+                let resolvedName = existing.stationName?.isEmpty == false ? existing.stationName : alert.stationName
+                resultByID[alert.id] = ActiveAlert(
+                    stationID: alert.stationID,
+                    fuelType: alert.fuelType,
+                    isEnabled: alert.isEnabled || existing.isEnabled,
+                    stationName: resolvedName
+                )
+            } else {
+                resultByID[alert.id] = alert
             }
         }
 
-        return result
+        return resultByID.values.sorted { $0.id < $1.id }
     }
 
     func isAlertActive(stationID: String, fuelType: String) -> Bool {
@@ -102,7 +113,9 @@ final class PriceAlertManager: ObservableObject {
 
     func clearLocalAlertsCache() {
         activeAlerts = []
-        UserDefaults.standard.removeObject(forKey: activeAlertsKey)
+        UserDefaults.standard.removeObject(forKey: SharedDefaults.activeAlertsKey)
+        SharedDefaults.shared.removeObject(forKey: SharedDefaults.activeAlertsKey)
+        WidgetSyncCoordinator.reloadWidgets()
     }
 
     func registerDevice(token: String) async {
@@ -169,10 +182,13 @@ final class PriceAlertManager: ObservableObject {
         let mapped = decoded.alerts
             .filter { $0.isEnabled }
             .map {
-                ActiveAlert(
+                let key = "\($0.stationID)|\($0.fuelType.lowercased())"
+                let savedName = activeAlerts.first(where: { $0.id == key })?.stationName
+                return ActiveAlert(
                     stationID: $0.stationID,
                     fuelType: $0.fuelType,
-                    isEnabled: $0.isEnabled
+                    isEnabled: $0.isEnabled,
+                    stationName: savedName
                 )
             }
 
@@ -180,7 +196,7 @@ final class PriceAlertManager: ObservableObject {
         saveAlerts()
     }
 
-    func activateAlert(stationID: String, fuelType: String) async throws -> ActivationResult {
+    func activateAlert(stationID: String, fuelType: String, stationName: String? = nil) async throws -> ActivationResult {
         guard let token = deviceToken, !token.isEmpty else {
             throw NSError(
                 domain: "PriceAlertManager",
@@ -235,8 +251,52 @@ final class PriceAlertManager: ObservableObject {
         )
 
         try? await fetchAlertsFromServer()
+        rememberStationName(stationName, forStationID: stationID, fuelType: normalizedFuelType)
 
         return alreadyActiveBeforeRefresh ? .alreadyActive : .activated
+    }
+
+    func rememberStationName(_ stationName: String?, forStationID stationID: String, fuelType: String) {
+        guard let stationName, !stationName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+
+        let normalizedFuelType = fuelType.lowercased()
+        let alertID = "\(stationID)|\(normalizedFuelType)"
+
+        guard let index = activeAlerts.firstIndex(where: { $0.id == alertID }) else { return }
+
+        if activeAlerts[index].stationName == stationName {
+            return
+        }
+
+        activeAlerts[index] = ActiveAlert(
+            stationID: activeAlerts[index].stationID,
+            fuelType: activeAlerts[index].fuelType,
+            isEnabled: activeAlerts[index].isEnabled,
+            stationName: stationName
+        )
+        saveAlerts()
+    }
+
+    func refreshStationNames(using stations: [FuelStation]) {
+        var didChange = false
+        var updatedAlerts = activeAlerts
+
+        for index in updatedAlerts.indices {
+            if let station = stations.first(where: { $0.id == updatedAlerts[index].stationID }),
+               updatedAlerts[index].stationName != station.displayName {
+                updatedAlerts[index] = ActiveAlert(
+                    stationID: updatedAlerts[index].stationID,
+                    fuelType: updatedAlerts[index].fuelType,
+                    isEnabled: updatedAlerts[index].isEnabled,
+                    stationName: station.displayName
+                )
+                didChange = true
+            }
+        }
+
+        guard didChange else { return }
+        activeAlerts = deduplicated(updatedAlerts)
+        saveAlerts()
     }
 
     func removeAlert(stationID: String, fuelType: String) async throws {

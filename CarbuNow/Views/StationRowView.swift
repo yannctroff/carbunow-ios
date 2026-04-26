@@ -8,70 +8,72 @@ struct StationRowView: View {
     var priceColor: Color = .green
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top, spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(station.displayName)
-                        .font(.headline)
-                        .lineLimit(2)
+        HStack(alignment: .top, spacing: 14) {
+            VStack(alignment: .leading, spacing: 10) {
+                UrbanSectionHeader("Station", subtitle: station.subtitle.isEmpty ? nil : station.subtitle)
 
-                    Text(station.subtitle)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
+                Text(station.displayName)
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                    .lineLimit(2)
 
-                    Text("ID \(station.id)")
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
+                HStack(spacing: 8) {
+                    UrbanMetricChip(text: "\(station.availableFuelTypes.count) carburants")
 
-                    if let updatedAtText = station.updatedAtText {
-                        Text(updatedAtText)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    } else {
-                        Text("Mise à jour inconnue")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
+                    if let distance = station.distance(from: userLocation) {
+                        UrbanMetricChip(text: formattedDistance(distance))
                     }
                 }
 
-                Spacer(minLength: 8)
-
-                if station.shouldShowRuptureBadge(for: selectedFuel) {
-                    Text("Rupture")
-                        .font(.headline)
-                        .foregroundStyle(.gray)
-                        .multilineTextAlignment(.trailing)
-                } else if let price = station.price(for: selectedFuel) {
-                    Text(String(format: "%.3f €/L", price))
-                        .font(.headline)
-                        .foregroundStyle(priceColor)
-                        .multilineTextAlignment(.trailing)
-                } else {
-                    Text("—")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.trailing)
-                }
+                Text(station.updatedAtText ?? "Mise à jour inconnue")
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .foregroundStyle(UrbanTheme.frost)
+                    .lineLimit(1)
             }
 
-            HStack {
-                Label("\(station.availableFuelTypes.count) carburants", systemImage: "fuelpump")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            Spacer(minLength: 12)
 
-                Spacer()
-
-                if let distance = station.distance(from: userLocation) {
-                    Text(formattedDistance(distance))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
+            priceBlock
         }
-        .padding(.vertical, 4)
-        .onAppear {
-            print("📋 [ROW] \(station.displayName) | \(station.updatedAtText ?? "maj=nil")")
+        .urbanCard()
+        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
+    }
+
+    @ViewBuilder
+    private var priceBlock: some View {
+        VStack(alignment: .trailing, spacing: 10) {
+            Text(selectedFuel.displayName)
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .foregroundStyle(selectedFuel.urbanAccent)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 7)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(selectedFuel.urbanAccent.opacity(0.16))
+                )
+
+            if station.shouldShowRuptureBadge(for: selectedFuel) {
+                Text("Rupture")
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundStyle(UrbanTheme.danger)
+                    .multilineTextAlignment(.trailing)
+            } else if let price = station.price(for: selectedFuel) {
+                Text(String(format: "%.3f €/L", price))
+                    .font(.system(size: 22, weight: .heavy, design: .rounded))
+                    .foregroundStyle(priceColor)
+                    .multilineTextAlignment(.trailing)
+            } else {
+                Text("—")
+                    .font(.system(size: 22, weight: .heavy, design: .rounded))
+                    .foregroundStyle(UrbanTheme.frost)
+                    .multilineTextAlignment(.trailing)
+            }
+
+            Text("ID \(station.id)")
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundStyle(UrbanTheme.frost)
         }
     }
 

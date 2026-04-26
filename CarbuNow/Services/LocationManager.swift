@@ -47,7 +47,9 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        currentLocation = locations.last
+        guard let latestLocation = locations.last else { return }
+        currentLocation = latestLocation
+        WidgetSyncCoordinator.storeLatestLocation(latestLocation)
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

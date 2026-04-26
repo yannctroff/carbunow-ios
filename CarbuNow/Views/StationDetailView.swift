@@ -36,11 +36,12 @@ struct StationDetailView: View {
             }
             .padding()
         }
+        .background(UrbanTheme.background.ignoresSafeArea())
         .navigationTitle(station.displayName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if showsCloseButton {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         dismiss()
                     } label: {
@@ -71,6 +72,7 @@ struct StationDetailView: View {
             )
         }
         .task(id: station.id) {
+            StationHistoryStore.shared.recordView(for: station)
             hasLoadedResolvedFuelTypes = false
             resolvedFuelTypes = []
             await loadResolvedFuelTypesIfNeeded()
@@ -96,69 +98,75 @@ struct StationDetailView: View {
             Marker(station.displayName, coordinate: station.coordinate)
         }
         .frame(height: 240)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .stroke(UrbanTheme.line, lineWidth: 1)
+        )
     }
 
     private var infoSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(station.displayName)
-                .font(.title2.bold())
+            UrbanSectionHeader("Station", subtitle: station.subtitle.isEmpty ? nil : station.subtitle)
 
-            Text(station.subtitle)
-                .foregroundStyle(.secondary)
+            Text(station.displayName)
+                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
 
             Text("Station \(station.id)")
                 .font(.footnote)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(UrbanTheme.frost)
 
             if let updatedAtText = station.updatedAtText {
                 Text(updatedAtText)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundStyle(UrbanTheme.frost)
             } else {
                 Text("Mise à jour le : inconnue")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundStyle(UrbanTheme.frost)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .urbanCard()
     }
 
     private var pricesSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Carburants")
-                .font(.headline)
+            UrbanSectionHeader("Carburants", subtitle: "Disponibilité et prix actuels")
 
             if displayedFuels.isEmpty {
                 Text("Aucun carburant actuellement identifié pour cette station.")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(UrbanTheme.frost)
             } else {
                 ForEach(displayedFuels, id: \.self) { fuel in
                     HStack {
                         Text(fuel.displayName)
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
                         Spacer()
 
                         if station.hasActiveRupture(for: fuel) {
                             Text("Rupture")
                                 .bold()
-                                .foregroundStyle(.gray)
+                                .foregroundStyle(UrbanTheme.danger)
                         } else if let price = station.price(for: fuel) {
                             Text(String(format: "%.3f €/L", price))
-                                .bold()
+                                .font(.system(size: 18, weight: .heavy, design: .rounded))
+                                .foregroundStyle(fuel.urbanAccent)
                         } else {
                             Text("—")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(UrbanTheme.frost)
                         }
                     }
 
                     if fuel != displayedFuels.last {
-                        Divider()
+                        Divider().overlay(UrbanTheme.line)
                     }
                 }
             }
         }
-        .padding()
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .urbanCard()
     }
 
     private var historySection: some View {
@@ -175,9 +183,10 @@ struct StationDetailView: View {
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 8)
                                     .background(
-                                        selectedHistoryFuel == fuel ? Color.white.opacity(0.18) : Color.white.opacity(0.08),
+                                        selectedHistoryFuel == fuel ? fuel.urbanAccent.opacity(0.18) : UrbanTheme.panelSoft,
                                         in: Capsule()
                                     )
+                                    .foregroundStyle(.white)
                             }
                             .buttonStyle(.plain)
                         }
@@ -196,8 +205,7 @@ struct StationDetailView: View {
 
     private var estimatedCostSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Estimation du plein")
-                .font(.headline)
+            UrbanSectionHeader("Estimation", subtitle: "Coût et autonomie")
 
             if vehicleStore.vehicles.isEmpty {
                 Text("Ajoute un véhicule dans Réglages pour estimer le plein dans cette fiche station.")
@@ -235,7 +243,7 @@ struct StationDetailView: View {
                             Label("Estimer le plein par rapport à mon autonomie", systemImage: "fuelpump.fill")
                                 .frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(UrbanCTAButtonStyle(tint: selectedVehicle.fuelType.urbanAccent, foreground: .white))
 
                         if let estimation = latestEstimation {
                             Divider()
@@ -250,6 +258,22 @@ struct StationDetailView: View {
 
                             detailRow(title: "Carburant estimé à ajouter", value: formattedLiters(estimation.estimatedLitersToAdd))
                             detailRow(title: "Coût estimé du plein", value: formattedCurrency(estimation.estimatedFillCost))
+
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Compléter jusqu’à")
+                                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                                    .foregroundStyle(UrbanTheme.frost)
+
+                                ForEach(estimation.fillLevelOptions) { option in
+                                    detailRow(
+                                        title: option.title,
+                                        value: option.litersToAdd > 0
+                                        ? "\(formattedLiters(option.litersToAdd)) • \(formattedCurrency(option.cost))"
+                                        : "déjà atteint"
+                                    )
+                                }
+                            }
+                            .padding(.top, 4)
                         } else {
                             Text("Appuyez sur le bouton ci-dessus pour saisir l’autonomie restante, la distance parcourue et la consommation moyenne affichées sur l’ordinateur de bord.")
                                 .font(.footnote)
@@ -271,15 +295,12 @@ struct StationDetailView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .urbanCard()
     }
 
     private var alertsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Alertes de prix")
-                .font(.headline)
+            UrbanSectionHeader("Alertes", subtitle: "Surveiller un carburant")
 
             ForEach(alertableFuels, id: \.self) { fuel in
                 let isActive = alertManager.isAlertActive(
@@ -310,19 +331,17 @@ struct StationDetailView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(UrbanGhostButtonStyle(border: isActive ? fuel.urbanAccent.opacity(0.35) : UrbanTheme.line))
                 .disabled(isSubmittingAlert || isActive)
             }
 
             if alertableFuels.isEmpty {
                 Text("Aucun carburant disponible pour les alertes.")
                     .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(UrbanTheme.frost)
             }
         }
-        .padding()
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .urbanCard()
     }
 
     private var actionsSection: some View {
@@ -333,7 +352,7 @@ struct StationDetailView: View {
                 Label("Ouvrir dans Plans", systemImage: "map.fill")
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(UrbanCTAButtonStyle())
 
             Button {
                 showReportIssueSheet = true
@@ -341,7 +360,7 @@ struct StationDetailView: View {
                 Label("Signaler un problème", systemImage: "exclamationmark.bubble")
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(UrbanGhostButtonStyle())
         }
     }
 
@@ -467,7 +486,8 @@ struct StationDetailView: View {
         do {
             _ = try await alertManager.activateAlert(
                 stationID: station.id,
-                fuelType: fuelType.rawValue
+                fuelType: fuelType.rawValue,
+                stationName: station.displayName
             )
 
             alertMessage = AlertMessage(
@@ -510,13 +530,14 @@ struct StationDetailView: View {
     private func detailRow(title: String, value: String) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Text(title)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(UrbanTheme.frost)
 
             Spacer()
 
             Text(value)
                 .multilineTextAlignment(.trailing)
                 .bold()
+                .foregroundStyle(.white)
         }
     }
 
@@ -700,6 +721,9 @@ private struct AutonomyEstimatorSheet: View {
             averageConsumptionLitersPer100km: averageConsumption,
             remainingRangeKm: remainingRangeKm,
             averageSpeedKmh: parsedAverageSpeed,
+            currentFuelLiters: min(remainingLitersByRange, vehicle.tankCapacityLiters),
+            tankCapacityLiters: vehicle.tankCapacityLiters,
+            pricePerLiter: price,
             estimatedLitersToAdd: estimatedLitersToAdd,
             estimatedFillCost: estimatedLitersToAdd * price
         )
@@ -775,8 +799,38 @@ private struct FillEstimation {
     let averageConsumptionLitersPer100km: Double
     let remainingRangeKm: Double
     let averageSpeedKmh: Double?
+    let currentFuelLiters: Double
+    let tankCapacityLiters: Double
+    let pricePerLiter: Double
     let estimatedLitersToAdd: Double
     let estimatedFillCost: Double
+
+    var fillLevelOptions: [FillLevelEstimate] {
+        [
+            FillLevelEstimate(title: "1/4 plein", fraction: 0.25, currentFuelLiters: currentFuelLiters, tankCapacityLiters: tankCapacityLiters, pricePerLiter: pricePerLiter),
+            FillLevelEstimate(title: "1/2 plein", fraction: 0.50, currentFuelLiters: currentFuelLiters, tankCapacityLiters: tankCapacityLiters, pricePerLiter: pricePerLiter),
+            FillLevelEstimate(title: "3/4 plein", fraction: 0.75, currentFuelLiters: currentFuelLiters, tankCapacityLiters: tankCapacityLiters, pricePerLiter: pricePerLiter),
+            FillLevelEstimate(title: "Plein complet", fraction: 1.00, currentFuelLiters: currentFuelLiters, tankCapacityLiters: tankCapacityLiters, pricePerLiter: pricePerLiter)
+        ]
+    }
+}
+
+private struct FillLevelEstimate: Identifiable {
+    let title: String
+    let fraction: Double
+    let currentFuelLiters: Double
+    let tankCapacityLiters: Double
+    let pricePerLiter: Double
+
+    var id: Double { fraction }
+
+    var litersToAdd: Double {
+        max((tankCapacityLiters * fraction) - currentFuelLiters, 0)
+    }
+
+    var cost: Double {
+        litersToAdd * pricePerLiter
+    }
 }
 
 private struct AlertMessage: Identifiable {
