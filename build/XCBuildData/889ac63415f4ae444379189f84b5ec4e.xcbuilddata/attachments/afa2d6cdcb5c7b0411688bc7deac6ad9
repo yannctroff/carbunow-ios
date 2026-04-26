@@ -1,0 +1,389 @@
+{
+  "" : {
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNow - Prix Du Carburant-primary.dia",
+    "emit-module-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNow - Prix Du Carburant-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNow - Prix Du Carburant-primary-emit-module.dia",
+    "pch" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNow - Prix Du Carburant-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNow - Prix Du Carburant-primary.swiftdeps"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp Watch App/Services/WatchConnectivityBridge.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WatchConnectivityBridge.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WatchConnectivityBridge.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WatchConnectivityBridge.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WatchConnectivityBridge.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WatchConnectivityBridge.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WatchConnectivityBridge.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WatchConnectivityBridge.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WatchConnectivityBridge~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp Watch App/SharedDefaults.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SharedDefaults.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SharedDefaults.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SharedDefaults.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SharedDefaults.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SharedDefaults.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SharedDefaults.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SharedDefaults.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SharedDefaults~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/CarbuNowApp.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNowApp.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNowApp.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNowApp.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNowApp.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNowApp.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNowApp.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNowApp.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/CarbuNowApp~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/ContentView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Design/UrbanTheme.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/UrbanTheme.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/UrbanTheme.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/UrbanTheme.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/UrbanTheme.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/UrbanTheme.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/UrbanTheme.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/UrbanTheme.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/UrbanTheme~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelPrice.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPrice.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPrice.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPrice.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPrice.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPrice.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPrice.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPrice.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPrice~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelPriceHistoryPoint.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPriceHistoryPoint.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPriceHistoryPoint.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPriceHistoryPoint.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPriceHistoryPoint.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPriceHistoryPoint.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPriceHistoryPoint.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPriceHistoryPoint.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelPriceHistoryPoint~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelRupture.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelRupture.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelRupture.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelRupture.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelRupture.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelRupture.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelRupture.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelRupture.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelRupture~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelStation.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelStation.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelStation.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelStation.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelStation.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelStation.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelStation.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelStation.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelStation~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelType.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelType.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelType.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelType.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelType.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelType.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelType.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelType.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelType~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/SavedPlace.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlace.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlace.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlace.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlace.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlace.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlace.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlace.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlace~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/StationHistoryEntry.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryEntry.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryEntry.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryEntry.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryEntry.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryEntry.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryEntry.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryEntry.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryEntry~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/StationIssueType.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationIssueType.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationIssueType.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationIssueType.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationIssueType.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationIssueType.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationIssueType.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationIssueType.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationIssueType~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Resources/PreviewData.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PreviewData.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PreviewData.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PreviewData.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PreviewData.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PreviewData.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PreviewData.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PreviewData.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PreviewData~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/AlertAPI.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AlertAPI.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AlertAPI.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AlertAPI.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AlertAPI.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AlertAPI.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AlertAPI.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AlertAPI.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AlertAPI~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/AppDelegate.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AppDelegate.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AppDelegate.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AppDelegate.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AppDelegate.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AppDelegate.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AppDelegate.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AppDelegate.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/AppDelegate~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/FavoritesStore.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesStore.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesStore.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesStore.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesStore.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesStore.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesStore.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesStore.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesStore~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/FuelAPIService.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelAPIService.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelAPIService.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelAPIService.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelAPIService.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelAPIService.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelAPIService.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelAPIService.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FuelAPIService~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/LocationManager.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/LocationManager.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/LocationManager.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/LocationManager.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/LocationManager.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/LocationManager.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/LocationManager.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/LocationManager.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/LocationManager~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/PriceAlertManager.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PriceAlertManager.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PriceAlertManager.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PriceAlertManager.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PriceAlertManager.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PriceAlertManager.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PriceAlertManager.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PriceAlertManager.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PriceAlertManager~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/PushNotificationManager.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PushNotificationManager.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PushNotificationManager.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PushNotificationManager.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PushNotificationManager.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PushNotificationManager.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PushNotificationManager.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PushNotificationManager.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PushNotificationManager~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/ReportIssueAPI.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueAPI.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueAPI.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueAPI.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueAPI.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueAPI.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueAPI.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueAPI.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueAPI~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/SavedPlacesStore.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesStore.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesStore.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesStore.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesStore.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesStore.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesStore.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesStore.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesStore~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/StationHistoryStore.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryStore.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryStore.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryStore.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryStore.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryStore.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryStore.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryStore.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationHistoryStore~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/VersionChecker.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/VersionChecker.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/VersionChecker.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/VersionChecker.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/VersionChecker.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/VersionChecker.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/VersionChecker.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/VersionChecker.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/VersionChecker~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/WidgetSyncCoordinator.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WidgetSyncCoordinator.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WidgetSyncCoordinator.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WidgetSyncCoordinator.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WidgetSyncCoordinator.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WidgetSyncCoordinator.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WidgetSyncCoordinator.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WidgetSyncCoordinator.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/WidgetSyncCoordinator~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/ViewModels/StationSortOption.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationSortOption.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationSortOption.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationSortOption.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationSortOption.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationSortOption.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationSortOption.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationSortOption.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationSortOption~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/ViewModels/StationsViewModel.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationsViewModel.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationsViewModel.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationsViewModel.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationsViewModel.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationsViewModel.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationsViewModel.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationsViewModel.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationsViewModel~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/FavoritesView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/FavoritesView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/HomeView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/HomeView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/HomeView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/HomeView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/HomeView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/HomeView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/HomeView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/HomeView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/HomeView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/PersonalHistoryView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PersonalHistoryView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PersonalHistoryView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PersonalHistoryView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PersonalHistoryView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PersonalHistoryView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PersonalHistoryView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PersonalHistoryView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/PersonalHistoryView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/ReportIssueView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/ReportIssueView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/SavedPlacesView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SavedPlacesView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/SettingsView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SettingsView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SettingsView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SettingsView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SettingsView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SettingsView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SettingsView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SettingsView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/SettingsView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/StationDetailView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationDetailView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationDetailView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationDetailView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationDetailView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationDetailView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationDetailView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationDetailView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationDetailView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/StationPriceHistoryView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationPriceHistoryView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationPriceHistoryView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationPriceHistoryView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationPriceHistoryView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationPriceHistoryView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationPriceHistoryView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationPriceHistoryView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationPriceHistoryView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/StationRowView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationRowView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationRowView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationRowView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationRowView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationRowView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationRowView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationRowView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/StationRowView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow - Prix Du Carburant.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

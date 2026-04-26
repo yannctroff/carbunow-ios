@@ -1,0 +1,38 @@
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Design/UrbanTheme.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp\ Watch\ App/Services/WatchConnectivityBridge.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp\ Watch\ App/SharedDefaults.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelPrice.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelPriceHistoryPoint.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelRupture.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelStation.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelType.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/SavedPlace.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/StationHistoryEntry.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/StationIssueType.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Resources/PreviewData.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/AlertAPI.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/AppDelegate.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/FavoritesStore.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/FuelAPIService.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/LocationManager.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/PriceAlertManager.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/PushNotificationManager.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/ReportIssueAPI.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/SavedPlacesStore.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/StationHistoryStore.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/VersionChecker.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Services/WidgetSyncCoordinator.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/ViewModels/StationSortOption.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/ViewModels/StationsViewModel.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/FavoritesView.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/HomeView.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/PersonalHistoryView.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/ReportIssueView.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/SavedPlacesView.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/SettingsView.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/StationDetailView.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/StationPriceHistoryView.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Views/StationRowView.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/CarbuNowApp.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/ContentView.swift
+/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow\ -\ Prix\ Du\ Carburant.build/DerivedSources/GeneratedAssetSymbols.swift

@@ -11,8 +11,7 @@ struct SettingsView: View {
     @AppStorage("priceAlert.selectedStationID") private var selectedStationID = ""
     @AppStorage("priceAlert.selectedFuel") private var selectedFuelRawValue = FuelType.gazole.rawValue
 
-    @State private var showVehicleEditor = false
-    @State private var editingVehicle: VehicleProfile?
+    @State private var vehicleEditorRoute: VehicleEditorRoute?
     @State private var showActiveAlertsView = false
     @State private var showAddAlertView = false
     @State private var showSavedPlacesView = false
@@ -28,7 +27,7 @@ struct SettingsView: View {
                 if hidesNavigationChrome {
                     Text("Réglages")
                         .font(.system(size: 30, weight: .black, design: .rounded))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(UrbanTheme.textPrimary)
                         .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 4, trailing: 16))
                         .listRowBackground(Color.clear)
                         .padding(.top, 16)
@@ -64,7 +63,7 @@ struct SettingsView: View {
                         HStack(alignment: .top, spacing: 12) {
                             Image(systemName: priceAlertIsEnabled ? "bell.badge.fill" : "bell.slash")
                                 .font(.title3)
-                                .foregroundColor(priceAlertIsEnabled ? .accentColor : .secondary)
+                                .foregroundStyle(priceAlertIsEnabled ? UrbanTheme.accent : UrbanTheme.frost)
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(priceAlertIsEnabled ? "Notifications de prix activées" : "Notifications de prix désactivées")
                                     .font(.subheadline.weight(.semibold))
@@ -210,14 +209,17 @@ struct SettingsView: View {
             .navigationTitle("Réglages")
             .toolbar(hidesNavigationChrome ? .hidden : .visible, for: .navigationBar)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: 124)
+            }
             .scrollContentBackground(.hidden)
             .background(UrbanTheme.background.ignoresSafeArea())
             .tint(UrbanTheme.accent)
             .task(id: viewModel.availableStationsForAlerts.map(\.id).joined(separator: "|")) {
                 priceAlertManager.refreshStationNames(using: viewModel.availableStationsForAlerts)
             }
-            .sheet(isPresented: $showVehicleEditor) {
-                VehicleEditorSheet(vehicle: editingVehicle)
+            .sheet(item: $vehicleEditorRoute) { route in
+                VehicleEditorSheet(vehicle: route.vehicle)
             }
             .sheet(isPresented: $showActiveAlertsView) {
                 NavigationStack {
@@ -284,17 +286,16 @@ struct SettingsView: View {
 
                             if vehicleStore.selectedVehicleID == vehicle.id.uuidString {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(.tint)
+                                    .foregroundStyle(UrbanTheme.accent)
                             }
                         }
                     }
                     .buttonStyle(.plain)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button("Modifier") {
-                            editingVehicle = vehicle
-                            showVehicleEditor = true
+                            vehicleEditorRoute = .edit(vehicle)
                         }
-                        .tint(.blue)
+                        .tint(UrbanTheme.accent)
 
                         Button("Supprimer", role: .destructive) {
                             vehicleStore.deleteVehicle(vehicle)
@@ -305,8 +306,7 @@ struct SettingsView: View {
             }
 
             Button {
-                editingVehicle = nil
-                showVehicleEditor = true
+                vehicleEditorRoute = .add
             } label: {
                 Label("Ajouter un véhicule", systemImage: "plus.circle.fill")
             }
@@ -380,6 +380,29 @@ struct SettingsView: View {
         formatter.maximumFractionDigits = 1
         let text = formatter.string(from: NSNumber(value: value)) ?? String(format: "%.1f", value)
         return "\(text) L/100"
+    }
+}
+
+private enum VehicleEditorRoute: Identifiable {
+    case add
+    case edit(VehicleProfile)
+
+    var id: String {
+        switch self {
+        case .add:
+            return "add"
+        case .edit(let vehicle):
+            return vehicle.id.uuidString
+        }
+    }
+
+    var vehicle: VehicleProfile? {
+        switch self {
+        case .add:
+            return nil
+        case .edit(let vehicle):
+            return vehicle
+        }
     }
 }
 

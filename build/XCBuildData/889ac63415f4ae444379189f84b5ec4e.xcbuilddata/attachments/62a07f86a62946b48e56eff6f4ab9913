@@ -1,0 +1,59 @@
+{
+  "" : {
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgets-primary.dia",
+    "emit-module-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgets-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgets-primary-emit-module.dia",
+    "pch" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgets-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgets-primary.swiftdeps"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNowWidgets/ActiveAlertsWidget.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/ActiveAlertsWidget.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/ActiveAlertsWidget.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/ActiveAlertsWidget.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/ActiveAlertsWidget.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/ActiveAlertsWidget.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/ActiveAlertsWidget.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/ActiveAlertsWidget.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/ActiveAlertsWidget~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNowWidgets/CarbuNowWidgetsBundle.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgetsBundle.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgetsBundle.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgetsBundle.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgetsBundle.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgetsBundle.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgetsBundle.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgetsBundle.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CarbuNowWidgetsBundle~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNowWidgets/CheapestAroundWidget.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CheapestAroundWidget.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CheapestAroundWidget.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CheapestAroundWidget.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CheapestAroundWidget.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CheapestAroundWidget.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CheapestAroundWidget.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CheapestAroundWidget.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/CheapestAroundWidget~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNowWidgets/NearestStationWidget.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/NearestStationWidget.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/NearestStationWidget.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/NearestStationWidget.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/NearestStationWidget.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/NearestStationWidget.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/NearestStationWidget.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/NearestStationWidget.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/NearestStationWidget~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNowWidgets/WidgetSupport.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/WidgetSupport.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/WidgetSupport.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/WidgetSupport.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/WidgetSupport.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/WidgetSupport.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/WidgetSupport.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/WidgetSupport.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNowWidgets.build/Objects-normal/arm64/WidgetSupport~partial.swiftmodule"
+  }
+}

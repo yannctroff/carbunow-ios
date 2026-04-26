@@ -14,7 +14,7 @@ struct StationRowView: View {
 
                 Text(station.displayName)
                     .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(UrbanTheme.textPrimary)
                     .lineLimit(2)
 
                 HStack(spacing: 8) {

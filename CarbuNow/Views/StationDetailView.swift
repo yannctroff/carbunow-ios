@@ -111,7 +111,7 @@ struct StationDetailView: View {
 
             Text(station.displayName)
                 .font(.system(size: 24, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(UrbanTheme.textPrimary)
 
             Text("Station \(station.id)")
                 .font(.footnote)
@@ -143,7 +143,7 @@ struct StationDetailView: View {
                     HStack {
                         Text(fuel.displayName)
                             .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(UrbanTheme.textPrimary)
                         Spacer()
 
                         if station.hasActiveRupture(for: fuel) {
@@ -186,7 +186,7 @@ struct StationDetailView: View {
                                         selectedHistoryFuel == fuel ? fuel.urbanAccent.opacity(0.18) : UrbanTheme.panelSoft,
                                         in: Capsule()
                                     )
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(UrbanTheme.textPrimary)
                             }
                             .buttonStyle(.plain)
                         }
@@ -537,7 +537,7 @@ struct StationDetailView: View {
             Text(value)
                 .multilineTextAlignment(.trailing)
                 .bold()
-                .foregroundStyle(.white)
+                .foregroundStyle(UrbanTheme.textPrimary)
         }
     }
 

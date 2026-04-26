@@ -1,0 +1,179 @@
+{
+  "" : {
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow-WatchApp Watch App-primary.dia",
+    "emit-module-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow-WatchApp Watch App-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow-WatchApp Watch App-primary-emit-module.dia",
+    "pch" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow-WatchApp Watch App-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow-WatchApp Watch App-primary.swiftdeps"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp Watch App/CarbuNow_WatchAppApp.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow_WatchAppApp.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow_WatchAppApp.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow_WatchAppApp.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow_WatchAppApp.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow_WatchAppApp.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow_WatchAppApp.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow_WatchAppApp.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/CarbuNow_WatchAppApp~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp Watch App/ContentView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp Watch App/Services/WatchConnectivityBridge.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchConnectivityBridge.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchConnectivityBridge.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchConnectivityBridge.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchConnectivityBridge.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchConnectivityBridge.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchConnectivityBridge.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchConnectivityBridge.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchConnectivityBridge~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp Watch App/Services/WatchFuelAPIService.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchFuelAPIService.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchFuelAPIService.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchFuelAPIService.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchFuelAPIService.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchFuelAPIService.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchFuelAPIService.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchFuelAPIService.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchFuelAPIService~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp Watch App/Services/WatchLocationManager.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchLocationManager.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchLocationManager.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchLocationManager.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchLocationManager.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchLocationManager.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchLocationManager.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchLocationManager.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchLocationManager~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp Watch App/SharedDefaults.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/SharedDefaults.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/SharedDefaults.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/SharedDefaults.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/SharedDefaults.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/SharedDefaults.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/SharedDefaults.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/SharedDefaults.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/SharedDefaults~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp Watch App/ViewModels/WatchStationsViewModel.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationsViewModel.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationsViewModel.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationsViewModel.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationsViewModel.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationsViewModel.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationsViewModel.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationsViewModel.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationsViewModel~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp Watch App/Views/WatchRootView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchRootView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchRootView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchRootView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchRootView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchRootView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchRootView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchRootView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchRootView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp Watch App/Views/WatchStationDetailView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationDetailView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationDetailView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationDetailView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationDetailView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationDetailView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationDetailView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationDetailView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationDetailView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow-WatchApp Watch App/Views/WatchStationRowView.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationRowView.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationRowView.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationRowView.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationRowView.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationRowView.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationRowView.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationRowView.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/WatchStationRowView~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelPrice.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPrice.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPrice.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPrice.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPrice.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPrice.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPrice.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPrice.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPrice~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelPriceHistoryPoint.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPriceHistoryPoint.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPriceHistoryPoint.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPriceHistoryPoint.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPriceHistoryPoint.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPriceHistoryPoint.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPriceHistoryPoint.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPriceHistoryPoint.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelPriceHistoryPoint~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelRupture.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelRupture.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelRupture.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelRupture.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelRupture.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelRupture.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelRupture.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelRupture.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelRupture~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelStation.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelStation.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelStation.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelStation.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelStation.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelStation.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelStation.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelStation.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelStation~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/FuelType.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelType.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelType.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelType.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelType.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelType.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelType.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelType.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/FuelType~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/CarbuNow/Models/StationIssueType.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/StationIssueType.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/StationIssueType.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/StationIssueType.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/StationIssueType.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/StationIssueType.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/StationIssueType.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/StationIssueType.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/StationIssueType~partial.swiftmodule"
+  },
+  "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/yann/Documents/CarbuNow/CarbuNow/build/CarbuNow.build/Debug-iphoneos/CarbuNow-WatchApp Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

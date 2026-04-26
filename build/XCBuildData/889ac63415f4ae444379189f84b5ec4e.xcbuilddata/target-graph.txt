@@ -1,0 +1,6 @@
+Target dependency graph (3 targets)
+Target 'CarbuNow - Prix Du Carburant' in project 'CarbuNow'
+➜ Explicit dependency on target 'CarbuNowWidgets' in project 'CarbuNow'
+➜ Explicit dependency on target 'CarbuNow-WatchApp Watch App' in project 'CarbuNow'
+Target 'CarbuNow-WatchApp Watch App' in project 'CarbuNow' (no dependencies)
+Target 'CarbuNowWidgets' in project 'CarbuNow' (no dependencies)

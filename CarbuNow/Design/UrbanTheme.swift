@@ -1,25 +1,68 @@
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 
 enum UrbanTheme {
-    static let ink = Color(red: 0.09, green: 0.10, blue: 0.12)
-    static let panel = Color(red: 0.14, green: 0.15, blue: 0.18)
-    static let panelSoft = Color(red: 0.18, green: 0.19, blue: 0.22)
-    static let line = Color.white.opacity(0.07)
-    static let mist = Color.white.opacity(0.68)
-    static let frost = Color.white.opacity(0.46)
-    static let accent = Color(red: 0.97, green: 0.58, blue: 0.20)
-    static let accentSoft = Color(red: 0.92, green: 0.43, blue: 0.27)
-    static let danger = Color(red: 0.92, green: 0.39, blue: 0.33)
-    static let success = Color(red: 0.25, green: 0.80, blue: 0.56)
+    #if canImport(UIKit)
+    static let ink = Color(uiColor: .label)
+    static let panel = Color(uiColor: .secondarySystemBackground)
+    static let panelSoft = Color(uiColor: .tertiarySystemBackground)
+    static let line = Color(uiColor: .separator).opacity(0.65)
+    static let mist = Color(uiColor: .label).opacity(0.72)
+    static let frost = Color(uiColor: .secondaryLabel)
+    static let textPrimary = Color(uiColor: .label)
+    static let textSecondary = Color(uiColor: .secondaryLabel)
+    static let textTertiary = Color(uiColor: .tertiaryLabel)
 
     static let background = LinearGradient(
         colors: [
-            Color(red: 0.08, green: 0.09, blue: 0.11),
-            Color(red: 0.13, green: 0.14, blue: 0.17)
+            Color(uiColor: .systemBackground),
+            Color(uiColor: .secondarySystemBackground)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
+    #else
+    static let ink = Color.primary
+    static let panel = Color.primary.opacity(0.08)
+    static let panelSoft = Color.primary.opacity(0.12)
+    static let line = Color.primary.opacity(0.12)
+    static let mist = Color.primary.opacity(0.72)
+    static let frost = Color.secondary
+    static let textPrimary = Color.primary
+    static let textSecondary = Color.secondary
+    static let textTertiary = Color.secondary.opacity(0.75)
+
+    static let background = LinearGradient(
+        colors: [Color.clear, Color.primary.opacity(0.06)],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    #endif
+
+    static let accent = Color(red: 0.97, green: 0.58, blue: 0.20)
+    static let accentSoft = Color(red: 0.92, green: 0.43, blue: 0.27)
+    static let danger = Color(red: 0.92, green: 0.39, blue: 0.33)
+    static let success = Color(red: 0.15, green: 0.55, blue: 0.25)
+    static let mapControlBackground = Color(uiColorOrFallback: .systemBackground, fallback: Color.primary.opacity(0.08))
+}
+
+private extension Color {
+    init(uiColorOrFallback uiColor: PlatformColorName, fallback: Color) {
+        #if canImport(UIKit)
+        switch uiColor {
+        case .systemBackground:
+            self = Color(uiColor: .systemBackground)
+        }
+        #else
+        self = fallback
+        #endif
+    }
+}
+
+private enum PlatformColorName {
+    case systemBackground
 }
 
 extension FuelType {
@@ -32,7 +75,7 @@ extension FuelType {
         case .sp98:
             return Color(red: 0.12, green: 0.33, blue: 0.20)
         case .e10:
-            return Color(red: 0.56, green: 0.82, blue: 0.31)
+            return Color(red: 0.36, green: 0.63, blue: 0.18)
         case .e85:
             return Color(red: 0.16, green: 0.27, blue: 0.56)
         case .gplc:
@@ -110,7 +153,7 @@ struct UrbanMetricChip: View {
 
 struct UrbanFloatingButtonStyle: ButtonStyle {
     var tint: Color = UrbanTheme.panel
-    var foreground: Color = .white
+    var foreground: Color = UrbanTheme.textPrimary
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -119,10 +162,10 @@ struct UrbanFloatingButtonStyle: ButtonStyle {
             .padding(.vertical, 10)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(configuration.isPressed ? tint.opacity(0.72) : tint.opacity(0.58))
+                    .fill(configuration.isPressed ? tint.opacity(0.72) : tint.opacity(0.92))
                     .overlay(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                            .stroke(UrbanTheme.line, lineWidth: 1)
                     )
             )
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
@@ -155,7 +198,7 @@ struct UrbanGhostButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 15, weight: .bold, design: .rounded))
-            .foregroundStyle(.white)
+            .foregroundStyle(UrbanTheme.textPrimary)
             .padding(.horizontal, 18)
             .padding(.vertical, 14)
             .background(

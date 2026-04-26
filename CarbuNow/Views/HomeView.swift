@@ -1,6 +1,7 @@
 import SwiftUI
 import MapKit
 import CoreLocation
+import UIKit
 
 private let defaultHomeRegion = MKCoordinateRegion(
     center: CLLocationCoordinate2D(latitude: 44.555, longitude: -0.245),
@@ -8,6 +9,7 @@ private let defaultHomeRegion = MKCoordinateRegion(
 )
 
 struct HomeView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var locationManager: LocationManager
     @EnvironmentObject private var viewModel: StationsViewModel
     @StateObject private var notificationInbox = NotificationInboxStore.shared
@@ -40,16 +42,18 @@ struct HomeView: View {
     @State private var isSearchingCity = false
     @State private var citySearchErrorMessage: String?
     @State private var suppressNextPendingRefresh = false
+    @State private var knownSoldFuelKeys: Set<String> = []
+    @State private var knownAbsentFuelKeys: Set<String> = []
+    @State private var loadingSoldFuelKeys: Set<String> = []
 
     
     var body: some View {
         ZStack(alignment: .bottom) {
             ZStack {
-                if selectedTab == .map {
-                    mapScreen
-                        .transition(screenTransition)
-                        .zIndex(1)
-                }
+                mapScreen
+                    .opacity(selectedTab == .map ? 1 : 0)
+                    .allowsHitTesting(selectedTab == .map)
+                    .zIndex(selectedTab == .map ? 1 : 0)
 
                 if selectedTab == .list {
                     listScreen
@@ -67,7 +71,7 @@ struct HomeView: View {
 
             navigationDock
                 .padding(.horizontal, 16)
-                .padding(.bottom, 0)
+                .padding(.bottom, 10)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .tint(UrbanTheme.accent)
@@ -301,7 +305,7 @@ struct HomeView: View {
                                 if notificationInbox.unreadCount > 0 {
                                     Text(notificationInbox.unreadCount > 99 ? "99+" : "\(notificationInbox.unreadCount)")
                                         .font(.caption2.bold())
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(UrbanTheme.textPrimary)
                                         .padding(.horizontal, 6)
                                         .padding(.vertical, 3)
                                         .background(UrbanTheme.danger, in: Capsule())
@@ -332,10 +336,13 @@ struct HomeView: View {
                         .buttonStyle(UrbanFloatingButtonStyle(tint: UrbanTheme.panel))
                     }
                     .padding(.trailing)
-                    .padding(.bottom, 62)
+                    .padding(.bottom, 78)
                 }
             }
             .safeAreaPadding(.top, 58)
+        }
+        .task(id: ruptureLookupKey) {
+            await refreshRuptureFuelKnowledgeIfNeeded()
         }
     }
 
@@ -368,7 +375,7 @@ struct HomeView: View {
         .buttonStyle(
             UrbanFloatingButtonStyle(
                 tint: viewModel.selectedFuel.urbanAccent,
-                foreground: .white
+                foreground: UrbanTheme.textPrimary
             )
         )
     }
@@ -400,36 +407,33 @@ struct HomeView: View {
     }
 
     private func stationAnnotationView(for station: FuelStation, color: Color) -> some View {
-        let isRupture = station.shouldShowRuptureBadge(for: viewModel.selectedFuel)
         let price = station.price(for: viewModel.selectedFuel)
+        let isRupture = shouldShowMapRupture(for: station, fuel: viewModel.selectedFuel, price: price)
         let isPriceUnavailable = !isRupture && price == nil
-
-        let markerColor = (isRupture || isPriceUnavailable) ? UrbanTheme.panelSoft : color
+        let markerFill = markerBackgroundColor(isUnavailable: isPriceUnavailable, isRupture: isRupture)
 
         return VStack(spacing: 4) {
             ZStack {
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(markerColor)
-                    .frame(width: 32, height: 32)
+                Circle()
+                    .fill(markerFill)
+                    .frame(width: 34, height: 34)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .stroke(.white.opacity(0.14), lineWidth: 1)
+                        Circle()
+                            .stroke(UrbanTheme.line.opacity(colorScheme == .dark ? 0.9 : 0.45), lineWidth: 1)
                     )
-                    .rotationEffect(.degrees(45))
+                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.28 : 0.14), radius: 5, y: 3)
 
-                Image(systemName: "fuelpump.fill")
-                    .font(.system(size: 13, weight: .black))
-                    .foregroundStyle(.white)
+                brandMarkerContent(for: station)
             }
             .padding(.bottom, 2)
 
             Group {
                 if isRupture {
-                    annotationBadge("Rupture")
+                    annotationBadge("Rupture", tint: UrbanTheme.danger, foreground: .white)
                 } else if let price {
-                    annotationBadge(String(format: "%.3f €", price))
+                    annotationBadge(String(format: "%.3f €", price), tint: color, foreground: priceBadgeForeground)
                 } else {
-                    annotationBadge("—")
+                    annotationBadge("—", tint: UrbanTheme.panel, foreground: UrbanTheme.textPrimary)
                 }
             }
         }
@@ -440,27 +444,54 @@ struct HomeView: View {
         .transition(.scale(scale: 0.92).combined(with: .opacity))
     }
 
-    private func annotationBadge(_ text: String) -> some View {
+    @ViewBuilder
+    private func brandMarkerContent(for station: FuelStation) -> some View {
+        if let brand = station.normalizedBrand, UIImage(named: brand.logoAssetName) != nil {
+            Image(brand.logoAssetName)
+                .resizable()
+                .scaledToFit()
+                .padding(4)
+                .frame(width: 30, height: 30)
+        } else {
+            Image(systemName: "fuelpump.fill")
+                .font(.system(size: 14, weight: .black))
+                .foregroundStyle(UrbanTheme.textPrimary)
+        }
+    }
+
+    private func annotationBadge(_ text: String, tint: Color, foreground: Color) -> some View {
         Text(text)
-            .font(.system(size: 11, weight: .bold, design: .rounded))
-            .foregroundStyle(.white)
+            .font(.system(size: 11, weight: .black, design: .rounded))
+            .foregroundStyle(foreground)
             .padding(.horizontal, 7)
             .padding(.vertical, 4)
             .background(
                 Capsule(style: .continuous)
-                    .fill(UrbanTheme.panel.opacity(0.96))
+                    .fill(tint.opacity(colorScheme == .dark ? 0.96 : 0.88))
                     .overlay(
                         Capsule(style: .continuous)
-                            .stroke(.white.opacity(0.08), lineWidth: 1)
+                            .stroke(Color.white.opacity(colorScheme == .dark ? 0.12 : 0.28), lineWidth: 1)
                     )
             )
+            .shadow(color: .black.opacity(colorScheme == .dark ? 0.25 : 0.10), radius: 4, y: 2)
+    }
+
+    private func markerBackgroundColor(isUnavailable: Bool, isRupture: Bool) -> Color {
+        if isUnavailable || isRupture {
+            return UrbanTheme.panelSoft
+        }
+        return colorScheme == .dark ? Color(.secondarySystemBackground) : Color.white
+    }
+
+    private var priceBadgeForeground: Color {
+        colorScheme == .dark ? .black.opacity(0.88) : .white
     }
 
     private var listContent: some View {
         VStack(spacing: 12) {
             Text("Stations")
                 .font(.system(size: 30, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(UrbanTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
                 .padding(.top, 58)
@@ -485,22 +516,28 @@ struct HomeView: View {
                 .padding()
                 Spacer()
             } else {
-                List(viewModel.filteredAndSortedListStations(userLocation: locationManager.currentLocation)) { station in
-                    Button {
-                        selectedListStation = station
-                    } label: {
-                        StationRowView(
-                            station: station,
-                            selectedFuel: viewModel.selectedFuel,
-                            userLocation: locationManager.currentLocation,
-                            priceColor: priceColorForList(for: station)
-                        )
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(viewModel.filteredAndSortedListStations(userLocation: locationManager.currentLocation)) { station in
+                            Button {
+                                selectedListStation = station
+                            } label: {
+                                StationRowView(
+                                    station: station,
+                                    selectedFuel: viewModel.selectedFuel,
+                                    userLocation: locationManager.currentLocation,
+                                    priceColor: priceColorForList(for: station)
+                                )
+                                .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
-                    .buttonStyle(.plain)
+                    .padding(.bottom, 124)
                 }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
-                .background(UrbanTheme.background)
+                .scrollIndicators(.hidden)
+                .background(UrbanTheme.background.ignoresSafeArea())
                 .refreshable {
                     await reloadList(force: true)
                 }
@@ -535,7 +572,7 @@ struct HomeView: View {
                 HStack {
                     Text("Rayon de recherche")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(UrbanTheme.textPrimary)
                     Spacer()
                     Text(viewModel.searchRadiusKm <= 0 ? "Illimité" : "\(Int(viewModel.searchRadiusKm)) km")
                         .foregroundStyle(UrbanTheme.mist)
@@ -632,6 +669,7 @@ struct HomeView: View {
     }
 
     private func handleInitialLoad() async {
+        guard !hasCompletedInitialMapLoad else { return }
         recenterOnUserIfPossible(force: false)
         appliedRegion = region
         hasPendingMapRefresh = false
@@ -779,6 +817,18 @@ struct HomeView: View {
         visibleMapStations.compactMap { $0.price(for: viewModel.selectedFuel) }
     }
 
+    private var ruptureLookupKey: String {
+        let stationIDs = visibleMapStations
+            .filter {
+                $0.price(for: viewModel.selectedFuel) == nil &&
+                $0.hasActiveRupture(for: viewModel.selectedFuel)
+            }
+            .map(\.id)
+            .joined(separator: "|")
+
+        return "\(viewModel.selectedFuel.rawValue)|\(stationIDs)"
+    }
+
     private var regionSnapshot: String {
         let c = region.center
         let s = region.span
@@ -822,6 +872,60 @@ struct HomeView: View {
         return formatter.string(from: date)
     }
 
+    private func soldFuelKey(stationID: String, fuel: FuelType) -> String {
+        "\(stationID)|\(fuel.rawValue)"
+    }
+
+    private func shouldShowMapRupture(for station: FuelStation, fuel: FuelType, price: Double?) -> Bool {
+        guard station.hasActiveRupture(for: fuel) else { return false }
+
+        if price != nil {
+            return true
+        }
+
+        let key = soldFuelKey(stationID: station.id, fuel: fuel)
+        return knownSoldFuelKeys.contains(key)
+    }
+
+    private func refreshRuptureFuelKnowledgeIfNeeded() async {
+        let fuel = viewModel.selectedFuel
+        let candidates = visibleMapStations.filter {
+            $0.price(for: fuel) == nil &&
+            $0.hasActiveRupture(for: fuel)
+        }
+
+        for station in candidates {
+            let key = soldFuelKey(stationID: station.id, fuel: fuel)
+
+            guard !knownSoldFuelKeys.contains(key),
+                  !knownAbsentFuelKeys.contains(key),
+                  !loadingSoldFuelKeys.contains(key) else {
+                continue
+            }
+
+            loadingSoldFuelKeys.insert(key)
+
+            do {
+                let history = try await FuelAPIService.shared.fetchHistory(
+                    stationID: station.id,
+                    fuelType: fuel.rawValue,
+                    days: 365
+                )
+                let hasSoldFuel = history.contains { $0.price != nil }
+
+                if hasSoldFuel {
+                    knownSoldFuelKeys.insert(key)
+                } else {
+                    knownAbsentFuelKeys.insert(key)
+                }
+            } catch {
+                print("Historique rupture indisponible pour \(station.id) \(fuel.rawValue):", error.localizedDescription)
+            }
+
+            loadingSoldFuelKeys.remove(key)
+        }
+    }
+
     private func priceColorForMap(for station: FuelStation, prices: [Double]) -> Color {
         guard let currentPrice = station.price(for: viewModel.selectedFuel),
               let minPrice = prices.min(),
@@ -834,8 +938,7 @@ struct HomeView: View {
         }
 
         let ratio = (currentPrice - minPrice) / (maxPrice - minPrice)
-        let hue = (1 - ratio) * 0.33
-        return Color(hue: hue, saturation: 0.85, brightness: 0.95)
+        return priceScaleColor(ratio: ratio)
     }
 
     private func priceColorForList(for station: FuelStation) -> Color {
@@ -853,8 +956,15 @@ struct HomeView: View {
         }
 
         let ratio = (currentPrice - minPrice) / (maxPrice - minPrice)
+        return priceScaleColor(ratio: ratio)
+    }
+
+    private func priceScaleColor(ratio rawRatio: Double) -> Color {
+        let ratio = min(max(rawRatio, 0), 1)
         let hue = (1 - ratio) * 0.33
-        return Color(hue: hue, saturation: 0.85, brightness: 0.95)
+        let saturation = colorScheme == .dark ? 0.88 : 0.82
+        let brightness = colorScheme == .dark ? 0.98 : 0.78
+        return Color(hue: hue, saturation: saturation, brightness: brightness)
     }
 
     private func handleDeepLink(_ url: URL) {
@@ -876,7 +986,6 @@ struct HomeView: View {
             Task {
                 await openStationFromDeepLink(id: stationID, latitude: latitude, longitude: longitude)
             }
-
         default:
             break
         }
