@@ -17,6 +17,7 @@ struct ReportIssueView: View {
 
     @State private var selectedIssueType: StationIssueType = .badLocation
     @State private var message: String = ""
+    @State private var contactEmail: String = ""
 
     @State private var isSending = false
     @State private var alertMessage: IssueAlertMessage?
@@ -71,6 +72,18 @@ struct ReportIssueView: View {
                         TextEditor(text: $message)
                             .frame(minHeight: 120)
                     }
+                }
+
+                Section("Contact") {
+                    TextField("Adresse e-mail", text: $contactEmail)
+                        .keyboardType(.emailAddress)
+                        .textContentType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+
+                    Text("Cette adresse permettra de te recontacter quand le problème sera résolu.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
 
                 Section("Pièce jointe") {
@@ -170,10 +183,16 @@ struct ReportIssueView: View {
     }
 
     private var canSend: Bool {
+        guard isValidEmail(contactEmail) else { return false }
+
         if selectedIssueType == .other {
             return !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
         return true
+    }
+
+    private var sanitizedContactEmail: String {
+        contactEmail.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     private func sendIssue() async {
@@ -187,6 +206,7 @@ struct ReportIssueView: View {
                 station: station,
                 issueType: selectedIssueType,
                 message: message,
+                contactEmail: sanitizedContactEmail,
                 attachment: selectedAttachment
             )
 
@@ -273,6 +293,15 @@ struct ReportIssueView: View {
         default:
             return "application/octet-stream"
         }
+    }
+
+    private func isValidEmail(_ email: String) -> Bool {
+        let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        let pattern = #"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$"#
+        return trimmedEmail.range(
+            of: pattern,
+            options: [.regularExpression, .caseInsensitive]
+        ) != nil
     }
 }
 

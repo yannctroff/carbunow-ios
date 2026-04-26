@@ -272,6 +272,15 @@ enum StationBrand: String, Hashable {
         }
     }
 
+    var usesWideMapMarker: Bool {
+        switch self {
+        case .intermarché:
+            return true
+        default:
+            return false
+        }
+    }
+
     var logoURL: URL? {
         switch self {
         case .totalEnergies, .totalAccess:

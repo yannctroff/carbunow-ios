@@ -80,43 +80,6 @@ struct SettingsView: View {
                             Spacer()
                         }
 
-                        if !priceAlertManager.activeAlerts.isEmpty {
-                            VStack(alignment: .leading, spacing: 6) {
-                                ForEach(Array(priceAlertManager.activeAlerts.prefix(3))) { alert in
-                                    if let station = viewModel.availableStationsForAlerts.first(where: { $0.id == alert.stationID }),
-                                       let fuel = FuelType(rawValue: alert.fuelType.lowercased()) {
-                                        HStack(spacing: 8) {
-                                            Circle()
-                                                .fill(.tint)
-                                                .frame(width: 6, height: 6)
-
-                                            Text("\(fuel.displayName) • \(station.displayName)")
-                                                .font(.footnote)
-                                                .foregroundStyle(.secondary)
-                                                .lineLimit(1)
-                                        }
-                                    } else if let fuel = FuelType(rawValue: alert.fuelType.lowercased()) {
-                                        HStack(spacing: 8) {
-                                            Circle()
-                                                .fill(.tint)
-                                                .frame(width: 6, height: 6)
-
-                                            Text("\(fuel.displayName) • Station \(alert.stationID)")
-                                                .font(.footnote)
-                                                .foregroundStyle(.secondary)
-                                                .lineLimit(1)
-                                        }
-                                    }
-                                }
-
-                                if priceAlertManager.activeAlerts.count > 3 {
-                                    Text("+ \(priceAlertManager.activeAlerts.count - 3) autre\(priceAlertManager.activeAlerts.count - 3 > 1 ? "s" : "")")
-                                        .font(.footnote)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                            .padding(.top, 2)
-                        }
                     }
                     .padding(.vertical, 4)
 
@@ -410,6 +373,7 @@ struct ActiveAlertsListView: View {
     @EnvironmentObject private var viewModel: StationsViewModel
     @ObservedObject private var alertManager = PriceAlertManager.shared
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedStation: FuelStation?
 
     let showsCloseButton: Bool
 
@@ -427,30 +391,37 @@ struct ActiveAlertsListView: View {
                 )
             } else {
                 ForEach(alertManager.activeAlerts) { alert in
-                    VStack(alignment: .leading, spacing: 6) {
-                        if let station = viewModel.availableStationsForAlerts.first(where: { $0.id == alert.stationID }) {
-                            Text(station.displayName)
-                                .font(.body.weight(.semibold))
-                        } else {
-                            Text("Station \(alert.stationID)")
-                                .font(.body.weight(.semibold))
+                    if let station = station(for: alert) {
+                        Button {
+                            selectedStation = station
+                        } label: {
+                            ActiveAlertRow(alert: alert, station: station)
                         }
-
-                        if let fuel = FuelType(rawValue: alert.fuelType.lowercased()) {
-                            Text(fuel.displayName)
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .swipeActions(edge: .trailing) {
-                        Button("Supprimer", role: .destructive) {
-                            Task {
-                                try? await alertManager.removeAlert(
-                                    stationID: alert.stationID,
-                                    fuelType: alert.fuelType
-                                )
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                        .buttonStyle(.plain)
+                        .swipeActions(edge: .trailing) {
+                            Button("Supprimer", role: .destructive) {
+                                Task {
+                                    try? await alertManager.removeAlert(
+                                        stationID: alert.stationID,
+                                        fuelType: alert.fuelType
+                                    )
+                                }
                             }
                         }
+                    } else {
+                        ActiveAlertRow(alert: alert, station: nil)
+                            .swipeActions(edge: .trailing) {
+                                Button("Supprimer", role: .destructive) {
+                                    Task {
+                                        try? await alertManager.removeAlert(
+                                            stationID: alert.stationID,
+                                            fuelType: alert.fuelType
+                                        )
+                                    }
+                                }
+                            }
                     }
                 }
             }
@@ -467,6 +438,46 @@ struct ActiveAlertsListView: View {
                 }
             }
         }
+        .sheet(item: $selectedStation) { station in
+            NavigationStack {
+                StationDetailView(station: station, showsCloseButton: true)
+            }
+        }
+    }
+
+    private func station(for alert: PriceAlertManager.ActiveAlert) -> FuelStation? {
+        viewModel.availableStationsForAlerts.first { $0.id == alert.stationID }
+    }
+}
+
+private struct ActiveAlertRow: View {
+    let alert: PriceAlertManager.ActiveAlert
+    let station: FuelStation?
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: station == nil ? "bell.badge" : "fuelpump.fill")
+                .font(.body.weight(.bold))
+                .foregroundStyle(UrbanTheme.accent)
+                .frame(width: 28, height: 28)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(station?.displayName ?? alert.stationName ?? "Station \(alert.stationID)")
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(.primary)
+
+                if let fuel = FuelType(rawValue: alert.fuelType.lowercased()) {
+                    Text(fuel.displayName)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+        .padding(.vertical, 4)
     }
 }
 

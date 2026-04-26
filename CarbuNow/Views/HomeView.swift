@@ -13,6 +13,7 @@ struct HomeView: View {
     @EnvironmentObject private var locationManager: LocationManager
     @EnvironmentObject private var viewModel: StationsViewModel
     @StateObject private var notificationInbox = NotificationInboxStore.shared
+    @StateObject private var citySearchCompleter = FranceAddressSearchCompleter()
 
     @Namespace private var mapScope
 
@@ -45,6 +46,7 @@ struct HomeView: View {
     @State private var knownSoldFuelKeys: Set<String> = []
     @State private var knownAbsentFuelKeys: Set<String> = []
     @State private var loadingSoldFuelKeys: Set<String> = []
+    @State private var openingStationIDs: Set<String> = []
 
     
     var body: some View {
@@ -94,7 +96,11 @@ struct HomeView: View {
         }
         .sheet(item: $selectedListStation) { station in
             NavigationStack {
-                StationDetailView(station: station, showsCloseButton: true)
+                StationDetailView(
+                    station: station,
+                    showsCloseButton: true,
+                    initiallyResolvedFuelTypes: confirmedFuelTypes(for: station)
+                )
             }
         }
         .onOpenURL { url in
@@ -118,7 +124,11 @@ struct HomeView: View {
             }
             .sheet(item: $selectedStation) { station in
                 NavigationStack {
-                    StationDetailView(station: station, showsCloseButton: true)
+                    StationDetailView(
+                        station: station,
+                        showsCloseButton: true,
+                        initiallyResolvedFuelTypes: confirmedFuelTypes(for: station)
+                    )
                 }
             }
             .task {
@@ -411,22 +421,9 @@ struct HomeView: View {
         let isRupture = shouldShowMapRupture(for: station, fuel: viewModel.selectedFuel, price: price)
         let isPriceUnavailable = !isRupture && price == nil
         let markerFill = markerBackgroundColor(isUnavailable: isPriceUnavailable, isRupture: isRupture)
+        let markerFrame = markerFrame(for: station)
 
         return VStack(spacing: 4) {
-            ZStack {
-                Circle()
-                    .fill(markerFill)
-                    .frame(width: 34, height: 34)
-                    .overlay(
-                        Circle()
-                            .stroke(UrbanTheme.line.opacity(colorScheme == .dark ? 0.9 : 0.45), lineWidth: 1)
-                    )
-                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.28 : 0.14), radius: 5, y: 3)
-
-                brandMarkerContent(for: station)
-            }
-            .padding(.bottom, 2)
-
             Group {
                 if isRupture {
                     annotationBadge("Rupture", tint: UrbanTheme.danger, foreground: .white)
@@ -436,10 +433,26 @@ struct HomeView: View {
                     annotationBadge("—", tint: UrbanTheme.panel, foreground: UrbanTheme.textPrimary)
                 }
             }
+
+            ZStack {
+                RoundedRectangle(cornerRadius: markerFrame.height / 2, style: .continuous)
+                    .fill(markerFill)
+                    .frame(width: markerFrame.width, height: markerFrame.height)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: markerFrame.height / 2, style: .continuous)
+                            .stroke(UrbanTheme.line.opacity(colorScheme == .dark ? 0.9 : 0.45), lineWidth: 1)
+                    )
+                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.28 : 0.14), radius: 5, y: 3)
+
+                brandMarkerContent(for: station)
+            }
+            .padding(.top, 2)
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            selectedStation = station
+            Task {
+                await openStationDetail(station)
+            }
         }
         .transition(.scale(scale: 0.92).combined(with: .opacity))
     }
@@ -447,16 +460,33 @@ struct HomeView: View {
     @ViewBuilder
     private func brandMarkerContent(for station: FuelStation) -> some View {
         if let brand = station.normalizedBrand, UIImage(named: brand.logoAssetName) != nil {
+            let logoFrame = markerLogoFrame(for: brand)
+
             Image(brand.logoAssetName)
                 .resizable()
                 .scaledToFit()
-                .padding(4)
-                .frame(width: 30, height: 30)
+                .frame(width: logoFrame.width, height: logoFrame.height)
         } else {
             Image(systemName: "fuelpump.fill")
                 .font(.system(size: 14, weight: .black))
                 .foregroundStyle(UrbanTheme.textPrimary)
         }
+    }
+
+    private func markerFrame(for station: FuelStation) -> CGSize {
+        guard station.normalizedBrand?.usesWideMapMarker == true else {
+            return CGSize(width: 34, height: 34)
+        }
+
+        return CGSize(width: 52, height: 34)
+    }
+
+    private func markerLogoFrame(for brand: StationBrand) -> CGSize {
+        if brand.usesWideMapMarker {
+            return CGSize(width: 44, height: 18)
+        }
+
+        return CGSize(width: 27, height: 27)
     }
 
     private func annotationBadge(_ text: String, tint: Color, foreground: Color) -> some View {
@@ -520,7 +550,9 @@ struct HomeView: View {
                     LazyVStack(spacing: 0) {
                         ForEach(viewModel.filteredAndSortedListStations(userLocation: locationManager.currentLocation)) { station in
                             Button {
-                                selectedListStation = station
+                                Task {
+                                    await openListStationDetail(station)
+                                }
                             } label: {
                                 StationRowView(
                                     station: station,
@@ -623,10 +655,13 @@ struct HomeView: View {
     private var citySearchSheet: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                TextField("Ville ou code postal (33000, Bordeaux, 750000, Paris,...)", text: $citySearchText)
+                TextField("Adresse, ville ou code postal en France", text: $citySearchText)
                     .textFieldStyle(.roundedBorder)
                     .textInputAutocapitalization(.words)
                     .disableAutocorrection(true)
+                    .onChange(of: citySearchText) { _, newValue in
+                        citySearchCompleter.update(query: newValue)
+                    }
 
                 if let citySearchErrorMessage {
                     Text(citySearchErrorMessage)
@@ -634,9 +669,44 @@ struct HomeView: View {
                         .foregroundStyle(.red)
                 }
 
+                if !citySearchCompleter.completions.isEmpty {
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            ForEach(citySearchCompleter.completions, id: \.completionIdentifier) { completion in
+                                Button {
+                                    citySearchText = completion.displayTitle
+                                    Task {
+                                        await searchCity(completion: completion)
+                                    }
+                                } label: {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(completion.title)
+                                            .font(.body.weight(.semibold))
+                                            .foregroundStyle(.primary)
+                                            .lineLimit(1)
+
+                                        if !completion.subtitle.isEmpty {
+                                            Text(completion.subtitle)
+                                                .font(.footnote)
+                                                .foregroundStyle(.secondary)
+                                                .lineLimit(2)
+                                        }
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.vertical, 10)
+                                }
+                                .buttonStyle(.plain)
+
+                                Divider()
+                            }
+                        }
+                    }
+                    .frame(maxHeight: 220)
+                }
+
                 Button {
                     Task {
-                        await searchCity()
+                        await searchCity(completion: nil)
                     }
                 } label: {
                     HStack {
@@ -654,7 +724,7 @@ struct HomeView: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle("Rechercher une ville")
+            .navigationTitle("Rechercher en France")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -664,6 +734,12 @@ struct HomeView: View {
                         Image(systemName: "xmark")
                     }
                 }
+            }
+            .onAppear {
+                citySearchCompleter.update(query: citySearchText)
+            }
+            .onDisappear {
+                citySearchCompleter.clear()
             }
         }
     }
@@ -734,22 +810,24 @@ struct HomeView: View {
         lastListReloadLocation = locationManager.currentLocation
     }
 
-    private func searchCity() async {
+    private func searchCity(completion: MKLocalSearchCompletion?) async {
         let query = citySearchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !query.isEmpty else { return }
+        guard completion != nil || !query.isEmpty else { return }
 
         isSearchingCity = true
         citySearchErrorMessage = nil
         defer { isSearchingCity = false }
 
-        let request = MKLocalSearch.Request()
-        request.naturalLanguageQuery = query
-        request.resultTypes = .address
-
         do {
-            let response = try await MKLocalSearch(request: request).start()
-            guard let item = response.mapItems.first else {
-                citySearchErrorMessage = "Aucun résultat."
+            let results: [MKMapItem]
+            if let completion {
+                results = try await FranceAddressSearchCompleter.search(completion: completion)
+            } else {
+                results = try await FranceAddressSearchCompleter.search(query: query)
+            }
+
+            guard let item = results.first else {
+                citySearchErrorMessage = "Aucun résultat en France."
                 return
             }
 
@@ -771,15 +849,20 @@ struct HomeView: View {
             cameraPosition = cameraPosition(for: searchedRegion, distance: 12000)
             hasPendingMapRefresh = false
             showCitySearchSheet = false
+            citySearchCompleter.clear()
 
             await viewModel.loadStations(in: searchedRegion, force: true)
             hasCompletedInitialMapLoad = true
         } catch {
-            citySearchErrorMessage = error.localizedDescription
+            citySearchErrorMessage = "Recherche impossible ou aucun résultat en France."
         }
     }
 
     private var visibleMapStations: [FuelStation] {
+        Array(mapRegionStations.filter(shouldShowStationOnMap).prefix(mapStationDisplayLimit))
+    }
+
+    private var mapRegionStations: [FuelStation] {
         let latMin = appliedRegion.center.latitude - appliedRegion.span.latitudeDelta / 2
         let latMax = appliedRegion.center.latitude + appliedRegion.span.latitudeDelta / 2
         let lonMin = appliedRegion.center.longitude - appliedRegion.span.longitudeDelta / 2
@@ -794,6 +877,10 @@ struct HomeView: View {
             station.longitude >= lonMin && station.longitude <= lonMax
         }
 
+        return insideRegion
+    }
+
+    private var mapStationDisplayLimit: Int {
         let limit: Int
         let maxSpan = max(appliedRegion.span.latitudeDelta, appliedRegion.span.longitudeDelta)
 
@@ -810,7 +897,7 @@ struct HomeView: View {
             limit = 8
         }
 
-        return Array(insideRegion.prefix(limit))
+        return limit
     }
 
     private var visibleMapPrices: [Double] {
@@ -818,7 +905,7 @@ struct HomeView: View {
     }
 
     private var ruptureLookupKey: String {
-        let stationIDs = visibleMapStations
+        let stationIDs = mapRegionStations
             .filter {
                 $0.price(for: viewModel.selectedFuel) == nil &&
                 $0.hasActiveRupture(for: viewModel.selectedFuel)
@@ -884,12 +971,23 @@ struct HomeView: View {
         }
 
         let key = soldFuelKey(stationID: station.id, fuel: fuel)
-        return knownSoldFuelKeys.contains(key)
+        return !knownAbsentFuelKeys.contains(key)
+    }
+
+    private func shouldShowStationOnMap(_ station: FuelStation) -> Bool {
+        let fuel = viewModel.selectedFuel
+
+        guard station.price(for: fuel) == nil, station.hasActiveRupture(for: fuel) else {
+            return true
+        }
+
+        let key = soldFuelKey(stationID: station.id, fuel: fuel)
+        return !knownAbsentFuelKeys.contains(key)
     }
 
     private func refreshRuptureFuelKnowledgeIfNeeded() async {
         let fuel = viewModel.selectedFuel
-        let candidates = visibleMapStations.filter {
+        let candidates = mapRegionStations.filter {
             $0.price(for: fuel) == nil &&
             $0.hasActiveRupture(for: fuel)
         }
@@ -903,26 +1001,77 @@ struct HomeView: View {
                 continue
             }
 
-            loadingSoldFuelKeys.insert(key)
+            _ = await resolveSoldFuelStatus(stationID: station.id, fuel: fuel)
+        }
+    }
 
-            do {
-                let history = try await FuelAPIService.shared.fetchHistory(
-                    stationID: station.id,
-                    fuelType: fuel.rawValue,
-                    days: 365
-                )
-                let hasSoldFuel = history.contains { $0.price != nil }
+    private func openStationDetail(_ station: FuelStation) async {
+        guard !openingStationIDs.contains(station.id) else { return }
 
-                if hasSoldFuel {
-                    knownSoldFuelKeys.insert(key)
-                } else {
-                    knownAbsentFuelKeys.insert(key)
-                }
-            } catch {
-                print("Historique rupture indisponible pour \(station.id) \(fuel.rawValue):", error.localizedDescription)
+        openingStationIDs.insert(station.id)
+        defer { openingStationIDs.remove(station.id) }
+
+        await resolveActiveRuptureFuels(for: station)
+        selectedStation = station
+    }
+
+    private func openListStationDetail(_ station: FuelStation) async {
+        guard !openingStationIDs.contains(station.id) else { return }
+
+        openingStationIDs.insert(station.id)
+        defer { openingStationIDs.remove(station.id) }
+
+        await resolveActiveRuptureFuels(for: station)
+        selectedListStation = station
+    }
+
+    private func confirmedFuelTypes(for station: FuelStation) -> Set<FuelType> {
+        Set(
+            FuelType.allCases.filter { fuel in
+                station.price(for: fuel) != nil ||
+                knownSoldFuelKeys.contains(soldFuelKey(stationID: station.id, fuel: fuel))
+            }
+        )
+    }
+
+    private func resolveActiveRuptureFuels(for station: FuelStation) async {
+        let fuels = FuelType.allCases.filter { fuel in
+            station.price(for: fuel) == nil && station.hasActiveRupture(for: fuel)
+        }
+
+        for fuel in fuels {
+            _ = await resolveSoldFuelStatus(stationID: station.id, fuel: fuel)
+        }
+    }
+
+    private func resolveSoldFuelStatus(stationID: String, fuel: FuelType) async -> Bool {
+        let key = soldFuelKey(stationID: stationID, fuel: fuel)
+
+        if knownSoldFuelKeys.contains(key) { return true }
+        if knownAbsentFuelKeys.contains(key) { return false }
+        if loadingSoldFuelKeys.contains(key) { return false }
+
+        loadingSoldFuelKeys.insert(key)
+        defer { loadingSoldFuelKeys.remove(key) }
+
+        do {
+            let history = try await FuelAPIService.shared.fetchHistory(
+                stationID: stationID,
+                fuelType: fuel.rawValue,
+                days: 365
+            )
+            let hasSoldFuel = history.contains { $0.price != nil }
+
+            if hasSoldFuel {
+                knownSoldFuelKeys.insert(key)
+            } else {
+                knownAbsentFuelKeys.insert(key)
             }
 
-            loadingSoldFuelKeys.remove(key)
+            return hasSoldFuel
+        } catch {
+            print("Historique rupture indisponible pour \(stationID) \(fuel.rawValue):", error.localizedDescription)
+            return false
         }
     }
 
@@ -996,7 +1145,7 @@ struct HomeView: View {
         selectedTab = .map
 
         if let localStation = resolveStation(id: id) {
-            selectedStation = localStation
+            await openStationDetail(localStation)
             return
         }
 
@@ -1019,7 +1168,7 @@ struct HomeView: View {
             }
 
             if let station = fetched.first(where: { $0.id == id }) {
-                selectedStation = station
+                await openStationDetail(station)
             }
         } catch {
             print("Impossible d'ouvrir la station depuis le widget :", error.localizedDescription)

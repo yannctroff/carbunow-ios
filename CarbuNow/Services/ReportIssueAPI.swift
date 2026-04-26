@@ -43,6 +43,7 @@ final class ReportIssueAPI {
         station: FuelStation,
         issueType: StationIssueType,
         message: String,
+        contactEmail: String,
         attachment: ReportIssueAttachment?
     ) async throws {
         guard let url = URL(string: "\(baseURL)/reports/issues") else {
@@ -69,6 +70,7 @@ final class ReportIssueAPI {
             "issue_type": issueType.rawValue,
             "issue_type_label": issueType.title,
             "message": message.trimmingCharacters(in: .whitespacesAndNewlines),
+            "contact_email": contactEmail.trimmingCharacters(in: .whitespacesAndNewlines),
             "app_version": appVersion,
             "build_number": buildNumber,
             "ios_version": systemVersion,

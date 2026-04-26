@@ -22,6 +22,7 @@ struct StationDetailView: View {
 
     let station: FuelStation
     var showsCloseButton: Bool = false
+    var initiallyResolvedFuelTypes: Set<FuelType> = []
 
     var body: some View {
         ScrollView {
@@ -218,7 +219,7 @@ struct StationDetailView: View {
             } else if let selectedVehicle = vehicleStore.selectedVehicle {
                 let fuel = selectedVehicle.fuelType
 
-                if station.hasActiveRupture(for: fuel) {
+                if station.hasActiveRupture(for: fuel), stationHasConfirmedFuel(fuel) {
                     Text("Le \(fuel.displayName) est en rupture dans cette station.")
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -369,7 +370,7 @@ struct StationDetailView: View {
             return resolvedFuelTypes
         }
 
-        return FuelType.allCases.filter { station.price(for: $0) != nil }
+        return initiallyKnownFuels
     }
 
     private var historyFuels: [FuelType] {
@@ -412,9 +413,7 @@ struct StationDetailView: View {
             isLoadingResolvedFuelTypes = true
         }
 
-        let fuelsWithCurrentPrice = Set(
-            FuelType.allCases.filter { station.price(for: $0) != nil }
-        )
+        let fuelsKnownAtOpen = Set(initiallyKnownFuels)
 
         do {
             let fuelsWithHistory = try await withThrowingTaskGroup(of: FuelType?.self) { group in
@@ -442,7 +441,7 @@ struct StationDetailView: View {
                 return result
             }
 
-            let merged = fuelsWithCurrentPrice.union(fuelsWithHistory)
+            let merged = fuelsKnownAtOpen.union(fuelsWithHistory)
             let ordered = FuelType.allCases.filter { merged.contains($0) }
 
             await MainActor.run {
@@ -454,11 +453,21 @@ struct StationDetailView: View {
             print("Erreur chargement carburants résolus:", error)
 
             await MainActor.run {
-                resolvedFuelTypes = FuelType.allCases.filter { fuelsWithCurrentPrice.contains($0) }
+                resolvedFuelTypes = initiallyKnownFuels
                 hasLoadedResolvedFuelTypes = true
                 isLoadingResolvedFuelTypes = false
             }
         }
+    }
+
+    private var initiallyKnownFuels: [FuelType] {
+        FuelType.allCases.filter {
+            station.price(for: $0) != nil || initiallyResolvedFuelTypes.contains($0)
+        }
+    }
+
+    private func stationHasConfirmedFuel(_ fuel: FuelType) -> Bool {
+        displayedFuels.contains(fuel)
     }
     
 //    private var displayedFuels: [FuelType] {
