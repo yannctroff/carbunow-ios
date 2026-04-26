@@ -424,16 +424,6 @@ struct HomeView: View {
         let markerFrame = markerFrame(for: station)
 
         return VStack(spacing: 4) {
-            Group {
-                if isRupture {
-                    annotationBadge("Rupture", tint: UrbanTheme.danger, foreground: .white)
-                } else if let price {
-                    annotationBadge(String(format: "%.3f €", price), tint: color, foreground: priceBadgeForeground)
-                } else {
-                    annotationBadge("—", tint: UrbanTheme.panel, foreground: UrbanTheme.textPrimary)
-                }
-            }
-
             ZStack {
                 RoundedRectangle(cornerRadius: markerFrame.height / 2, style: .continuous)
                     .fill(markerFill)
@@ -446,7 +436,16 @@ struct HomeView: View {
 
                 brandMarkerContent(for: station)
             }
-            .padding(.top, 2)
+
+            Group {
+                if isRupture {
+                    annotationBadge("Rupture", tint: UrbanTheme.danger, foreground: .white)
+                } else if let price {
+                    annotationBadge(String(format: "%.3f €", price), tint: color, foreground: priceBadgeForeground)
+                } else {
+                    annotationBadge("—", tint: UrbanTheme.panel, foreground: UrbanTheme.textPrimary)
+                }
+            }
         }
         .contentShape(Rectangle())
         .onTapGesture {

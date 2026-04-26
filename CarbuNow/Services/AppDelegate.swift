@@ -14,6 +14,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         print("🚀 didFinishLaunching")
+        LaunchDebug.log(context: "AppDelegate didFinishLaunching")
 
         UNUserNotificationCenter.current().delegate = self
 

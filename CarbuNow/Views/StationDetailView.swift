@@ -286,6 +286,11 @@ struct StationDetailView: View {
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Text("Ces informations sont à titres indicatives et ne peuvent réfleter la réalité. A utiliser avec prudence.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 } else {

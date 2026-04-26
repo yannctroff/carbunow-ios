@@ -13,6 +13,10 @@ struct CarbuNowApp: App {
     @StateObject private var versionChecker = VersionChecker()
     private let priceAlertManager = PriceAlertManager.shared
 
+    init() {
+        LaunchDebug.log(context: "SwiftUI App init")
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -73,4 +77,5 @@ struct CarbuNowApp: App {
             print("reset badge server error:", error)
         }
     }
+
 }
