@@ -103,7 +103,7 @@ struct NearestStationProvider: TimelineProvider {
                 stationID: nearest.id,
                 latitude: nearest.latitude,
                 longitude: nearest.longitude,
-                stationName: nearest.displayName,
+                stationName: nearest.compactName,
                 priceText: price.map { String(format: "%.3f €/L", $0) } ?? "Prix indisponible",
                 detailText: price == nil ? "Station la plus proche sans prix pour ce carburant." : "Station la plus proche autour de toi.",
                 fuelType: price == nil ? nil : selectedFuel,
@@ -145,8 +145,16 @@ struct NearestStationWidget: Widget {
         }
         .configurationDisplayName("Station la plus proche")
         .description("Affiche la station la plus proche de ta derniere position connue.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies(Self.supportedFamilies)
         .contentMarginsDisabled()
+    }
+
+    private static var supportedFamilies: [WidgetFamily] {
+        #if os(watchOS)
+        return [.accessoryCircular, .accessoryRectangular, .accessoryInline]
+        #else
+        return [.systemSmall, .systemMedium]
+        #endif
     }
 }
 
@@ -181,22 +189,64 @@ private struct NearestStationWidgetView: View {
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
-        WidgetShell(
-            icon: "mappin.and.ellipse",
-            eyebrow: "Station la plus proche"
-        ) {
-            if let stationName = entry.stationName {
-                content(stationName: stationName)
-            } else {
-                emptyState
+        if family.isAccessory {
+            accessoryBody
+        } else {
+            WidgetShell(
+                icon: "mappin.and.ellipse",
+                eyebrow: "Station la plus proche"
+            ) {
+                if let stationName = entry.stationName {
+                    content(stationName: stationName)
+                } else {
+                    emptyState
+                }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var accessoryBody: some View {
+        switch family {
+        case .accessoryCircular:
+            VStack(spacing: 3) {
+                Image(systemName: "mappin.and.ellipse")
+                    .font(.system(size: 16, weight: .bold))
+                Text(entry.statusText ?? "--")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .minimumScaleFactor(0.7)
+                    .lineLimit(1)
+            }
+
+        case .accessoryInline:
+            Label("\(entry.statusText ?? "--") · \(entry.priceText)", systemImage: "mappin.and.ellipse")
+
+        case .accessoryRectangular:
+            VStack(alignment: .leading, spacing: 3) {
+                Text(entry.stationName ?? "Station proche")
+                    .font(.headline)
+                    .lineLimit(1)
+
+                Text(entry.priceText)
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .lineLimit(1)
+
+                Text(entry.statusText ?? entry.detailText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+        default:
+            EmptyView()
         }
     }
 
     private func content(stationName: String) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(stationName)
-                .font(.system(size: family == .systemSmall ? 15 : 16, weight: .semibold, design: .rounded))
+                .font(.system(size: family.isSystemSmall ? 15 : 16, weight: .semibold, design: .rounded))
                 .foregroundStyle(.white)
                 .lineLimit(2)
 
@@ -204,7 +254,7 @@ private struct NearestStationWidgetView: View {
                 WidgetPriceLine(
                     priceText: entry.priceText,
                     trend: entry.priceTrend,
-                    size: family == .systemSmall ? 29 : 31
+                    size: family.isSystemSmall ? 29 : 31
                 )
 
                 Text(subtitleText)
@@ -229,13 +279,13 @@ private struct NearestStationWidgetView: View {
     private var emptyState: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(entry.priceText)
-                .font(.system(size: family == .systemSmall ? 22 : 24, weight: .bold, design: .rounded))
+                .font(.system(size: family.isSystemSmall ? 22 : 24, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
 
             Text(entry.detailText)
                 .font(.system(size: 13, weight: .regular, design: .rounded))
                 .foregroundStyle(.white.opacity(0.64))
-                .lineLimit(family == .systemSmall ? 3 : 2)
+                .lineLimit(family.isSystemSmall ? 3 : 2)
 
             if let statusText = entry.statusText {
                 WidgetMetricPill(text: statusText)
@@ -245,7 +295,7 @@ private struct NearestStationWidgetView: View {
     }
 
     private var subtitleText: String {
-        if family == .systemSmall {
+        if family.isSystemSmall {
             return entry.detailText
         }
 

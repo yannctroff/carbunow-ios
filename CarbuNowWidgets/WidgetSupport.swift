@@ -106,6 +106,7 @@ struct WidgetStation: Decodable, Identifiable {
     let city: String?
     let address: String?
     let name: String?
+    let brand: String?
     let prices: [WidgetFuelPrice]
 
     var displayName: String {
@@ -123,6 +124,18 @@ struct WidgetStation: Decodable, Identifiable {
         }
 
         return cityPart.isEmpty ? "Station \(id)" : cityPart
+    }
+
+    var compactName: String {
+        if let name, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return name
+        }
+
+        if let brand, !brand.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return brand
+        }
+
+        return "Station \(id)"
     }
 
     func price(for fuel: WidgetFuelType) -> Double? {
@@ -324,5 +337,24 @@ struct WidgetPriceLine: View {
                     .offset(y: -2)
             }
         }
+    }
+}
+
+extension WidgetFamily {
+    var isAccessory: Bool {
+        switch self {
+        case .accessoryCircular, .accessoryRectangular, .accessoryInline:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isSystemSmall: Bool {
+        #if os(watchOS)
+        return false
+        #else
+        return self == .systemSmall
+        #endif
     }
 }

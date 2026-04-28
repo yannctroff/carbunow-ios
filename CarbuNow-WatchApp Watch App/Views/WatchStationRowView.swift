@@ -14,6 +14,18 @@ struct WatchStationRowView: View {
     let selectedFuel: FuelType
     let userLocation: CLLocation?
 
+    private var stationName: String {
+        if let name = station.name?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty {
+            return name
+        }
+
+        if let brand = station.brand?.trimmingCharacters(in: .whitespacesAndNewlines), !brand.isEmpty {
+            return brand
+        }
+
+        return "Station \(station.id)"
+    }
+
     private var priceText: String {
         if station.shouldShowRuptureBadge(for: selectedFuel) {
             return "Rupture"
@@ -28,7 +40,7 @@ struct WatchStationRowView: View {
 
     private var priceColor: Color {
         if station.shouldShowRuptureBadge(for: selectedFuel) {
-            return .gray
+            return .red
         }
 
         if station.price(for: selectedFuel) != nil {
@@ -50,7 +62,7 @@ struct WatchStationRowView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(station.displayName)
+            Text(stationName)
                 .font(.headline)
                 .lineLimit(2)
 

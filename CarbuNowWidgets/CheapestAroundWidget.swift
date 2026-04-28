@@ -112,7 +112,7 @@ struct CheapestAroundProvider: TimelineProvider {
                 stationID: cheapest.id,
                 latitude: cheapest.latitude,
                 longitude: cheapest.longitude,
-                stationName: cheapest.displayName,
+                stationName: cheapest.compactName,
                 priceText: String(format: "%.3f €/L", price),
                 detailText: formattedDistance(distance),
                 fuelType: selectedFuel,
@@ -154,8 +154,16 @@ struct CheapestAroundWidget: Widget {
         }
         .configurationDisplayName("Meilleur prix autour de moi")
         .description("Affiche la station la moins chere autour de ta derniere position connue.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies(Self.supportedFamilies)
         .contentMarginsDisabled()
+    }
+
+    private static var supportedFamilies: [WidgetFamily] {
+        #if os(watchOS)
+        return [.accessoryCircular, .accessoryRectangular, .accessoryInline]
+        #else
+        return [.systemSmall, .systemMedium]
+        #endif
     }
 }
 
@@ -207,15 +215,58 @@ private struct CheapestAroundWidgetView: View {
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
-        WidgetShell(
-            icon: "location.fill",
-            eyebrow: "Meilleur prix autour"
-        ) {
-            if let stationName = entry.stationName {
-                content(stationName: stationName)
-            } else {
-                emptyState
+        if family.isAccessory {
+            accessoryBody
+        } else {
+            WidgetShell(
+                icon: "location.fill",
+                eyebrow: "Meilleur prix autour"
+            ) {
+                if let stationName = entry.stationName {
+                    content(stationName: stationName)
+                } else {
+                    emptyState
+                }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var accessoryBody: some View {
+        switch family {
+        case .accessoryCircular:
+            Gauge(value: gaugeValue) {
+                Image(systemName: "fuelpump.fill")
+            } currentValueLabel: {
+                Text(entry.fuelType?.displayName ?? "--")
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .minimumScaleFactor(0.7)
+            }
+            .gaugeStyle(.accessoryCircular)
+            .tint(entry.fuelType?.accent ?? .green)
+
+        case .accessoryInline:
+            Label("\(entry.fuelType?.displayName ?? "Prix") \(entry.priceText)", systemImage: "fuelpump.fill")
+
+        case .accessoryRectangular:
+            VStack(alignment: .leading, spacing: 3) {
+                Text(entry.stationName ?? "Meilleur prix")
+                    .font(.headline)
+                    .lineLimit(1)
+
+                Text("\(entry.fuelType?.displayName ?? "Prix") · \(entry.priceText)")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .lineLimit(1)
+
+                Text(entry.detailText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+        default:
+            EmptyView()
         }
     }
 
@@ -223,7 +274,7 @@ private struct CheapestAroundWidgetView: View {
     private func content(stationName: String) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(stationName)
-                .font(.system(size: family == .systemSmall ? 15 : 16, weight: .semibold, design: .rounded))
+                .font(.system(size: family.isSystemSmall ? 15 : 16, weight: .semibold, design: .rounded))
                 .foregroundStyle(.white)
                 .lineLimit(2)
 
@@ -231,7 +282,7 @@ private struct CheapestAroundWidgetView: View {
                 WidgetPriceLine(
                     priceText: entry.priceText,
                     trend: entry.priceTrend,
-                    size: family == .systemSmall ? 29 : 31
+                    size: family.isSystemSmall ? 29 : 31
                 )
 
                 Text(subtitleText)
@@ -247,7 +298,7 @@ private struct CheapestAroundWidgetView: View {
 
                 WidgetMetricPill(text: entry.detailText)
 
-                if family != .systemSmall, let statusText = entry.statusText {
+                if !family.isSystemSmall, let statusText = entry.statusText {
                     WidgetMetricPill(text: statusText)
                 }
             }
@@ -258,13 +309,13 @@ private struct CheapestAroundWidgetView: View {
     private var emptyState: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(entry.priceText)
-                .font(.system(size: family == .systemSmall ? 22 : 24, weight: .bold, design: .rounded))
+                .font(.system(size: family.isSystemSmall ? 22 : 24, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
 
             Text(entry.detailText)
                 .font(.system(size: 13, weight: .regular, design: .rounded))
                 .foregroundStyle(.white.opacity(0.64))
-                .lineLimit(family == .systemSmall ? 3 : 2)
+                .lineLimit(family.isSystemSmall ? 3 : 2)
 
             if let statusText = entry.statusText {
                 WidgetMetricPill(text: statusText)
@@ -274,10 +325,18 @@ private struct CheapestAroundWidgetView: View {
     }
 
     private var subtitleText: String {
-        if family == .systemSmall {
+        if family.isSystemSmall {
             return "Selon ton carburant et ton rayon."
         }
 
         return "Station la moins chere autour de ta derniere position connue."
+    }
+
+    private var gaugeValue: Double {
+        guard let price = Double(entry.priceText.replacingOccurrences(of: " €/L", with: "")) else {
+            return 0.5
+        }
+
+        return min(max((price - 1.2) / 1.2, 0), 1)
     }
 }

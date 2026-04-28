@@ -79,4 +79,40 @@ final class WatchFuelAPIService {
         let decoder = JSONDecoder()
         return try decoder.decode([FuelStation].self, from: data)
     }
+
+    func fetchHistory(
+        stationID: String,
+        fuelType: String,
+        days: Int
+    ) async throws -> [FuelPriceHistoryPoint] {
+        guard var components = URLComponents(string: "\(baseURL)/stations/\(stationID)/history") else {
+            throw URLError(.badURL)
+        }
+
+        components.queryItems = [
+            URLQueryItem(name: "fuel_type", value: fuelType),
+            URLQueryItem(name: "days", value: String(days))
+        ]
+
+        guard let url = components.url else {
+            throw URLError(.badURL)
+        }
+
+        let (data, response) = try await session.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let body = String(data: data, encoding: .utf8) ?? ""
+            throw NSError(
+                domain: "WatchFuelAPIService",
+                code: httpResponse.statusCode,
+                userInfo: [NSLocalizedDescriptionKey: "Erreur API history \(httpResponse.statusCode) : \(body)"]
+            )
+        }
+
+        return try JSONDecoder().decode([FuelPriceHistoryPoint].self, from: data)
+    }
 }

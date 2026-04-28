@@ -14,12 +14,32 @@ struct WatchStationDetailView: View {
     let selectedFuel: FuelType
     let userLocation: CLLocation?
 
+    @State private var resolvedFuelTypes: [FuelType] = []
+    @State private var hasLoadedResolvedFuelTypes = false
+    @State private var isLoadingResolvedFuelTypes = false
+
+    private var stationName: String {
+        if let name = station.name?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty {
+            return name
+        }
+
+        if let brand = station.brand?.trimmingCharacters(in: .whitespacesAndNewlines), !brand.isEmpty {
+            return brand
+        }
+
+        return "Station \(station.id)"
+    }
+
     private var displayedFuels: [FuelType] {
-        FuelType.allCases.filter { station.price(for: $0) != nil }
+        if !resolvedFuelTypes.isEmpty {
+            return resolvedFuelTypes
+        }
+
+        return initiallyKnownFuels
     }
 
     private var priceText: String {
-        if station.shouldShowRuptureBadge(for: selectedFuel) {
+        if shouldShowRupture(for: selectedFuel) {
             return "Rupture"
         }
 
@@ -31,8 +51,8 @@ struct WatchStationDetailView: View {
     }
 
     private var selectedFuelPriceColor: Color {
-        if station.shouldShowRuptureBadge(for: selectedFuel) {
-            return .gray
+        if shouldShowRupture(for: selectedFuel) {
+            return .red
         }
 
         if station.price(for: selectedFuel) != nil {
@@ -55,14 +75,8 @@ struct WatchStationDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
-                Text(station.displayName)
+                Text(stationName)
                     .font(.headline)
-
-                if !station.subtitle.isEmpty {
-                    Text(station.subtitle)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(selectedFuel.displayName)
@@ -97,7 +111,10 @@ struct WatchStationDetailView: View {
                                 Text(fuel.displayName)
                                 Spacer()
 
-                                if let price = station.price(for: fuel) {
+                                if shouldShowRupture(for: fuel) {
+                                    Text("Rupture")
+                                        .foregroundStyle(.red)
+                                } else if let price = station.price(for: fuel) {
                                     Text(String(format: "%.3f €/L", price))
                                 } else {
                                     Text("—")
@@ -115,5 +132,62 @@ struct WatchStationDetailView: View {
         }
         .navigationTitle("Station")
         .navigationBarTitleDisplayMode(.inline)
+        .task(id: station.id) {
+            hasLoadedResolvedFuelTypes = false
+            resolvedFuelTypes = []
+            await loadResolvedFuelTypesIfNeeded()
+        }
+    }
+
+    private var initiallyKnownFuels: [FuelType] {
+        FuelType.allCases.filter { station.price(for: $0) != nil }
+    }
+
+    private func shouldShowRupture(for fuel: FuelType) -> Bool {
+        station.hasActiveRupture(for: fuel) && displayedFuels.contains(fuel)
+    }
+
+    private func loadResolvedFuelTypesIfNeeded() async {
+        guard !hasLoadedResolvedFuelTypes, !isLoadingResolvedFuelTypes else { return }
+
+        isLoadingResolvedFuelTypes = true
+        defer { isLoadingResolvedFuelTypes = false }
+
+        let fuelsKnownAtOpen = Set(initiallyKnownFuels)
+        let stationID = station.id
+
+        do {
+            let fuelsWithHistory = try await withThrowingTaskGroup(of: FuelType?.self) { group in
+                for fuel in FuelType.allCases {
+                    group.addTask {
+                        let history = try await WatchFuelAPIService.shared.fetchHistory(
+                            stationID: stationID,
+                            fuelType: fuel.rawValue,
+                            days: 365
+                        )
+
+                        return history.contains { $0.price != nil } ? fuel : nil
+                    }
+                }
+
+                var result = Set<FuelType>()
+
+                for try await fuel in group {
+                    if let fuel {
+                        result.insert(fuel)
+                    }
+                }
+
+                return result
+            }
+
+            let merged = fuelsKnownAtOpen.union(fuelsWithHistory)
+            resolvedFuelTypes = FuelType.allCases.filter { merged.contains($0) }
+            hasLoadedResolvedFuelTypes = true
+        } catch {
+            print("Erreur chargement carburants résolus Watch:", error)
+            resolvedFuelTypes = initiallyKnownFuels
+            hasLoadedResolvedFuelTypes = true
+        }
     }
 }

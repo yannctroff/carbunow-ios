@@ -87,8 +87,16 @@ struct ActiveAlertsWidget: Widget {
         }
         .configurationDisplayName("Alertes actives")
         .description("Affiche la station et le carburant de ta premiere alerte active.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies(Self.supportedFamilies)
         .contentMarginsDisabled()
+    }
+
+    private static var supportedFamilies: [WidgetFamily] {
+        #if os(watchOS)
+        return [.accessoryCircular, .accessoryRectangular, .accessoryInline]
+        #else
+        return [.systemSmall, .systemMedium]
+        #endif
     }
 }
 
@@ -97,15 +105,55 @@ private struct ActiveAlertsWidgetView: View {
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
-        WidgetShell(
-            icon: "bell.badge.fill",
-            eyebrow: "Alertes actives"
-        ) {
-            if let stationName = entry.stationName {
-                filledState(stationName: stationName)
-            } else {
-                emptyState
+        if family.isAccessory {
+            accessoryBody
+        } else {
+            WidgetShell(
+                icon: "bell.badge.fill",
+                eyebrow: "Alertes actives"
+            ) {
+                if let stationName = entry.stationName {
+                    filledState(stationName: stationName)
+                } else {
+                    emptyState
+                }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var accessoryBody: some View {
+        switch family {
+        case .accessoryCircular:
+            VStack(spacing: 3) {
+                Image(systemName: "bell.badge.fill")
+                    .font(.system(size: 15, weight: .bold))
+                Text(compactCountText.isEmpty ? "0" : compactCountText)
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+            }
+
+        case .accessoryInline:
+            Label(entry.countText, systemImage: "bell.badge.fill")
+
+        case .accessoryRectangular:
+            VStack(alignment: .leading, spacing: 3) {
+                Text(entry.stationName ?? "Aucune alerte")
+                    .font(.headline)
+                    .lineLimit(1)
+
+                Text(entry.fuelName ?? entry.countText)
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .lineLimit(1)
+
+                Text(entry.detailText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+        default:
+            EmptyView()
         }
     }
 
@@ -113,13 +161,13 @@ private struct ActiveAlertsWidgetView: View {
     private func filledState(stationName: String) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(stationName)
-                .font(.system(size: family == .systemSmall ? 15 : 16, weight: .semibold, design: .rounded))
+                .font(.system(size: family.isSystemSmall ? 15 : 16, weight: .semibold, design: .rounded))
                 .foregroundStyle(.white)
                 .lineLimit(2)
 
             HStack(alignment: .lastTextBaseline, spacing: 8) {
                 Text(compactCountText)
-                    .font(.system(size: family == .systemSmall ? 30 : 32, weight: .bold, design: .rounded))
+                    .font(.system(size: family.isSystemSmall ? 30 : 32, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
 
                 Text(compactCountLabel)
@@ -137,7 +185,7 @@ private struct ActiveAlertsWidgetView: View {
                     WidgetMetricPill(text: fuelName)
                 }
 
-                if family != .systemSmall {
+                if !family.isSystemSmall {
                     WidgetMetricPill(text: entry.countText)
                 }
             }
@@ -148,13 +196,13 @@ private struct ActiveAlertsWidgetView: View {
     private var emptyState: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Aucune alerte")
-                .font(.system(size: family == .systemSmall ? 22 : 24, weight: .bold, design: .rounded))
+                .font(.system(size: family.isSystemSmall ? 22 : 24, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
 
             Text(entry.detailText)
                 .font(.system(size: 13, weight: .regular, design: .rounded))
                 .foregroundStyle(.white.opacity(0.64))
-                .lineLimit(family == .systemSmall ? 3 : 2)
+                .lineLimit(family.isSystemSmall ? 3 : 2)
 
             WidgetMetricPill(text: "Active des alertes")
         }
@@ -170,7 +218,7 @@ private struct ActiveAlertsWidgetView: View {
     }
 
     private var subtitleText: String {
-        if family == .systemSmall {
+        if family.isSystemSmall {
             return entry.detailText
         }
 

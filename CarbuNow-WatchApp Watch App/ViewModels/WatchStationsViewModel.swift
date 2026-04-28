@@ -80,7 +80,7 @@ final class WatchStationsViewModel: ObservableObject {
                 limit: 100
             )
 
-            let filtered = fetched.filter { $0.isAvailable(for: selectedFuel) }
+            let filtered = fetched.filter { $0.shouldAppear(for: selectedFuel) }
             stations = sortStations(filtered, userLocation: location)
             lastRefreshDate = Date()
 
